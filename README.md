@@ -278,13 +278,28 @@ contexts:
     note: "No distinction between test code and implementation code"
 ```
 
-## Setup
+## Quick Start
 
+### 1. Clone the repository
 ```bash
 git clone https://github.com/mizkun/vibeflow.git
-cd vibeflow
-./setup_vibeflow.sh
 ```
+
+### 2. Create your project directory
+```bash
+mkdir ~/my-vibe-project
+cd ~/my-vibe-project
+```
+
+### 3. Run setup script
+```bash
+~/path/to/vibeflow/setup_vibeflow.sh
+```
+
+### 4. Start development
+1. Edit vision.md, spec.md, and plan.md
+2. Open in Claude Code
+3. Say "開発サイクルを開始して"
 
 ## Usage
 
@@ -300,10 +315,43 @@ cd vibeflow
 - `/next` - Continue to next step
 - `/vibe-status` - Show configuration status
 
-## Project Structure
+## Repository Structure
 
 ```
-/
+vibeflow/
+├── README.md              # This file
+├── setup_vibeflow.sh      # Main setup script
+├── LICENSE                # MIT License
+├── .gitignore            # Git ignore rules
+│
+├── lib/                   # Script modules
+│   ├── common.sh         # Common functions
+│   ├── create_agents.sh  # Subagent creation
+│   ├── create_claude_md.sh
+│   ├── create_commands.sh
+│   ├── create_structure.sh
+│   └── create_templates.sh
+│
+├── docs/                  # Documentation
+│   ├── setup-guide.md    # Setup guide
+│   ├── troubleshooting.md
+│   └── architecture.md
+│
+└── examples/              # Example projects
+    ├── README.md
+    └── todo-app/         # TODO app example
+        ├── vision.md
+        ├── spec.md
+        ├── plan.md
+        └── ...
+```
+
+## Project Structure (After Setup)
+
+After running setup_vibeflow.sh in your project directory:
+
+```
+your-project/
 ├── .claude/agents/          # Subagent definitions
 ├── .claude/commands/        # Slash commands
 ├── .vibe/state.yaml        # Current cycle state
@@ -313,8 +361,7 @@ cd vibeflow
 ├── vision.md              # Product vision
 ├── spec.md               # Specifications
 ├── plan.md               # Development plan
-├── CLAUDE.md             # Framework documentation
-└── setup_vibeflow.sh     # Setup script
+└── CLAUDE.md             # Framework documentation
 ```
 
 ## Rules

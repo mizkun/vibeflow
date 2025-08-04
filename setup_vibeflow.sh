@@ -112,6 +112,35 @@ show_welcome() {
     echo ""
 }
 
+# Function to check if running in vibeflow repository
+check_repository_location() {
+    local current_dir="$(pwd)"
+    local script_parent_dir="$(dirname "$SCRIPT_DIR")"
+    
+    # Check if we're in the vibeflow repository itself
+    if [ -f "$current_dir/setup_vibeflow.sh" ] && [ -d "$current_dir/lib" ] && [ -d "$current_dir/docs" ]; then
+        warning "Vibe Codingリポジトリ内で実行しようとしています！"
+        echo ""
+        echo "  推奨される使い方："
+        echo "  1. 新しいプロジェクトディレクトリを作成"
+        echo "  2. そのディレクトリに移動"
+        echo "  3. このスクリプトを実行"
+        echo ""
+        echo "  例:"
+        echo "    mkdir ~/my-project"
+        echo "    cd ~/my-project"
+        echo "    $SCRIPT_DIR/setup_vibeflow.sh"
+        echo ""
+        
+        if [ "$FORCE_INSTALL" = false ]; then
+            if ! confirm "本当にこのディレクトリで続行しますか？"; then
+                info "インストールをキャンセルしました。"
+                exit 0
+            fi
+        fi
+    fi
+}
+
 # Function to check existing installation
 check_existing_installation() {
     local has_existing=false
@@ -270,6 +299,9 @@ main() {
         exit 1
     fi
     success "前提条件のチェック: OK"
+    
+    # Check if running in repository
+    check_repository_location
     
     # Check for existing installation
     check_existing_installation
