@@ -324,4 +324,3 @@ cd vibeflow
 - TDD process must be followed
 - Only 2 human checkpoints in entire cycle
 - Automatic progression between non-human steps
-
