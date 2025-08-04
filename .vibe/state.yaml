@@ -1,0 +1,7 @@
+current_cycle: 1
+current_step: 1_plan_review
+current_issue: null
+next_step: 2_issue_breakdown
+checkpoint_status:
+  2a_issue_validation: pending
+  7a_runnable_check: pending
