@@ -1,373 +1,467 @@
 # Vibe Coding Framework
 
-An AI-driven development methodology with role separation and structured workflow automation.
+AI-driven development methodology setup tool for Claude Code
 
 ## Overview
 
-Vibe Coding Framework implements an 11-step development cycle with automated role switching and strict access control. The system uses 4 specialized subagents to handle different phases of development while humans participate only at 2 designated checkpoints.
+Vibe Coding Framework is an AI-driven development methodology designed for use with Claude Code. It enables efficient, high-quality development through role separation, automated workflows, and clear checkpoints.
 
-## Workflow Steps
+## Features
 
-### Planning Phase
-1. `plan_review` - Product Manager reviews progress and updates development plan
-2. `issue_breakdown` - Product Manager creates issues for next sprint
-3. `issue_validation` - Human validates issues (Checkpoint 1)
+- 🤖 **AI-Driven Development**: Automated development with 4 specialized Subagents
+- 📋 **11-Step Cycle**: Structured flow from planning to deployment
+- 🛡️ **Role-Based Access Control**: Clear separation of responsibilities (PM, Engineer, QA, Human)
+- ✅ **Human Checkpoints**: Human verification at critical decision points
+- 🔧 **Automated Setup**: Complete development environment with a single command
 
-### Implementation Phase  
-4. `branch_creation` - Engineer creates feature branch
-5. `test_writing` - Engineer writes failing tests (TDD Red)
-6. `implementation` - Engineer implements code to pass tests (TDD Green)
-7. `refactoring` - Engineer improves code quality (TDD Refactor)
-8. `code_sanity_check` - QA Engineer runs automated checks
+## Quick Start
 
-### Validation Phase
-9. `acceptance_test` - QA Engineer verifies requirements
-10. `runnable_check` - Human tests feature functionality (Checkpoint 2)
-11. `failure_analysis` - QA Engineer analyzes failures if needed
+```bash
+# Clone the repository
+git clone https://github.com/mizkun/vibeflow.git
 
-### Deployment Phase
-12. `pull_request` - Engineer creates PR
-13. `review` - QA Engineer reviews code quality
-14. `merge` - Engineer merges approved changes
-15. `deployment` - Engineer deploys to staging/production
+# Create a new project directory
+mkdir my-project
+cd my-project
 
-## Workflow YAML Definition
-
-```yaml
-steps:
-  1_plan_review:
-    role: product_manager
-    mission: "Review progress and update development plan"
-    context:
-      read: [vision, spec, plan]
-      edit: [plan]
-      create: []
-
-  2_issue_breakdown:
-    role: product_manager
-    mission: "Create issues for next sprint/iteration"
-    context:
-      read: [vision, spec, plan]
-      edit: []
-      create: [issues]
-
-  2a_issue_validation:
-    role: human
-    mission: "Validate issues are clear and implementable (Human checkpoint)"
-    context:
-      read: [issues]
-      edit: []
-      create: []
-    condition:
-      pass: 3_branch_creation
-      fail: 2_issue_breakdown
-
-  3_branch_creation:
-    role: engineer
-    mission: "Create feature branch for the issue"
-    context:
-      read: [issues]
-      edit: []
-      create: []
-
-  4_test_writing:
-    role: engineer
-    mission: "Write tests and confirm they fail (TDD Red)"
-    context:
-      read: [issues]
-      edit: []
-      create: [code]
-
-  5_implementation:
-    role: engineer
-    mission: "Implement minimal code to pass tests (TDD Green)"
-    context:
-      read: [issues, code]
-      edit: [code]
-      create: [code]
-
-  6_refactoring:
-    role: engineer
-    mission: "Improve code quality (TDD Refactor)"
-    context:
-      read: [issues, code]
-      edit: [code]
-      create: []
-
-  6a_code_sanity_check:
-    role: qa_engineer
-    mission: "Run automated checks for obvious bugs or issues"
-    context:
-      read: [code]
-      edit: []
-      create: []
-    condition:
-      pass: 7_acceptance_test
-      fail: 6_refactoring
-
-  7_acceptance_test:
-    role: qa_engineer
-    mission: "Verify issue requirements are met"
-    context:
-      read: [spec, issues, code]
-      edit: []
-      create: []
-    condition:
-      pass: 7a_runnable_check
-      fail: 5_implementation
-
-  7a_runnable_check:
-    role: human
-    mission: "Manually test the feature works as expected (Human checkpoint)"
-    context:
-      read: [issues]
-      edit: []
-      create: []
-    condition:
-      pass: 8_pull_request
-      fail: 7b_failure_analysis
-
-  7b_failure_analysis:
-    role: qa_engineer
-    mission: "Analyze why requirements weren't met"
-    context:
-      read: [issues, code]
-      edit: []
-      create: []
-    next: 5_implementation
-
-  8_pull_request:
-    role: engineer
-    mission: "Create PR and request review"
-    context:
-      read: [issues, code]
-      edit: []
-      create: []
-
-  9_review:
-    role: qa_engineer
-    mission: "Review code quality and compliance"
-    context:
-      read: [issues, code]
-      edit: []
-      create: []
-    condition:
-      approve: 10_merge
-      request_changes: 6_refactoring
-
-  10_merge:
-    role: engineer
-    mission: "Merge approved changes to main branch"
-    context:
-      read: [code]
-      edit: []
-      create: []
-
-  11_deployment:
-    role: engineer
-    mission: "Deploy to staging/production environment"
-    context:
-      read: [code]
-      edit: []
-      create: []
-    condition:
-      success: 1_plan_review
-      fail: 10_merge
+# Run setup
+../vibeflow/setup_vibeflow.sh
 ```
 
-## Roles and Access Rights
+## Table of Contents
 
-### Product Manager
-- Read: vision.md, spec.md, plan.md
-- Edit: plan.md
-- Create: issues
+- [Installation](#installation)
+- [Detailed Setup Guide](#detailed-setup-guide)
+- [How It Works](#how-it-works)
+- [Project Structure](#project-structure)
+- [Available Commands](#available-commands)
+- [Troubleshooting](#troubleshooting)
+- [Examples](#examples)
+- [Technical Architecture](#technical-architecture)
+- [Contributing](#contributing)
+- [License](#license)
 
-### Engineer
-- Read: issues, code
-- Edit: code
-- Create: code
+## Installation
 
-### QA Engineer
-- Read: spec.md, issues, code
-- Edit: none
-- Create: none
+### Prerequisites
 
-### Human
-- Read: issues
-- Edit: none
-- Create: none
+- macOS or Linux
+- Bash shell
+- Git (optional, for project management)
+- Claude Code
 
-## Role YAML Definition
+### Installation Steps
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/mizkun/vibeflow.git
+   cd vibeflow
+   ```
+
+2. **Create a new project directory**:
+   
+   **Important**: Run setup_vibeflow.sh in the directory where you want to create your project. Do not run it directly in the repository.
+   
+   ```bash
+   # Create a new project directory
+   mkdir ~/my-vibe-project
+   cd ~/my-vibe-project
+   
+   # Run the setup script
+   ~/path/to/vibeflow/setup_vibeflow.sh
+   ```
+
+3. **Setup options**:
+   ```bash
+   # Show help
+   ./setup_vibeflow.sh --help
+   
+   # Install without confirmation
+   ./setup_vibeflow.sh --force
+   
+   # Skip backup
+   ./setup_vibeflow.sh --no-backup
+   
+   # Check version
+   ./setup_vibeflow.sh --version
+   ```
+
+## Detailed Setup Guide
+
+### Initial Configuration
+
+After setup completes, edit the following files to define your project:
+
+#### 1. vision.md
+Define your product vision:
+- Problem to solve
+- Target users
+- Value proposition
+- Product overview
+- Success criteria
+
+#### 2. spec.md
+Define specifications and technical design:
+- Functional requirements (must-have, nice-to-have)
+- Non-functional requirements (performance, security, availability)
+- Technology stack
+- Architecture
+- Constraints
+
+#### 3. plan.md
+Define development plan and TODOs:
+- Milestones
+- TODO list (by priority)
+- Completed items
+- Next sprint plan
+
+### Using with Claude Code
+
+1. Open the project directory in Claude Code
+2. Type "Start the development cycle" (or in Japanese: "開発サイクルを開始して")
+3. AI will automatically proceed with the development flow
+
+## How It Works
+
+### The 11-Step Development Cycle
+
+1. **Plan Review**: Product Manager reviews the development plan
+2. **Issue Breakdown**: Create specific implementation tasks
+   - **Checkpoint 2a**: Human validates issues
+3. **Branch Creation**: Create feature branches
+4. **Test Writing**: Write tests before implementation (TDD)
+5. **Implementation**: Engineer implements features
+6. **Refactoring**: Improve code quality
+   - **Checkpoint 6a**: Code quality check
+7. **Acceptance Test**: QA Engineer validates implementation
+   - **Checkpoint 7a**: Human runnable check
+   - **7b**: Failure analysis if needed
+8. **Pull Request**: Create PR for review
+9. **Review**: Code review and feedback
+10. **Merge**: Merge approved changes
+11. **Deployment**: Deploy to production
+
+### Role Separation
+
+- **Product Manager**: Plans review, issue creation, project management
+- **Engineer**: Implementation, testing, refactoring
+- **QA Engineer**: Quality assurance, acceptance testing
+- **Human**: Final validation at checkpoints
+
+## Project Structure
+
+After setup, the following structure is created:
+
+```
+your-project/
+├── .claude/
+│   ├── agents/         # Subagent definitions
+│   │   ├── pm-auto.md
+│   │   ├── engineer-auto.md
+│   │   ├── qa-auto.md
+│   │   └── deploy-auto.md
+│   └── commands/       # Slash commands
+│       ├── progress.md
+│       ├── healthcheck.md
+│       └── ... (11 commands total)
+├── .vibe/
+│   ├── state.yaml      # Cycle state management
+│   └── templates/      # Issue templates
+├── issues/             # Implementation tasks
+├── src/                # Source code
+├── CLAUDE.md           # Framework documentation
+├── vision.md           # Product vision
+├── spec.md             # Specifications
+└── plan.md             # Development plan
+```
+
+## Available Commands
+
+### Slash Commands
+
+The framework provides 11 slash commands for controlling the development flow:
+
+- `/progress` - Show current development progress
+- `/healthcheck` - Check project health status
+- `/abort` - Abort current operation
+- `/next` - Proceed to next step
+- `/restart-cycle` - Restart the development cycle
+- `/skip-tests` - Skip test execution (use with caution)
+- `/vibe-status` - Show Vibe framework status
+- `/role-product_manager` - Switch to Product Manager role
+- `/role-engineer` - Switch to Engineer role
+- `/role-qa_engineer` - Switch to QA Engineer role
+- `/role-reset` - Reset role to default
+
+### Script Options
+
+```bash
+# Display help
+./setup_vibeflow.sh --help
+
+# Force installation (skip confirmations)
+./setup_vibeflow.sh --force
+
+# Skip backup creation
+./setup_vibeflow.sh --no-backup
+
+# Display version
+./setup_vibeflow.sh --version
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### Error: "lib directory not found"
+```bash
+❌ Error: lib directory not found at /path/to/lib
+```
+
+**Cause**: Script cannot find the lib directory.
+
+**Solution**:
+1. Verify repository is correctly cloned
+2. Ensure setup_vibeflow.sh and lib directory are in the same location
+3. Try running with full path instead of relative path
+
+#### Error: "command not found"
+```bash
+bash: git: command not found
+```
+
+**Cause**: Required tools are not installed.
+
+**Solution**:
+- macOS: `brew install git`
+- Linux: `sudo apt-get install git` or `sudo yum install git`
+
+#### Existing Configuration Warning
+```
+⚠️  Existing Vibe Coding configuration found.
+```
+
+**Solution**:
+1. Create backup and continue: Type "y"
+2. Run in different directory: Create new directory and run there
+3. Force install: Use `--force` option
+
+#### Slash Commands Not Working
+
+**Cause**: Command files may not be generated correctly.
+
+**Solution**:
+1. Check `.claude/commands/` directory
+2. Verify command files (.md) exist
+3. Re-run setup if necessary
+
+#### "Subagent not found" Error
+
+**Cause**: Subagent files are missing.
+
+**Solution**:
+1. Check `.claude/agents/` directory
+2. Verify all 4 Subagent files exist:
+   - pm-auto.md
+   - engineer-auto.md
+   - qa-auto.md
+   - deploy-auto.md
+
+#### Development Cycle Not Progressing
+
+**Cause**: state.yaml may not be updating correctly.
+
+**Solution**:
+1. Check `.vibe/state.yaml` contents
+2. Manually fix if needed:
+   ```yaml
+   current_cycle: 1
+   current_step: 1_plan_review
+   current_issue: null
+   next_step: 2_issue_breakdown
+   ```
+
+### Platform-Specific Issues
+
+#### Windows (WSL/Git Bash)
+
+**Issue**: Line ending errors
+
+**Solution**:
+```bash
+# Convert line endings to LF
+dos2unix setup_vibeflow.sh
+dos2unix lib/*.sh
+```
+
+#### macOS
+
+**Issue**: Old Bash version errors
+
+**Solution**:
+```bash
+# Install newer Bash with Homebrew
+brew install bash
+# Change shell
+chsh -s /usr/local/bin/bash
+```
+
+### Getting Support
+
+If issues persist, create an issue with the following information:
+
+1. Full error message
+2. Command executed
+3. OS information: `uname -a`
+4. Bash version: `bash --version`
+5. setup_vibeflow.sh version: `./setup_vibeflow.sh --version`
+
+Create issue at: https://github.com/mizkun/vibeflow/issues
+
+## Examples
+
+The `examples/` directory contains a complete example showing the file structure generated by setup_vibeflow.sh. See [examples/todo-app/](examples/todo-app/) for a practical example of how the framework structures a project.
+
+## Technical Architecture
+
+### Core Concepts
+
+#### 1. Role-Based Access Control
+
+The framework defines 4 roles with specific access permissions:
 
 ```yaml
 roles:
   product_manager:
-    can_read: [vision, spec, plan]  # MUST read ALL before creating issues
+    can_read: [vision, spec, plan]
     can_edit: [plan]
     can_create: [issues]
-
+    
   engineer:
-    can_read: [issues, code]  # MUST read issues carefully before implementing
+    can_read: [issues, code]
     can_edit: [code]
     can_create: [code]
-
+    
   qa_engineer:
-    can_read: [spec, issues, code]  # MUST verify against spec
+    can_read: [spec, issues, code]
     can_edit: []
     can_create: []
-
+    
   human:
-    can_read: [issues]  # Reviews issues only, no code access
+    can_read: [issues]
     can_edit: []
     can_create: []
 ```
 
-## Context Definitions
+#### 2. Context Separation
+
+Each context contains specific information with role-based access:
+
+- **vision**: Product vision (read-only)
+- **spec**: Specifications and technical design (read-only)
+- **plan**: Development plan (PM edit only)
+- **issues**: Implementation tasks (PM creates, Engineer reads)
+- **code**: Source code (Engineer access only)
+
+#### 3. State Management
+
+`.vibe/state.yaml` manages cycle state:
 
 ```yaml
-contexts:
-  vision:
-    description: "Product vision - what you want to build"
-    format: "Markdown document"
-    created_by: "Human (initial phase)"
-    example: |
-      # Product Vision
-      ## Problem to solve
-      ## Target users
-      ## Value proposition
-
-  spec:
-    description: "Functional requirements, specifications, and technical design"
-    format: "Markdown document"
-    created_by: "Human (initial phase)"
-    example: |
-      # Specification Document
-      ## Functional requirements
-      ## Non-functional requirements
-      ## Technical stack
-      ## Architecture
-      ## Constraints
-
-  plan:
-    description: "Development plan and progress tracking"
-    format: "Markdown document"
-    created_by: "Human (initial phase)"
-    updated_by: "product_manager (step_1)"
-    example: |
-      # Development Plan
-      ## Milestones
-      ## TODO List
-      ## Completed items
-      ## Next sprint plan
-
-  issues:
-    description: "Implementation task list"
-    format: "GitHub Issues / Markdown"
-    created_by: "product_manager (step_2)"
-    example: |
-      ## Title
-      ## Overview
-      ## Acceptance criteria
-      ## Technical details
-
-  code:
-    description: "Source code (including implementation and tests)"
-    format: "Programming language files"
-    created_by: "engineer (step_4, step_5)"
-    updated_by: "engineer (step_5, step_6)"
-    note: "No distinction between test code and implementation code"
+current_cycle: 3
+current_step: 5_implementation
+current_issue: "issue-042-user-authentication"
+next_step: 6_refactoring
+checkpoint_status:
+  2a_issue_validation: passed
+  7a_runnable_check: pending
 ```
 
-## Quick Start
+### Subagent Architecture
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/mizkun/vibeflow.git
+Each Subagent has specific roles and toolsets:
+
+1. **pm-auto**
+   - Tools: file_view, file_edit, str_replace_editor
+   - Responsibilities: Plan review, issue creation
+
+2. **engineer-auto**
+   - Tools: file_view, file_edit, str_replace_editor, run_command, browser
+   - Responsibilities: Implementation, test creation, refactoring
+
+3. **qa-auto**
+   - Tools: file_view, run_command, str_replace_editor
+   - Responsibilities: Quality checks, acceptance testing
+
+4. **deploy-auto**
+   - Tools: file_view, run_command, browser
+   - Responsibilities: PR creation, merging, deployment
+
+### Security and Access Control
+
+#### Principles
+
+1. **Least Privilege**: Each role has minimal necessary access
+2. **Read-Only Documents**: vision.md and spec.md are immutable during development
+3. **No Human Code Access**: Humans cannot directly access source code
+
+#### Implementation
+
+- Control via AI instructions, not filesystem-level
+- Each Subagent accesses only permitted files
+- state.yaml tracks current role and permissions
+
+### Automation Flow
+
+#### Triggers and Transitions
+
+1. **Automatic Transitions**: Non-human steps proceed automatically
+2. **Conditional Branches**: Based on test results and reviews
+3. **Loop-back**: Return to appropriate step on failure
+
+#### Parallel Processing
+
+When possible, execute multiple tasks in parallel:
+- Create multiple issues simultaneously
+- Optimize test and implementation iterations
+
+### Extensibility
+
+#### Adding Custom Subagents
+
+To add a new Subagent:
+
+```markdown
+---
+name: custom-agent
+description: "Custom agent description"
+tools: file_view, custom_tool
+---
+
+# Detailed agent description and rules
 ```
 
-### 2. Create your project directory
-```bash
-mkdir ~/my-vibe-project
-cd ~/my-vibe-project
-```
+#### Workflow Customization
 
-### 3. Run setup script
-```bash
-~/path/to/vibeflow/setup_vibeflow.sh
-```
+Define custom workflows in `.vibe/workflow.yaml` (future feature)
 
-### 4. Start development
-1. Edit vision.md, spec.md, and plan.md
-2. Open in Claude Code
-3. Say "開発サイクルを開始して"
+### Performance Considerations
 
-## Usage
+1. **Context Size**: Each Subagent loads only necessary files
+2. **State Persistence**: state.yaml saves progress for resumption
+3. **Error Recovery**: Error handling at each step
 
-1. Edit vision.md, spec.md, and plan.md with project details
-2. Open project in Claude Code
-3. Execute command: "開発サイクルを開始して"
+### Future Extensions
 
-## Available Commands
+1. **Multi-project Support**: Parallel management of multiple projects
+2. **Custom Workflows**: YAML-based workflow definitions
+3. **Metrics Collection**: Development efficiency measurement
+4. **Plugin System**: Custom tools and Subagents
 
-- `/progress` - Check current cycle position
-- `/healthcheck` - Verify alignment between documents
-- `/abort` - Stop current cycle
-- `/next` - Continue to next step
-- `/vibe-status` - Show configuration status
+## Contributing
 
-## Repository Structure
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-```
-vibeflow/
-├── README.md              # This file
-├── setup_vibeflow.sh      # Main setup script
-├── LICENSE                # MIT License
-├── .gitignore            # Git ignore rules
-│
-├── lib/                   # Script modules
-│   ├── common.sh         # Common functions
-│   ├── create_agents.sh  # Subagent creation
-│   ├── create_claude_md.sh
-│   ├── create_commands.sh
-│   ├── create_structure.sh
-│   └── create_templates.sh
-│
-├── docs/                  # Documentation
-│   ├── setup-guide.md    # Setup guide
-│   ├── troubleshooting.md
-│   └── architecture.md
-│
-└── examples/              # Example projects
-    ├── README.md
-    └── todo-app/         # TODO app example
-        ├── vision.md
-        ├── spec.md
-        ├── plan.md
-        └── ...
-```
+## License
 
-## Project Structure (After Setup)
-
-After running setup_vibeflow.sh in your project directory:
-
-```
-your-project/
-├── .claude/agents/          # Subagent definitions
-├── .claude/commands/        # Slash commands
-├── .vibe/state.yaml        # Current cycle state
-├── .vibe/templates/        # Issue templates
-├── issues/                 # Implementation tasks
-├── src/                   # Source code
-├── vision.md              # Product vision
-├── spec.md               # Specifications
-├── plan.md               # Development plan
-└── CLAUDE.md             # Framework documentation
-```
-
-## Rules
-
-- Humans cannot access source code directly
-- Each role has strict file access permissions
-- TDD process must be followed
-- Only 2 human checkpoints in entire cycle
-- Automatic progression between non-human steps
+MIT License
