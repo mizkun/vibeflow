@@ -8,11 +8,11 @@ Vibe Coding Framework is an AI-driven development methodology designed for use w
 
 ## Features
 
-- 🤖 **AI-Driven Development**: Automated development with 4 specialized Subagents
-- 📋 **11-Step Cycle**: Structured flow from planning to deployment
-- 🛡️ **Role-Based Access Control**: Clear separation of responsibilities (PM, Engineer, QA, Human)
-- ✅ **Human Checkpoints**: Human verification at critical decision points
-- 🔧 **Automated Setup**: Complete development environment with a single command
+- **Context-Based Access Control**: Each step has a specific role with defined read/edit/create permissions for different contexts
+- **Strict Context Isolation**: Roles can only access contexts they need (e.g., Engineers cannot read vision/spec, Humans cannot access code)
+- **Role-Driven Development Cycle**: 11-step workflow with automatic role switching based on current step
+- **Minimal Human Intervention**: Only 2 checkpoints where human validation is required
+- **Automated Setup**: Complete development environment with a single command
 
 ## Quick Start
 
