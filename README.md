@@ -9,7 +9,7 @@ Vibe Coding Framework is an AI-driven development methodology designed for use w
 ## Features
 
 - **Context-Based Access Control**: Each step has a specific role with defined read/edit/create permissions for different contexts
-- **Strict Context Isolation**: Roles can only access contexts they need (e.g., Engineers cannot read vision/spec, Humans cannot access code)
+- **Strict Context Isolation**: Roles can only access contexts they need (e.g., Engineers read spec for implementation requirements, PMs cannot access code)
 - **Role-Driven Development Cycle**: 11-step workflow with automatic role switching based on current step
 - **Minimal Human Intervention**: Only 2 checkpoints where human validation is required
 - **Automated Setup**: Complete development environment with a single command
@@ -151,7 +151,7 @@ workflow:
   step_1_plan_review:
     role: Product Manager
     access:
-      read: [vision.md, spec.md, plan.md, state.yaml]
+      read: [vision.md, spec.md, plan.md, state.yaml, qa-reports/*]
       write: [plan.md, state.yaml]
       no_access: [src/*, *.test.*]
     purpose: Review and update development plan based on vision/spec
@@ -159,7 +159,7 @@ workflow:
   step_2_issue_breakdown:
     role: Product Manager  
     access:
-      read: [vision.md, spec.md, plan.md, state.yaml]
+      read: [vision.md, spec.md, plan.md, state.yaml, qa-reports/*]
       write: [issues/*, state.yaml]
       no_access: [src/*, *.test.*]
     purpose: Create detailed, implementable issues from plan
@@ -168,41 +168,41 @@ workflow:
   step_3_branch_creation:
     role: Engineer
     access:
-      read: [issues/*, state.yaml]
+      read: [spec.md, issues/*, state.yaml]
       write: [.git/*, state.yaml]
-      no_access: [vision.md, spec.md, plan.md]
+      no_access: []
     purpose: Create feature branch for implementation
     
   step_4_test_writing:
     role: Engineer
     access:
-      read: [issues/*, src/*, state.yaml]
+      read: [spec.md, issues/*, src/*, state.yaml]
       write: [*.test.*, state.yaml]
-      no_access: [vision.md, spec.md, plan.md]
+      no_access: []
     purpose: Write failing tests first (TDD Red phase)
     
   step_5_implementation:
     role: Engineer
     access:
-      read: [issues/*, src/*, *.test.*, state.yaml]
+      read: [spec.md, issues/*, src/*, *.test.*, state.yaml]
       write: [src/*, state.yaml]
-      no_access: [vision.md, spec.md, plan.md]
+      no_access: []
     purpose: Implement code to pass tests (TDD Green phase)
     
   step_6_refactoring:
     role: Engineer
     access:
-      read: [issues/*, src/*, *.test.*, state.yaml]
+      read: [spec.md, issues/*, src/*, *.test.*, state.yaml]
       write: [src/*, state.yaml]
-      no_access: [vision.md, spec.md, plan.md]
+      no_access: []
     purpose: Improve code quality (TDD Refactor phase)
     checkpoint: 6a_code_sanity_check (automated)
     
   step_7_acceptance_test:
     role: QA Engineer
     access:
-      read: [spec.md, issues/*, src/*, *.test.*, state.yaml]
-      write: [test-results.log, state.yaml]
+      read: [spec.md, issues/*, src/*, *.test.*, state.yaml, qa-reports/*]
+      write: [test-results.log, qa-reports/*, state.yaml]
       no_access: [vision.md, plan.md]
     purpose: Verify implementation meets requirements
     checkpoint: 7a_human_runnable_check (required)
@@ -210,39 +210,39 @@ workflow:
   step_8_pull_request:
     role: Engineer
     access:
-      read: [issues/*, src/*, state.yaml]
+      read: [spec.md, issues/*, src/*, state.yaml]
       write: [.git/*, state.yaml]
-      no_access: [vision.md, spec.md, plan.md]
+      no_access: []
     purpose: Create PR with proper documentation
     
   step_9_review:
     role: QA Engineer
     access:
-      read: [spec.md, issues/*, src/*, state.yaml]
-      write: [state.yaml]
-      no_access: [vision.md, plan.md]
+      read: [spec.md, issues/*, src/*, state.yaml, qa-reports/*]
+      write: [qa-reports/*, state.yaml]
+      no_access: []
     purpose: Code review and quality check
     
   step_10_merge:
     role: Engineer
     access:
-      read: [src/*, state.yaml]
+      read: [spec.md, src/*, state.yaml]
       write: [.git/*, state.yaml]
-      no_access: [vision.md, spec.md, plan.md]
+      no_access: []
     purpose: Merge approved changes to main
     
   step_11_deployment:
     role: Engineer
     access:
-      read: [src/*, state.yaml]
-      write: [deployment.log, plan.md, state.yaml]
-      no_access: [vision.md, spec.md]
-    purpose: Deploy to production and update plan
+      read: [spec.md, src/*, state.yaml]
+      write: [deployment.log, state.yaml]
+      no_access: []
+    purpose: Deploy to production
 ```
 
 ### Key Principles
 
-1. **Context Isolation**: Each role can only see what they need - Engineers never see the vision to avoid bias, PMs never see code to maintain abstraction
+1. **Context Isolation**: Each role can only see what they need - Engineers read spec for implementation requirements, PMs never see code to maintain abstraction
 2. **Automated Progression**: Steps flow automatically with only 2 human checkpoints
 3. **Verification at Each Step**: Each role verifies their own artifacts before proceeding
 4. **Clear State Management**: state.yaml tracks current position and progress
@@ -314,12 +314,11 @@ your-project/
 │   │   ├── pm-auto.md
 │   │   ├── engineer-auto.md
 │   │   ├── qa-auto.md
-│   │   ├── deploy-auto.md
 │   │   └── quickfix-auto.md
 │   └── commands/       # Slash commands
 │       ├── progress.md
 │       ├── healthcheck.md
-│       └── ... (15 commands total)
+│       └── ... (5 commands total)
 ├── .vibe/
 │   ├── state.yaml      # Cycle state management
 │   └── templates/      # Issue templates
@@ -335,30 +334,13 @@ your-project/
 
 ### Slash Commands
 
-The framework provides 16 slash commands organized by category:
+The framework provides 5 slash commands organized by category:
 
-**Flow Control:**
-- `/progress` - Show current development progress
-- `/next` - Proceed to next step
-- `/restart-cycle` - Restart the development cycle
-- `/abort` - Abort current operation
-- `/skip-tests` - Skip test execution (use with caution)
-
-**Status & Diagnostics:**
+**Core Commands:**
 - `/progress` - Check current progress and position
-- `/healthcheck` - Verify state consistency with actual project
-
-**Testing:**
-- `/run-e2e` - Run E2E tests using Playwright (requires --with-e2e setup)
-
-**Role Management:**
-- `/role-product_manager` - Switch to Product Manager role
-- `/role-engineer` - Switch to Engineer role
-- `/role-qa_engineer` - Switch to QA Engineer role
-- `/role-reset` - Reset role to default
-
-**Quick Fix Mode:**
-- `/quickfix` - Enter Quick Fix mode for minor UI adjustments
+- `/healthcheck` - Verify repository consistency
+- `/next` - Proceed to next step
+- `/quickfix` - Enter Quick Fix mode for minor adjustments
 - `/exit-quickfix` - Exit Quick Fix mode and return to normal cycle
 
 ### Script Options

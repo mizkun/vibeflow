@@ -37,7 +37,7 @@ if [ -f "${LIB_DIR}/create_notifications.sh" ]; then
 fi
 
 # Global variables
-VERSION="0.4.0"
+VERSION="0.4.1"
 FORCE_INSTALL=false
 BACKUP_ENABLED=true
 VERBOSE=false
