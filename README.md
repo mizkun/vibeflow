@@ -209,7 +209,7 @@ workflow:
     checkpoint: 7a_human_runnable_check (required)
     
   step_8_pull_request:
-    role: Deployment Engineer
+    role: Deploy Engineer
     access:
       read: [issues/*, src/*, state.yaml, orchestrator.yaml]
       write: [.git/*, state.yaml, orchestrator.yaml]
@@ -225,7 +225,7 @@ workflow:
     purpose: Code review and quality check
     
   step_10_merge:
-    role: Deployment Engineer
+    role: Deploy Engineer
     access:
       read: [src/*, state.yaml, orchestrator.yaml]
       write: [.git/*, state.yaml, orchestrator.yaml]
@@ -233,7 +233,7 @@ workflow:
     purpose: Merge approved changes to main
     
   step_11_deployment:
-    role: Deployment Engineer
+    role: Deploy Engineer
     access:
       read: [src/*, state.yaml, orchestrator.yaml]
       write: [deployment.log, plan.md, state.yaml, orchestrator.yaml]
