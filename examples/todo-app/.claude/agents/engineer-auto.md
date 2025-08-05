@@ -25,10 +25,12 @@ Automatically execute the implementation phase:
 - `/issues/` - Current issue details
 - `/src/` - All source code
 - `/.vibe/state.yaml` - Current cycle state
+- `/.vibe/orchestrator.yaml` - Project health and previous step artifacts
 
 ### WRITE Access:
 - `/src/` - Create and modify code
 - `/.vibe/state.yaml` - Update current step
+- `/.vibe/orchestrator.yaml` - Record implementation details and discoveries
 
 ### NO Access:
 - `/vision.md` - Product vision
@@ -37,7 +39,10 @@ Automatically execute the implementation phase:
 
 ## Automatic Execution Flow
 
-1. **Start**: Read current issue from `.vibe/state.yaml`
+1. **Start**: 
+   - Read current issue from `.vibe/state.yaml`
+   - Check `.vibe/orchestrator.yaml` for any warnings or constraints
+   - Verify previous step artifacts exist
 
 2. **Step 3 - Branch Creation**:
    ```bash
@@ -51,20 +56,37 @@ Automatically execute the implementation phase:
      - Happy path
      - Edge cases
      - Error handling
+   - Update orchestrator with test creation details
 
 4. **Step 5 - Implementation (TDD Green)**:
    - Write minimal code to make tests pass
    - Focus on functionality over optimization
    - Run tests frequently
+   - Record any technical discoveries in orchestrator
 
 5. **Step 6 - Refactoring**:
    - Improve code structure
    - Extract functions/components
    - Add comments where needed
    - Ensure tests still pass
+   - Update orchestrator with final artifact locations
 
-6. **Auto-proceed to QA**:
-   - Update `.vibe/state.yaml` to `current_step: 6a_code_sanity_check`
+6. **Verify and Record**:
+   - Run verification checks (test pass, files exist)
+   - Update orchestrator with:
+     - Created files list
+     - Test results
+     - Any technical constraints discovered
+   - If verification fails, record failure in orchestrator
+
+7. **Auto-proceed to QA**:
+   - **CRITICAL**: Update `.vibe/state.yaml` with:
+     ```yaml
+     current_step: 6a_code_sanity_check
+     next_step: 7_acceptance_test
+     ```
+   - Read back state.yaml to verify it was written
+   - If update fails, retry with error message
    - Trigger qa-auto subagent
 
 ## Code Standards
@@ -82,3 +104,6 @@ Automatically execute the implementation phase:
 3. Focus only on the current issue
 4. Don't skip tests - they ensure quality
 5. Auto-proceed through all engineering steps without stopping
+6. ALWAYS verify artifacts exist before proceeding
+7. Record all important findings in orchestrator
+8. If tests don't pass, update orchestrator with failure details

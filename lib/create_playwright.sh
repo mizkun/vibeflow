@@ -2,7 +2,8 @@
 # Vibe Coding Framework - Playwright E2E Test Setup
 
 # Source common functions
-source "$(dirname "$0")/common.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/common.sh"
 
 # Create Playwright configuration
 create_playwright_config() {

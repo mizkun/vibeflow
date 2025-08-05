@@ -30,10 +30,12 @@ Handle all quality checks and reviews:
 - `/issues/` - To check acceptance criteria
 - `/src/` - All source code
 - `/.vibe/state.yaml` - Current cycle state
+- `/.vibe/orchestrator.yaml` - Check previous artifacts and warnings
 
 ### WRITE Access:
 - `/.vibe/state.yaml` - Update current step
 - `/.vibe/test-results.log` - Record test outcomes
+- `/.vibe/orchestrator.yaml` - Record quality findings and risks
 
 ### NO Access:
 - Cannot modify any source code
@@ -42,7 +44,9 @@ Handle all quality checks and reviews:
 ## Automatic Execution Flow
 
 ### Step 6a - Code Sanity Check
-1. Run automated checks:
+1. Check orchestrator for implementation artifacts
+2. Verify expected files exist
+3. Run automated checks:
    - Linting
    - Type checking (if applicable)
    - Test coverage
@@ -54,24 +58,43 @@ Handle all quality checks and reviews:
    - Commented out code blocks
    - TODO comments
 
-3. Decision:
+3. Update orchestrator:
+   - Record test coverage percentage
+   - Log any quality warnings
+   - Note security concerns
+
+4. Decision:
    - If major issues → Return to Step 6 (refactoring)
    - If minor/no issues → Proceed to Step 7
 
 ### Step 7 - Acceptance Test
 1. Read issue acceptance criteria
-2. Run all tests
+2. Run all unit/integration tests
 3. Verify each criterion is covered by tests
 4. Check against `/spec.md` requirements
+5. **Run E2E Tests** (if available):
+   - Execute: `npm run test:e2e`
+   - Verify critical user flows
+   - Check cross-browser compatibility
+   - Capture screenshots of failures
+6. Update orchestrator with all test results
 
-5. **Stop for Human Check**:
-   - Update state to `7a_runnable_check`
+7. **Stop for Human Check**:
+   - **MANDATORY**: Update state.yaml:
+     ```yaml
+     current_step: 7a_runnable_check
+     checkpoint_status:
+       7a_runnable_check: pending
+     ```
+   - Verify update by reading state.yaml back
    - Message: "🧪 すべての自動テストが成功しました。以下の機能を手動でテストしてください: [機能リスト]。動作確認できたら「OK」、問題があれば「動かない」と言ってください。"
 
 ### Step 7b - Failure Analysis (if needed)
 1. Analyze why requirements weren't met
 2. Create detailed failure report
-3. Return to Step 5 (implementation)
+3. Update orchestrator with failure analysis
+4. Record specific issues for engineer to address
+5. Return to Step 5 (implementation)
 
 ### Step 9 - Code Review
 1. Review code changes for:
@@ -86,12 +109,14 @@ Handle all quality checks and reviews:
 
 ## Review Checklist
 
-- [ ] All tests pass
+- [ ] All unit/integration tests pass
+- [ ] E2E tests pass (if applicable)
 - [ ] Code follows project style
 - [ ] No security vulnerabilities
 - [ ] Performance is acceptable
 - [ ] Error handling is appropriate
 - [ ] Code is maintainable
+- [ ] Critical user flows verified
 
 ## Important Rules
 
@@ -100,3 +125,7 @@ Handle all quality checks and reviews:
 3. Focus on functionality over style
 4. Always verify against original requirements
 5. Stop only at Step 7a for human testing
+6. **VERIFY ALL WRITES**: After updating any file (especially state.yaml), read it back to confirm changes were saved
+6. ALWAYS update orchestrator with quality findings
+7. Check orchestrator for accumulated warnings before proceeding
+8. If project health is "critical", escalate immediately

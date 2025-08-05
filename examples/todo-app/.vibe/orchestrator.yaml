@@ -1,0 +1,75 @@
+# Vibe Coding Framework - Orchestrator Context
+# This file tracks the overall project health and cross-role coordination
+
+orchestrator:
+  # Overall project health status
+  project_health: "healthy"  # healthy, warning, critical
+  last_updated: ""
+  
+  # Registry of completed steps and their artifacts
+  step_registry: []
+    # Example entry:
+    # - step: "2_issue_breakdown"
+    #   status: "completed"
+    #   timestamp: "2024-12-20T10:00:00Z"
+    #   artifacts_verified: true
+    #   artifacts:
+    #     - type: "issue_files"
+    #       count: 5
+    #       location: "issues/"
+    #   warnings: []
+  
+  # Critical decisions that need cross-role visibility
+  critical_decisions: []
+    # Example entries:
+    # - "API contract required - awaiting PM confirmation"
+    # - "Test coverage at 60% - below standard"
+  
+  # Verification log for tracking what has been checked
+  verification_log: []
+    # Example entry:
+    # - timestamp: "2024-12-20T10:00:00Z"
+    #   step: "4_test_writing"
+    #   checks_performed:
+    #     - check: "test_files_exist"
+    #       result: "passed"
+    #       details: "15 test files found"
+    #   overall_result: "passed"
+  
+  # Risk register for accumulating concerns
+  risk_register: []
+    # Example entry:
+    # - risk: "Complex dependency chain"
+    #   severity: "medium"  # low, medium, high, critical
+    #   identified_at: "step_2"
+    #   mitigation: "Consider phased implementation"
+  
+  # Communication log for important cross-role messages
+  communication_log: []
+    # Example entry:
+    # - from: "engineer"
+    #   to: "product_manager"
+    #   timestamp: "2024-12-20T10:30:00Z"
+    #   subject: "Technical constraint discovered"
+    #   message: "Database schema needs revision for feature X"
+    #   priority: "high"
+  
+  # Shared technical constraints and decisions
+  shared_context:
+    technical_constraints: []
+      # Example: "Node.js version must be >= 18"
+    architecture_decisions: []
+      # Example: "Using microservices pattern"
+    discovered_limitations: []
+      # Example: "External API rate limit: 100 req/min"
+  
+  # Metrics for tracking progress
+  metrics:
+    total_cycles_completed: 0
+    total_issues_completed: 0
+    average_cycle_time: null
+    current_velocity: null
+    quality_metrics:
+      test_coverage: null
+      build_success_rate: null
+      review_pass_rate: null

@@ -21,9 +21,11 @@ Complete the deployment pipeline:
 - `/issues/` - For PR description
 - `/src/` - All source code
 - `/.vibe/state.yaml` - Current cycle state
+- `/.vibe/orchestrator.yaml` - Check project health before deployment
 
 ### WRITE Access:
 - `/.vibe/state.yaml` - Update current step
+- `/.vibe/orchestrator.yaml` - Record deployment status and metrics
 
 ### NO Access:
 - Cannot modify vision, spec, or plan
@@ -32,7 +34,10 @@ Complete the deployment pipeline:
 ## Automatic Execution Flow
 
 ### Step 8 - Pull Request Creation
-1. Create PR with:
+1. Check orchestrator health status
+   - If "critical", stop and alert
+   - If "warning", include warnings in PR description
+2. Create PR with:
    ```bash
    gh pr create --title "Issue #X: [Title]" --body "[Generated description]"
    ```
@@ -56,7 +61,8 @@ Complete the deployment pipeline:
    - [x] Ready for merge
    ```
 
-3. After PR creation, automatically trigger qa-auto for Step 9 (review)
+3. Update orchestrator with PR URL and status
+4. After PR creation, automatically trigger qa-auto for Step 9 (review)
 
 ### Step 10 - Merge
 1. After approval from Step 9:
@@ -67,20 +73,39 @@ Complete the deployment pipeline:
    ```
 
 ### Step 11 - Deployment
-1. Run deployment scripts:
+1. Final health check from orchestrator
+2. Run deployment scripts:
    ```bash
    npm run build
    npm run deploy:staging
    ```
 
-2. Verify deployment:
+3. Verify deployment:
    - Check deployment logs
    - Confirm service is running
    - Run smoke tests if available
 
-3. **Cycle Complete**:
-   - Update state: `current_step: 1_plan_review`
-   - Increment cycle number
+4. Update orchestrator:
+   - Record deployment timestamp
+   - Update metrics (cycle time, success rate)
+   - Clear resolved warnings
+   - Archive cycle artifacts
+
+5. **Cycle Complete**:
+   - **CRITICAL**: Update plan.md to mark completed issues:
+     ```markdown
+     ## Completed
+     - [x] Issue #1: Feature A (Sprint 1 - 2024-12-20)
+     - [x] Issue #2: Feature B (Sprint 1 - 2024-12-20)
+     ```
+   - **MANDATORY**: Update state.yaml:
+     ```yaml
+     current_step: 1_plan_review
+     current_cycle: [increment]
+     current_issue: null
+     completed_items: [append completed issues]
+     ```
+   - Verify both files were updated by reading them back
    - Message: "✅ デプロイが完了しました！スプリントサイクルが終了しました。次のサイクルを開始する準備ができています。"
 
 ## Deployment Checklist
@@ -96,5 +121,8 @@ Complete the deployment pipeline:
 1. Never skip deployment verification
 2. Always squash commits for clean history
 3. If deployment fails, rollback immediately
-4. Update state.yaml after each step
+4. **CRITICAL**: Always update state.yaml after EVERY step - verify by reading it back
 5. Auto-proceed through all deployment steps
+6. Check orchestrator health before critical operations
+7. Record all deployment metrics in orchestrator
+8. If project health is "critical", do not deploy

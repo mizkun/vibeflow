@@ -29,11 +29,13 @@ Automatically execute the planning phase:
 - `/spec.md` - Specifications and technical design (READ ONLY)  
 - `/plan.md` - Development plan and TODOs
 - `/.vibe/state.yaml` - Current cycle state
+- `/.vibe/orchestrator.yaml` - Project health and cross-role information
 
 ### WRITE Access:
 - `/plan.md` - Update progress and TODOs
 - `/issues/` - Create new issue files
 - `/.vibe/state.yaml` - Update current step
+- `/.vibe/orchestrator.yaml` - Record decisions, risks, and artifacts
 
 ### NO Access:
 - `/src/` - Source code (NEVER access)
@@ -41,22 +43,34 @@ Automatically execute the planning phase:
 
 ## Automatic Execution Flow
 
-1. **Start**: Read `.vibe/state.yaml` to confirm current state
+1. **Start**: 
+   - Read `.vibe/state.yaml` to confirm current state
+   - Read `.vibe/orchestrator.yaml` to check project health and any warnings
 
 2. **MANDATORY CONTEXT READING**:
    - First, read `/vision.md` completely - understand the product vision
    - Second, read `/spec.md` completely - understand all requirements and technical design
    - Third, read `/plan.md` - check current progress and TODOs
+   - Check orchestrator for any critical decisions or constraints
    - If any of these files are missing or unreadable, STOP and report error
 
 3. **Step 1 - Plan Review**:
    - Compare completed items in plan.md against previous issues
-   - Update TODO list based on:
-     - Uncompleted items from plan.md
-     - Next logical steps according to spec.md
-     - Priorities aligned with vision.md
-   - Mark completed items
-   - Save updated `/plan.md`
+   - **CRITICAL**: Update plan.md with:
+     - Move completed tasks to "## Completed" section with completion date
+     - Update TODO list based on spec.md and remaining work
+     - Add any new discoveries or priorities
+   - Mark completed items with checkmarks and dates:
+     ```markdown
+     ## Completed
+     - [x] Task 1 (2024-12-20)
+     - [x] Task 2 (2024-12-20)
+     
+     ## TODO
+     - [ ] Remaining task 1
+     - [ ] New task based on learnings
+     ```
+   - **MUST save the updated `/plan.md` before proceeding**
 
 4. **Step 2 - Issue Breakdown**:
    - Select next items from TODO list
@@ -71,8 +85,21 @@ Automatically execute the planning phase:
      - Technical hints based on spec.md architecture
      - Priority level based on plan.md
 
-5. **Stop for Human Review**:
-   - Update `.vibe/state.yaml` to `current_step: 2a_issue_validation`
+5. **Update Orchestrator**:
+   - Record created issues in orchestrator step_registry
+   - Note any technical constraints discovered
+   - Log any risks or complex dependencies
+   - Update project health status
+
+6. **Stop for Human Review**:
+   - **MANDATORY**: Update `.vibe/state.yaml` with:
+     ```yaml
+     current_step: 2a_issue_validation
+     next_step: 3_branch_creation
+     issues_created: [count]
+     issues_list: [list of created issue filenames]
+     ```
+   - Verify state.yaml was actually written by reading it back
    - Display created issues summary
    - Message: "✅ 今回のスプリント用に X 個のIssueを作成しました。確認して問題なければ「続けて」と言ってください。"
 
@@ -107,10 +134,12 @@ Automatically execute the planning phase:
 
 1. NEVER access or read source code
 2. ALWAYS read vision.md, spec.md, and plan.md BEFORE creating any issues
-3. Each issue MUST directly relate to the project vision and specifications
-4. Each issue should be completable in 1-4 hours
-5. Always stop at Step 2a for human validation
-6. If vision/spec seem unclear, create clarification issues first
+3. ALWAYS check orchestrator for project health and warnings
+4. Each issue MUST directly relate to the project vision and specifications
+5. Each issue should be completable in 1-4 hours
+6. Always stop at Step 2a for human validation
+7. If vision/spec seem unclear, create clarification issues first
+8. Record all important decisions and risks in orchestrator
 
 ## Common Mistakes to Avoid
 ❌ Creating generic issues like "Add database" without checking spec.md for the specified database
