@@ -35,11 +35,21 @@ cd my-project
 - [Installation](#installation)
 - [Detailed Setup Guide](#detailed-setup-guide)
 - [How It Works](#how-it-works)
+  - [Core Concept: Role-Based Development Workflow](#core-concept-role-based-development-workflow)
+  - [Key Principles](#key-principles)
+- [Optional Features](#optional-features)
+  - [E2E Testing with Playwright](#e2e-testing-with-playwright)
+  - [Notification Sounds](#notification-sounds)
+  - [Quick Fix Mode](#quick-fix-mode)
 - [Project Structure](#project-structure)
 - [Available Commands](#available-commands)
+  - [Slash Commands](#slash-commands)
+  - [Script Options](#script-options)
 - [Examples](#examples)
 - [Technical Architecture](#technical-architecture)
-- [Contributing](#contributing)
+  - [State Management](#state-management)
+  - [Why This Architecture?](#why-this-architecture)
+  - [Verification System](#verification-system)
 
 ## Installation
 
