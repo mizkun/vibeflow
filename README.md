@@ -9,7 +9,7 @@ Vibe Coding Framework is an AI-driven development methodology designed for use w
 ## Features
 
 - **Context-Based Access Control**: Each step has a specific role with defined read/edit/create permissions for different contexts
-- **Strict Context Isolation**: Roles can only access contexts they need (e.g., Engineers read spec for implementation requirements, PMs cannot access code)
+- **Strict Context Isolation**: Roles have defined read/edit/create permissions (e.g., Engineers can only edit code, PMs can only edit plan/issues)
 - **Role-Driven Development Cycle**: 11-step workflow with automatic role switching based on current step
 - **Minimal Human Intervention**: Only 2 checkpoints where human validation is required
 - **Automated Setup**: Complete development environment with a single command
@@ -242,7 +242,7 @@ workflow:
 
 ### Key Principles
 
-1. **Context Isolation**: Each role can only see what they need - Engineers read spec for implementation requirements, PMs never see code to maintain abstraction
+1. **Context Isolation**: Each role has defined permissions - Engineers only edit code, PMs only edit plans/issues, QA only creates reports
 2. **Automated Progression**: Steps flow automatically with only 2 human checkpoints
 3. **Verification at Each Step**: Each role verifies their own artifacts before proceeding
 4. **Clear State Management**: state.yaml tracks current position and progress
@@ -343,6 +343,8 @@ The framework provides 5 slash commands organized by category:
 - `/quickfix` - Enter Quick Fix mode for minor adjustments
 - `/exit-quickfix` - Exit Quick Fix mode and return to normal cycle
 
+**Note**: The setup script mentions `/vibe-status` but this command is not actually implemented.
+
 ### Script Options
 
 ```bash
@@ -390,7 +392,7 @@ The framework provides 5 slash commands organized by category:
 
 4. Start development:
    ```
-   Claude Code: "Start the development cycle"
+   /next
    ```
 
 ## Technical Architecture
@@ -405,7 +407,7 @@ The framework uses YAML files for state persistence:
 ### Why This Architecture?
 
 1. **Prevents Context Contamination**: Engineers implement based on clear requirements, not interpretations of vision
-2. **Ensures Traceability**: Every code change traces back to an issue, which traces to spec/vision
+2. **Ensures Traceability**: Every code change traces back to an issue, which traces to spec requirements
 3. **Maintains Quality**: Multiple verification points catch issues early
 4. **Enables Automation**: Clear role boundaries allow AI to execute most steps autonomously
 
