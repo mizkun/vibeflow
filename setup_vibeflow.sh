@@ -29,11 +29,21 @@ source "${LIB_DIR}/create_agents.sh"
 source "${LIB_DIR}/create_templates.sh"
 source "${LIB_DIR}/create_orchestrator.sh"
 
+# Source optional modules if they exist
+if [ -f "${LIB_DIR}/create_playwright.sh" ]; then
+    source "${LIB_DIR}/create_playwright.sh"
+fi
+if [ -f "${LIB_DIR}/create_notifications.sh" ]; then
+    source "${LIB_DIR}/create_notifications.sh"
+fi
+
 # Global variables
-VERSION="2.0"
+VERSION="3.1"
 FORCE_INSTALL=false
 BACKUP_ENABLED=true
 VERBOSE=false
+WITH_E2E=false
+WITH_NOTIFICATIONS=false
 
 # Function to show usage
 show_usage() {
@@ -48,11 +58,15 @@ Options:
     -n, --no-backup     Skip backup of existing files
     -v, --verbose       Enable verbose output
     -V, --version       Show version information
+    --with-e2e          Include Playwright E2E testing setup
+    --with-notifications Enable notification sounds for hooks
 
 Examples:
     $0                  Normal installation with confirmations
     $0 --force          Install without asking for confirmation
     $0 --no-backup      Install without creating backups
+    $0 --with-e2e       Install with E2E testing support
+    $0 --with-notifications Install with sound notifications
 
 EOF
 }
@@ -80,6 +94,14 @@ parse_arguments() {
             -V|--version)
                 echo "Vibe Coding Framework Setup Script v${VERSION}"
                 exit 0
+                ;;
+            --with-e2e)
+                WITH_E2E=true
+                shift
+                ;;
+            --with-notifications)
+                WITH_NOTIFICATIONS=true
+                shift
                 ;;
             *)
                 error "Unknown option: $1"
@@ -227,6 +249,28 @@ run_installation() {
     if ! create_orchestrator; then
         error "Orchestrator Contextの作成に失敗しました"
         exit 1
+    fi
+    
+    # Setup E2E testing (optional)
+    if [ "$WITH_E2E" = true ]; then
+        if type setup_playwright &>/dev/null; then
+            if ! setup_playwright; then
+                warning "E2Eテストのセットアップに失敗しましたが、インストールは続行します"
+            fi
+        else
+            warning "E2Eセットアップスクリプトが見つかりません"
+        fi
+    fi
+    
+    # Setup notifications (optional)
+    if [ "$WITH_NOTIFICATIONS" = true ]; then
+        if type setup_notifications &>/dev/null; then
+            if ! setup_notifications; then
+                warning "通知機能のセットアップに失敗しましたが、インストールは続行します"
+            fi
+        else
+            warning "通知セットアップスクリプトが見つかりません"
+        fi
     fi
 }
 

@@ -25,6 +25,9 @@ create_slash_commands() {
         "orchestrator-status:全体的なプロジェクト状態と警告"
         "verify-step:現在のステップの成果物を検証"
         
+        # テスト関連
+        "run-e2e:E2Eテストを実行（Playwright使用）"
+        
         # ロール切り替え
         "role-product_manager:PMロールに切り替え"
         "role-engineer:エンジニアロールに切り替え"
@@ -80,6 +83,12 @@ create_slash_commands() {
                 ;;
             "health-check")
                 create_health_check_command
+                ;;
+            "run-e2e")
+                # Use the file directly from lib/commands/
+                if [ -f "${SCRIPT_DIR}/lib/commands/run-e2e.md" ]; then
+                    cp "${SCRIPT_DIR}/lib/commands/run-e2e.md" ".claude/commands/run-e2e.md"
+                fi
                 ;;
         esac
     done

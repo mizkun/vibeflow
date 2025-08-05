@@ -84,6 +84,15 @@ cd my-project
    # Skip backup
    ./setup_vibeflow.sh --no-backup
    
+   # Install with E2E testing support (Playwright)
+   ./setup_vibeflow.sh --with-e2e
+   
+   # Install with notification sounds
+   ./setup_vibeflow.sh --with-notifications
+   
+   # Install with all features
+   ./setup_vibeflow.sh --with-e2e --with-notifications
+   
    # Check version
    ./setup_vibeflow.sh --version
    ```
@@ -150,6 +159,40 @@ Define development plan and TODOs:
 - **QA Engineer**: Quality assurance, acceptance testing
 - **Human**: Final validation at checkpoints
 
+## Optional Features
+
+### E2E Testing with Playwright
+
+When installed with `--with-e2e`, the framework includes:
+
+- Playwright configuration for cross-browser testing
+- E2E test directory structure (`tests/e2e/`)
+- Sample test files and page objects
+- Integration with the QA verification process
+- New command: `/run-e2e` to execute E2E tests
+
+To use E2E testing:
+1. Install dependencies: `npm install @playwright/test`
+2. Install browsers: `npx playwright install`
+3. Write tests in `tests/e2e/`
+4. Run tests: `npm run test:e2e` or `/run-e2e`
+
+### Notification Sounds
+
+When installed with `--with-notifications`, the framework includes:
+
+- OS-specific notification scripts
+- Claude Code hook configurations
+- Sound notifications for:
+  - Task completion
+  - Waiting for user input
+  - Error occurrences
+
+To enable notifications:
+1. Copy `.vibe/templates/claude-settings.json` to `~/.config/claude/settings.json`
+2. Restart Claude Code
+3. Test with: `.vibe/hooks/task_complete.sh`
+
 ## Project Structure
 
 After setup, the following structure is created:
@@ -197,6 +240,9 @@ The framework provides 13 slash commands organized by category:
 - `/health-check` - Comprehensive project health assessment
 - `/orchestrator-status` - View project health and accumulated warnings
 - `/verify-step` - Verify current step artifacts and requirements
+
+**Testing:**
+- `/run-e2e` - Run E2E tests using Playwright (requires --with-e2e setup)
 
 **Role Management:**
 - `/role-product_manager` - Switch to Product Manager role

@@ -390,12 +390,17 @@ Handle all quality checks and reviews:
 
 ### Step 7 - Acceptance Test
 1. Read issue acceptance criteria
-2. Run all tests
+2. Run all unit/integration tests
 3. Verify each criterion is covered by tests
 4. Check against `/spec.md` requirements
-5. Update orchestrator with acceptance test results
+5. **Run E2E Tests** (if available):
+   - Execute: `npm run test:e2e`
+   - Verify critical user flows
+   - Check cross-browser compatibility
+   - Capture screenshots of failures
+6. Update orchestrator with all test results
 
-6. **Stop for Human Check**:
+7. **Stop for Human Check**:
    - Update state to `7a_runnable_check`
    - Message: "🧪 すべての自動テストが成功しました。以下の機能を手動でテストしてください: [機能リスト]。動作確認できたら「OK」、問題があれば「動かない」と言ってください。"
 
@@ -419,12 +424,14 @@ Handle all quality checks and reviews:
 
 ## Review Checklist
 
-- [ ] All tests pass
+- [ ] All unit/integration tests pass
+- [ ] E2E tests pass (if applicable)
 - [ ] Code follows project style
 - [ ] No security vulnerabilities
 - [ ] Performance is acceptable
 - [ ] Error handling is appropriate
 - [ ] Code is maintainable
+- [ ] Critical user flows verified
 
 ## Important Rules
 
