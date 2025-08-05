@@ -12,20 +12,24 @@ create_slash_commands() {
     section "スラッシュコマンドを作成中"
     
     local commands=(
+        # 基本的なフロー制御
         "progress:現在の進捗確認"
-        "healthcheck:整合性チェック"
-        "abort:緊急停止"
-        "next:次のステップへ"
-        "restart-cycle:現在のIssueで最初から"
-        "skip-tests:TDDをスキップ - NOT RECOMMENDED"
-        "vibe-status:設定確認"
+        "next:次のステップへ進む"
+        "restart-cycle:現在のIssueで最初からやり直し"
+        "abort:緊急停止（現在の処理を中断）"
+        "skip-tests:TDDをスキップ（非推奨）"
+        
+        # 状態確認・診断
+        "vibe-status:フレームワーク設定確認"
+        "health-check:プロジェクト健全性の総合チェック"
+        "orchestrator-status:全体的なプロジェクト状態と警告"
+        "verify-step:現在のステップの成果物を検証"
+        
+        # ロール切り替え
         "role-product_manager:PMロールに切り替え"
         "role-engineer:エンジニアロールに切り替え"
         "role-qa_engineer:QAロールに切り替え"
         "role-reset:通常モードに戻る"
-        "verify-step:現在のステップを検証"
-        "orchestrator-status:Orchestrator状態表示"
-        "health-check:プロジェクト健全性チェック"
     )
     
     local total=${#commands[@]}
@@ -40,9 +44,6 @@ create_slash_commands() {
         case "$cmd_name" in
             "progress")
                 create_progress_command
-                ;;
-            "healthcheck")
-                create_healthcheck_command
                 ;;
             "abort")
                 create_abort_command

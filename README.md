@@ -183,22 +183,26 @@ your-project/
 
 ### Slash Commands
 
-The framework provides 11 slash commands for controlling the development flow:
+The framework provides 13 slash commands organized by category:
 
+**Flow Control:**
 - `/progress` - Show current development progress
-- `/healthcheck` - Check project health status
-- `/abort` - Abort current operation
 - `/next` - Proceed to next step
 - `/restart-cycle` - Restart the development cycle
+- `/abort` - Abort current operation
 - `/skip-tests` - Skip test execution (use with caution)
+
+**Status & Diagnostics:**
 - `/vibe-status` - Show Vibe framework status
+- `/health-check` - Comprehensive project health assessment
+- `/orchestrator-status` - View project health and accumulated warnings
+- `/verify-step` - Verify current step artifacts and requirements
+
+**Role Management:**
 - `/role-product_manager` - Switch to Product Manager role
 - `/role-engineer` - Switch to Engineer role
 - `/role-qa_engineer` - Switch to QA Engineer role
 - `/role-reset` - Reset role to default
-- `/verify-step` - Verify current step artifacts and requirements
-- `/orchestrator-status` - View project health and accumulated warnings
-- `/health-check` - Comprehensive project health assessment
 
 ### Script Options
 
