@@ -23,6 +23,9 @@ create_slash_commands() {
         "role-engineer:エンジニアロールに切り替え"
         "role-qa_engineer:QAロールに切り替え"
         "role-reset:通常モードに戻る"
+        "verify-step:現在のステップを検証"
+        "orchestrator-status:Orchestrator状態表示"
+        "health-check:プロジェクト健全性チェック"
     )
     
     local total=${#commands[@]}
@@ -67,6 +70,15 @@ create_slash_commands() {
                 ;;
             "role-reset")
                 create_role_reset_command
+                ;;
+            "verify-step")
+                create_verify_step_command
+                ;;
+            "orchestrator-status")
+                create_orchestrator_status_command
+                ;;
+            "health-check")
+                create_health_check_command
                 ;;
         esac
     done
@@ -162,6 +174,70 @@ create_role_reset_command() {
 Remove all role-based access restrictions and return to normal Claude Code operation. This exits the Vibe Coding role system. Use this when you need unrestricted access for debugging or setup tasks. Confirm the reset in Japanese.'
     
     create_file_with_backup ".claude/commands/role-reset.md" "$content"
+}
+
+create_verify_step_command() {
+    local content='# 現在のステップを検証
+
+Verify that the current step has completed successfully by checking:
+1. All required artifacts exist
+2. All verification rules pass  
+3. Orchestrator is updated
+
+This command will:
+- Check .vibe/state.yaml to identify current step
+- Load verification rules from .vibe/verification_rules.yaml
+- Check all post_conditions for the current step
+- Update .vibe/orchestrator.yaml with results
+- Block progression if verification fails
+
+Show verification results in Japanese with clear pass/fail indicators.'
+    
+    create_file_with_backup ".claude/commands/verify-step.md" "$content"
+}
+
+create_orchestrator_status_command() {
+    local content='# Orchestrator状態を表示
+
+Display the current orchestrator status including:
+- Overall project health (healthy/warning/critical)
+- Recent step completions and their artifacts
+- Active warnings and risks
+- Critical decisions pending
+- Communication log highlights
+
+Read .vibe/orchestrator.yaml and provide a comprehensive summary in Japanese.
+
+Format output as:
+```
+🌐 プロジェクト健全性: [status]
+📦 成果物: [summary]
+⚠️  警告: [count]
+🔴 リスク: [summary]
+💬 コミュニケーション: [recent]
+```'
+    
+    create_file_with_backup ".claude/commands/orchestrator-status.md" "$content"
+}
+
+create_health_check_command() {
+    local content='# プロジェクト健全性チェック
+
+Perform a comprehensive health check of the project:
+1. Verify all expected files exist
+2. Check for accumulated warnings in orchestrator
+3. Verify test status
+4. Check for blocking issues
+5. Assess overall project state
+
+Provide a health report with:
+- Overall status (🟢 Healthy / 🟡 Warning / 🔴 Critical)
+- Specific issues found
+- Recommended actions
+
+Report in Japanese with clear status indicators and actionable recommendations.'
+    
+    create_file_with_backup ".claude/commands/health-check.md" "$content"
 }
 
 # Main function (called if script is run directly)

@@ -27,6 +27,7 @@ source "${LIB_DIR}/create_claude_md.sh"
 source "${LIB_DIR}/create_commands.sh"
 source "${LIB_DIR}/create_agents.sh"
 source "${LIB_DIR}/create_templates.sh"
+source "${LIB_DIR}/create_orchestrator.sh"
 
 # Global variables
 VERSION="2.0"
@@ -219,6 +220,12 @@ run_installation() {
     # Step 5: Create templates
     if ! create_templates; then
         error "テンプレートの作成に失敗しました"
+        exit 1
+    fi
+    
+    # Create orchestrator context
+    if ! create_orchestrator; then
+        error "Orchestrator Contextの作成に失敗しました"
         exit 1
     fi
 }

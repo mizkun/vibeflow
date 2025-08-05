@@ -243,6 +243,8 @@ steps:
 ├── src/              # Source code (Engineers only)
 └── .vibe/
     ├── state.yaml    # Current cycle state
+    ├── orchestrator.yaml # Project health and cross-role coordination
+    ├── verification_rules.yaml # Automated verification rules
     └── workflow.yaml # Framework definitions
 ```
 
@@ -256,6 +258,23 @@ checkpoint_status:
   2a_issue_validation: passed
   7a_runnable_check: pending
 ```
+
+## 🌐 Orchestrator Context
+
+The Orchestrator Context (`.vibe/orchestrator.yaml`) is a shared space that all roles can access to:
+- Track overall project health (healthy/warning/critical)
+- Share critical information between roles
+- Record artifacts and verification results
+- Accumulate warnings and risks
+- Enable better decision-making
+
+This solves the "success theater" problem where subagents report completion without actual verification.
+
+### Key Features:
+1. **Artifact Registry**: Tracks what files were created at each step
+2. **Health Monitoring**: Accumulated warnings trigger escalation
+3. **Cross-Role Communication**: Engineers can inform PM of technical constraints
+4. **Verification Log**: Automated checks ensure real progress
 
 ## 🤖 Automated Subagents
 
@@ -285,6 +304,9 @@ You only need to intervene at:
 - `/progress` - Check current position in cycle (現在の進捗確認)
 - `/healthcheck` - Verify alignment between vision, spec, plan, and code (整合性チェック)
 - `/abort` - Stop current cycle (緊急停止)
+- `/verify-step` - Verify current step artifacts (現在のステップを検証)
+- `/orchestrator-status` - View project health and warnings (Orchestrator状態表示)
+- `/health-check` - Comprehensive project health check (プロジェクト健全性チェック)
 
 Or just ask in Japanese:
 - "今どこまで進んでる？" (Where are we now?)
@@ -297,6 +319,8 @@ Or just ask in Japanese:
 2. **Strict Role Boundaries**: Each subagent only accesses permitted files
 3. **Automatic Progression**: Non-human steps proceed without intervention
 4. **TDD Enforcement**: Tests are always written before implementation
+5. **Verification Required**: Each step must verify artifacts before proceeding
+6. **Health Monitoring**: Critical project health stops progression
 
 ## 🎯 Starting Your First Cycle
 

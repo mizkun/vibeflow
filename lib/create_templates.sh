@@ -30,13 +30,29 @@ create_templates() {
 create_initial_state() {
     info "初期state.yamlを作成中..."
     
-    local state_content='current_cycle: 1
+    local state_content='# Vibe Coding Framework - Current State
+current_cycle: 1
 current_step: 1_plan_review
 current_issue: null
 next_step: 2_issue_breakdown
+
+# Human checkpoint status
 checkpoint_status:
   2a_issue_validation: pending
-  7a_runnable_check: pending'
+  7a_runnable_check: pending
+
+# Step history for current cycle
+step_history: []
+
+# Verification status
+verification_status:
+  last_check: null
+  all_gates_passed: true
+
+# Communication
+communication:
+  unread_messages: 0
+  pending_decisions: 0'
     
     create_file_with_backup ".vibe/state.yaml" "$state_content"
 }

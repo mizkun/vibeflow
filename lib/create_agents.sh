@@ -80,11 +80,13 @@ Automatically execute the planning phase:
 - `/spec.md` - Specifications and technical design (READ ONLY)  
 - `/plan.md` - Development plan and TODOs
 - `/.vibe/state.yaml` - Current cycle state
+- `/.vibe/orchestrator.yaml` - Project health and cross-role information
 
 ### WRITE Access:
 - `/plan.md` - Update progress and TODOs
 - `/issues/` - Create new issue files
 - `/.vibe/state.yaml` - Update current step
+- `/.vibe/orchestrator.yaml` - Record decisions, risks, and artifacts
 
 ### NO Access:
 - `/src/` - Source code (NEVER access)
@@ -92,12 +94,15 @@ Automatically execute the planning phase:
 
 ## Automatic Execution Flow
 
-1. **Start**: Read `.vibe/state.yaml` to confirm current state
+1. **Start**: 
+   - Read `.vibe/state.yaml` to confirm current state
+   - Read `.vibe/orchestrator.yaml` to check project health and any warnings
 
 2. **MANDATORY CONTEXT READING**:
    - First, read `/vision.md` completely - understand the product vision
    - Second, read `/spec.md` completely - understand all requirements and technical design
    - Third, read `/plan.md` - check current progress and TODOs
+   - Check orchestrator for any critical decisions or constraints
    - If any of these files are missing or unreadable, STOP and report error
 
 3. **Step 1 - Plan Review**:
@@ -122,7 +127,13 @@ Automatically execute the planning phase:
      - Technical hints based on spec.md architecture
      - Priority level based on plan.md
 
-5. **Stop for Human Review**:
+5. **Update Orchestrator**:
+   - Record created issues in orchestrator step_registry
+   - Note any technical constraints discovered
+   - Log any risks or complex dependencies
+   - Update project health status
+
+6. **Stop for Human Review**:
    - Update `.vibe/state.yaml` to `current_step: 2a_issue_validation`
    - Display created issues summary
    - Message: "✅ 今回のスプリント用に X 個のIssueを作成しました。確認して問題なければ「続けて」と言ってください。"
@@ -158,10 +169,12 @@ Automatically execute the planning phase:
 
 1. NEVER access or read source code
 2. ALWAYS read vision.md, spec.md, and plan.md BEFORE creating any issues
-3. Each issue MUST directly relate to the project vision and specifications
-4. Each issue should be completable in 1-4 hours
-5. Always stop at Step 2a for human validation
-6. If vision/spec seem unclear, create clarification issues first
+3. ALWAYS check orchestrator for project health and warnings
+4. Each issue MUST directly relate to the project vision and specifications
+5. Each issue should be completable in 1-4 hours
+6. Always stop at Step 2a for human validation
+7. If vision/spec seem unclear, create clarification issues first
+8. Record all important decisions and risks in orchestrator
 
 ## Common Mistakes to Avoid
 ❌ Creating generic issues like "Add database" without checking spec.md for the specified database
@@ -224,10 +237,12 @@ Automatically execute the implementation phase:
 - `/issues/` - Current issue details
 - `/src/` - All source code
 - `/.vibe/state.yaml` - Current cycle state
+- `/.vibe/orchestrator.yaml` - Project health and previous step artifacts
 
 ### WRITE Access:
 - `/src/` - Create and modify code
 - `/.vibe/state.yaml` - Update current step
+- `/.vibe/orchestrator.yaml` - Record implementation details and discoveries
 
 ### NO Access:
 - `/vision.md` - Product vision
@@ -236,7 +251,10 @@ Automatically execute the implementation phase:
 
 ## Automatic Execution Flow
 
-1. **Start**: Read current issue from `.vibe/state.yaml`
+1. **Start**: 
+   - Read current issue from `.vibe/state.yaml`
+   - Check `.vibe/orchestrator.yaml` for any warnings or constraints
+   - Verify previous step artifacts exist
 
 2. **Step 3 - Branch Creation**:
    ```bash
@@ -250,19 +268,30 @@ Automatically execute the implementation phase:
      - Happy path
      - Edge cases
      - Error handling
+   - Update orchestrator with test creation details
 
 4. **Step 5 - Implementation (TDD Green)**:
    - Write minimal code to make tests pass
    - Focus on functionality over optimization
    - Run tests frequently
+   - Record any technical discoveries in orchestrator
 
 5. **Step 6 - Refactoring**:
    - Improve code structure
    - Extract functions/components
    - Add comments where needed
    - Ensure tests still pass
+   - Update orchestrator with final artifact locations
 
-6. **Auto-proceed to QA**:
+6. **Verify and Record**:
+   - Run verification checks (test pass, files exist)
+   - Update orchestrator with:
+     - Created files list
+     - Test results
+     - Any technical constraints discovered
+   - If verification fails, record failure in orchestrator
+
+7. **Auto-proceed to QA**:
    - Update `.vibe/state.yaml` to `current_step: 6a_code_sanity_check`
    - Trigger qa-auto subagent
 
@@ -280,7 +309,10 @@ Automatically execute the implementation phase:
 2. Always follow TDD: Red → Green → Refactor
 3. Focus only on the current issue
 4. Don'\''t skip tests - they ensure quality
-5. Auto-proceed through all engineering steps without stopping'
+5. Auto-proceed through all engineering steps without stopping
+6. ALWAYS verify artifacts exist before proceeding
+7. Record all important findings in orchestrator
+8. If tests don'\''t pass, update orchestrator with failure details'
     
     create_file_with_backup ".claude/agents/engineer-auto.md" "$content"
 }
@@ -319,10 +351,12 @@ Handle all quality checks and reviews:
 - `/issues/` - To check acceptance criteria
 - `/src/` - All source code
 - `/.vibe/state.yaml` - Current cycle state
+- `/.vibe/orchestrator.yaml` - Check previous artifacts and warnings
 
 ### WRITE Access:
 - `/.vibe/state.yaml` - Update current step
 - `/.vibe/test-results.log` - Record test outcomes
+- `/.vibe/orchestrator.yaml` - Record quality findings and risks
 
 ### NO Access:
 - Cannot modify any source code
@@ -331,7 +365,9 @@ Handle all quality checks and reviews:
 ## Automatic Execution Flow
 
 ### Step 6a - Code Sanity Check
-1. Run automated checks:
+1. Check orchestrator for implementation artifacts
+2. Verify expected files exist
+3. Run automated checks:
    - Linting
    - Type checking (if applicable)
    - Test coverage
@@ -343,7 +379,12 @@ Handle all quality checks and reviews:
    - Commented out code blocks
    - TODO comments
 
-3. Decision:
+3. Update orchestrator:
+   - Record test coverage percentage
+   - Log any quality warnings
+   - Note security concerns
+
+4. Decision:
    - If major issues → Return to Step 6 (refactoring)
    - If minor/no issues → Proceed to Step 7
 
@@ -352,15 +393,18 @@ Handle all quality checks and reviews:
 2. Run all tests
 3. Verify each criterion is covered by tests
 4. Check against `/spec.md` requirements
+5. Update orchestrator with acceptance test results
 
-5. **Stop for Human Check**:
+6. **Stop for Human Check**:
    - Update state to `7a_runnable_check`
    - Message: "🧪 すべての自動テストが成功しました。以下の機能を手動でテストしてください: [機能リスト]。動作確認できたら「OK」、問題があれば「動かない」と言ってください。"
 
 ### Step 7b - Failure Analysis (if needed)
 1. Analyze why requirements weren'\''t met
 2. Create detailed failure report
-3. Return to Step 5 (implementation)
+3. Update orchestrator with failure analysis
+4. Record specific issues for engineer to address
+5. Return to Step 5 (implementation)
 
 ### Step 9 - Code Review
 1. Review code changes for:
@@ -388,7 +432,10 @@ Handle all quality checks and reviews:
 2. Be thorough but not pedantic
 3. Focus on functionality over style
 4. Always verify against original requirements
-5. Stop only at Step 7a for human testing'
+5. Stop only at Step 7a for human testing
+6. ALWAYS update orchestrator with quality findings
+7. Check orchestrator for accumulated warnings before proceeding
+8. If project health is "critical", escalate immediately'
     
     create_file_with_backup ".claude/agents/qa-auto.md" "$content"
 }
@@ -418,9 +465,11 @@ Complete the deployment pipeline:
 - `/issues/` - For PR description
 - `/src/` - All source code
 - `/.vibe/state.yaml` - Current cycle state
+- `/.vibe/orchestrator.yaml` - Check project health before deployment
 
 ### WRITE Access:
 - `/.vibe/state.yaml` - Update current step
+- `/.vibe/orchestrator.yaml` - Record deployment status and metrics
 
 ### NO Access:
 - Cannot modify vision, spec, or plan
@@ -429,7 +478,10 @@ Complete the deployment pipeline:
 ## Automatic Execution Flow
 
 ### Step 8 - Pull Request Creation
-1. Create PR with:
+1. Check orchestrator health status
+   - If "critical", stop and alert
+   - If "warning", include warnings in PR description
+2. Create PR with:
    ```bash
    gh pr create --title "Issue #X: [Title]" --body "[Generated description]"
    ```
@@ -453,7 +505,8 @@ Complete the deployment pipeline:
    - [x] Ready for merge
    ```
 
-3. After PR creation, automatically trigger qa-auto for Step 9 (review)
+3. Update orchestrator with PR URL and status
+4. After PR creation, automatically trigger qa-auto for Step 9 (review)
 
 ### Step 10 - Merge
 1. After approval from Step 9:
@@ -464,18 +517,25 @@ Complete the deployment pipeline:
    ```
 
 ### Step 11 - Deployment
-1. Run deployment scripts:
+1. Final health check from orchestrator
+2. Run deployment scripts:
    ```bash
    npm run build
    npm run deploy:staging
    ```
 
-2. Verify deployment:
+3. Verify deployment:
    - Check deployment logs
    - Confirm service is running
    - Run smoke tests if available
 
-3. **Cycle Complete**:
+4. Update orchestrator:
+   - Record deployment timestamp
+   - Update metrics (cycle time, success rate)
+   - Clear resolved warnings
+   - Archive cycle artifacts
+
+5. **Cycle Complete**:
    - Update state: `current_step: 1_plan_review`
    - Increment cycle number
    - Message: "✅ デプロイが完了しました！スプリントサイクルが終了しました。次のサイクルを開始する準備ができています。"
@@ -494,7 +554,10 @@ Complete the deployment pipeline:
 2. Always squash commits for clean history
 3. If deployment fails, rollback immediately
 4. Update state.yaml after each step
-5. Auto-proceed through all deployment steps'
+5. Auto-proceed through all deployment steps
+6. Check orchestrator health before critical operations
+7. Record all deployment metrics in orchestrator
+8. If project health is "critical", do not deploy'
     
     create_file_with_backup ".claude/agents/deploy-auto.md" "$content"
 }
