@@ -136,7 +136,7 @@ Define development plan and TODOs:
 ### Using with Claude Code
 
 1. Open the project directory in Claude Code
-2. Type "Start the development cycle" (or in Japanese: "開発サイクルを開始して")
+2. Use the `/next` command to start the development cycle
 3. AI will automatically proceed with the development flow
 
 ## How It Works
@@ -151,16 +151,16 @@ workflow:
   step_1_plan_review:
     role: Product Manager
     access:
-      read: [vision.md, spec.md, plan.md, state.yaml, orchestrator.yaml]
-      write: [plan.md, state.yaml, orchestrator.yaml]
+      read: [vision.md, spec.md, plan.md, state.yaml]
+      write: [plan.md, state.yaml]
       no_access: [src/*, *.test.*]
     purpose: Review and update development plan based on vision/spec
     
   step_2_issue_breakdown:
     role: Product Manager  
     access:
-      read: [vision.md, spec.md, plan.md, state.yaml, orchestrator.yaml]
-      write: [issues/*, state.yaml, orchestrator.yaml]
+      read: [vision.md, spec.md, plan.md, state.yaml]
+      write: [issues/*, state.yaml]
       no_access: [src/*, *.test.*]
     purpose: Create detailed, implementable issues from plan
     checkpoint: 2a_human_validation (required)
@@ -168,7 +168,7 @@ workflow:
   step_3_branch_creation:
     role: Engineer
     access:
-      read: [issues/*, state.yaml, orchestrator.yaml]
+      read: [issues/*, state.yaml]
       write: [.git/*, state.yaml]
       no_access: [vision.md, spec.md, plan.md]
     purpose: Create feature branch for implementation
@@ -176,24 +176,24 @@ workflow:
   step_4_test_writing:
     role: Engineer
     access:
-      read: [issues/*, src/*, state.yaml, orchestrator.yaml]
-      write: [*.test.*, state.yaml, orchestrator.yaml]
+      read: [issues/*, src/*, state.yaml]
+      write: [*.test.*, state.yaml]
       no_access: [vision.md, spec.md, plan.md]
     purpose: Write failing tests first (TDD Red phase)
     
   step_5_implementation:
     role: Engineer
     access:
-      read: [issues/*, src/*, *.test.*, state.yaml, orchestrator.yaml]
-      write: [src/*, state.yaml, orchestrator.yaml]
+      read: [issues/*, src/*, *.test.*, state.yaml]
+      write: [src/*, state.yaml]
       no_access: [vision.md, spec.md, plan.md]
     purpose: Implement code to pass tests (TDD Green phase)
     
   step_6_refactoring:
     role: Engineer
     access:
-      read: [issues/*, src/*, *.test.*, state.yaml, orchestrator.yaml]
-      write: [src/*, state.yaml, orchestrator.yaml]
+      read: [issues/*, src/*, *.test.*, state.yaml]
+      write: [src/*, state.yaml]
       no_access: [vision.md, spec.md, plan.md]
     purpose: Improve code quality (TDD Refactor phase)
     checkpoint: 6a_code_sanity_check (automated)
@@ -201,8 +201,8 @@ workflow:
   step_7_acceptance_test:
     role: QA Engineer
     access:
-      read: [spec.md, issues/*, src/*, *.test.*, state.yaml, orchestrator.yaml]
-      write: [test-results.log, state.yaml, orchestrator.yaml]
+      read: [spec.md, issues/*, src/*, *.test.*, state.yaml]
+      write: [test-results.log, state.yaml]
       no_access: [vision.md, plan.md]
     purpose: Verify implementation meets requirements
     checkpoint: 7a_human_runnable_check (required)
@@ -210,32 +210,32 @@ workflow:
   step_8_pull_request:
     role: Engineer
     access:
-      read: [issues/*, src/*, state.yaml, orchestrator.yaml]
-      write: [.git/*, state.yaml, orchestrator.yaml]
+      read: [issues/*, src/*, state.yaml]
+      write: [.git/*, state.yaml]
       no_access: [vision.md, spec.md, plan.md]
     purpose: Create PR with proper documentation
     
   step_9_review:
     role: QA Engineer
     access:
-      read: [spec.md, issues/*, src/*, state.yaml, orchestrator.yaml]
-      write: [state.yaml, orchestrator.yaml]
+      read: [spec.md, issues/*, src/*, state.yaml]
+      write: [state.yaml]
       no_access: [vision.md, plan.md]
     purpose: Code review and quality check
     
   step_10_merge:
     role: Engineer
     access:
-      read: [src/*, state.yaml, orchestrator.yaml]
-      write: [.git/*, state.yaml, orchestrator.yaml]
+      read: [src/*, state.yaml]
+      write: [.git/*, state.yaml]
       no_access: [vision.md, spec.md, plan.md]
     purpose: Merge approved changes to main
     
   step_11_deployment:
     role: Engineer
     access:
-      read: [src/*, state.yaml, orchestrator.yaml]
-      write: [deployment.log, plan.md, state.yaml, orchestrator.yaml]
+      read: [src/*, state.yaml]
+      write: [deployment.log, plan.md, state.yaml]
       no_access: [vision.md, spec.md]
     purpose: Deploy to production and update plan
 ```
@@ -301,7 +301,7 @@ Quick Fix Mode allows rapid minor adjustments outside the normal development cyc
 - No API modifications
 - Maximum 5 files per fix
 
-All quick fixes are logged in `.vibe/orchestrator.yaml` for tracking.
+All quick fixes are documented in git commit messages for tracking.
 
 ## Project Structure
 
@@ -322,8 +322,6 @@ your-project/
 │       └── ... (15 commands total)
 ├── .vibe/
 │   ├── state.yaml      # Cycle state management
-│   ├── orchestrator.yaml # Project health and cross-role coordination
-│   ├── verification_rules.yaml # Automated verification rules
 │   └── templates/      # Issue templates
 ├── issues/             # Implementation tasks
 ├── src/                # Source code
@@ -347,10 +345,8 @@ The framework provides 16 slash commands organized by category:
 - `/skip-tests` - Skip test execution (use with caution)
 
 **Status & Diagnostics:**
-- `/vibe-status` - Show Vibe framework status
-- `/health-check` - Comprehensive project health assessment
-- `/orchestrator-status` - View project health and accumulated warnings
-- `/verify-step` - Verify current step artifacts and requirements
+- `/progress` - Check current progress and position
+- `/healthcheck` - Verify state consistency with actual project
 
 **Testing:**
 - `/run-e2e` - Run E2E tests using Playwright (requires --with-e2e setup)
@@ -422,8 +418,7 @@ The framework provides 16 slash commands organized by category:
 The framework uses YAML files for state persistence:
 
 - **state.yaml**: Tracks current cycle, step, and issue
-- **orchestrator.yaml**: Maintains project health and cross-role communication
-- **verification_rules.yaml**: Defines automated checks for each step
+- **templates/**: Contains issue templates for different types of development tasks
 
 ### Why This Architecture?
 

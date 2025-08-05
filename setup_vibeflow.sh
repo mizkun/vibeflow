@@ -319,7 +319,7 @@ show_completion() {
     echo "2. Claude Code でこのディレクトリを開いてください"
     echo ""
     echo "3. 以下のコマンドで開発を開始できます："
-    print_color "$YELLOW" '   "開発サイクルを開始して"'
+    print_color "$YELLOW" '   /next'
     echo ""
     echo "利用可能なコマンド:"
     echo "   /progress    - 現在の進捗確認"

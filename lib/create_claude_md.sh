@@ -21,7 +21,7 @@ This project follows the **Vibe Coding Framework** - an AI-driven development me
 
 Examples:
 - ❌ "Start development cycle"
-- ✅ "開発サイクルを開始して"
+- ✅ "/next"
 - ✅ "次のIssueをお願い"
 - ✅ "現在の進捗を教えて"
 
@@ -38,10 +38,10 @@ The goal: Let AI handle implementation details while humans focus on vision and 
 
 ## 🚀 Quick Start
 
-Just say one of these (in Japanese):
-- "開発サイクルを開始して"
-- "次のスプリントを始めて"  
-- "次のIssueに取り組んで"
+Just use the command:
+- `/next` - Start or continue development cycle
+- "次のIssueをお願い" (for Japanese speakers)
+- "問題があるからやり直して" (if issues found)
 
 The system will automatically handle the entire development flow with only 2 human checkpoints.
 
@@ -311,7 +311,7 @@ Or just ask in Japanese:
    - `spec.md` - How it should work + technical architecture
    - `plan.md` - Initial TODO list
 
-2. Say "開発サイクルを開始して" (in Japanese)
+2. Use the `/next` command to start the development cycle
 
 3. Wait for the first checkpoint (issue review)
 
