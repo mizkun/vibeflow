@@ -132,30 +132,111 @@ Define development plan and TODOs:
 
 ## How It Works
 
-### The 11-Step Development Cycle
+### Core Concept: Role-Based Development Workflow
 
-1. **Plan Review**: Product Manager reviews the development plan
-2. **Issue Breakdown**: Create specific implementation tasks
-   - **Checkpoint 2a**: Human validates issues
-3. **Branch Creation**: Create feature branches
-4. **Test Writing**: Write tests before implementation (TDD)
-5. **Implementation**: Engineer implements features
-6. **Refactoring**: Improve code quality
-   - **Checkpoint 6a**: Code quality check
-7. **Acceptance Test**: QA Engineer validates implementation
-   - **Checkpoint 7a**: Human runnable check
-   - **7b**: Failure analysis if needed
-8. **Pull Request**: Create PR for review
-9. **Review**: Code review and feedback
-10. **Merge**: Merge approved changes
-11. **Deployment**: Deploy to production
+The most important innovation of Vibe Coding Framework is the **strict role separation with context-based access control**. Each step in the development cycle is executed by a specific role with precisely defined permissions:
 
-### Role Separation
+```yaml
+# Step-by-Step Role and Permission Definition
+workflow:
+  step_1_plan_review:
+    role: Product Manager
+    access:
+      read: [vision.md, spec.md, plan.md, state.yaml, orchestrator.yaml]
+      write: [plan.md, state.yaml, orchestrator.yaml]
+      no_access: [src/*, *.test.*]
+    purpose: Review and update development plan based on vision/spec
+    
+  step_2_issue_breakdown:
+    role: Product Manager  
+    access:
+      read: [vision.md, spec.md, plan.md, state.yaml, orchestrator.yaml]
+      write: [issues/*, state.yaml, orchestrator.yaml]
+      no_access: [src/*, *.test.*]
+    purpose: Create detailed, implementable issues from plan
+    checkpoint: 2a_human_validation (required)
+    
+  step_3_branch_creation:
+    role: Engineer
+    access:
+      read: [issues/*, state.yaml, orchestrator.yaml]
+      write: [.git/*, state.yaml]
+      no_access: [vision.md, spec.md, plan.md]
+    purpose: Create feature branch for implementation
+    
+  step_4_test_writing:
+    role: Engineer
+    access:
+      read: [issues/*, src/*, state.yaml, orchestrator.yaml]
+      write: [*.test.*, state.yaml, orchestrator.yaml]
+      no_access: [vision.md, spec.md, plan.md]
+    purpose: Write failing tests first (TDD Red phase)
+    
+  step_5_implementation:
+    role: Engineer
+    access:
+      read: [issues/*, src/*, *.test.*, state.yaml, orchestrator.yaml]
+      write: [src/*, state.yaml, orchestrator.yaml]
+      no_access: [vision.md, spec.md, plan.md]
+    purpose: Implement code to pass tests (TDD Green phase)
+    
+  step_6_refactoring:
+    role: Engineer
+    access:
+      read: [issues/*, src/*, *.test.*, state.yaml, orchestrator.yaml]
+      write: [src/*, state.yaml, orchestrator.yaml]
+      no_access: [vision.md, spec.md, plan.md]
+    purpose: Improve code quality (TDD Refactor phase)
+    checkpoint: 6a_code_sanity_check (automated)
+    
+  step_7_acceptance_test:
+    role: QA Engineer
+    access:
+      read: [spec.md, issues/*, src/*, *.test.*, state.yaml, orchestrator.yaml]
+      write: [test-results.log, state.yaml, orchestrator.yaml]
+      no_access: [vision.md, plan.md]
+    purpose: Verify implementation meets requirements
+    checkpoint: 7a_human_runnable_check (required)
+    
+  step_8_pull_request:
+    role: Deployment Engineer
+    access:
+      read: [issues/*, src/*, state.yaml, orchestrator.yaml]
+      write: [.git/*, state.yaml, orchestrator.yaml]
+      no_access: [vision.md, spec.md, plan.md]
+    purpose: Create PR with proper documentation
+    
+  step_9_review:
+    role: QA Engineer
+    access:
+      read: [spec.md, issues/*, src/*, state.yaml, orchestrator.yaml]
+      write: [state.yaml, orchestrator.yaml]
+      no_access: [vision.md, plan.md]
+    purpose: Code review and quality check
+    
+  step_10_merge:
+    role: Deployment Engineer
+    access:
+      read: [src/*, state.yaml, orchestrator.yaml]
+      write: [.git/*, state.yaml, orchestrator.yaml]
+      no_access: [vision.md, spec.md, plan.md]
+    purpose: Merge approved changes to main
+    
+  step_11_deployment:
+    role: Deployment Engineer
+    access:
+      read: [src/*, state.yaml, orchestrator.yaml]
+      write: [deployment.log, plan.md, state.yaml, orchestrator.yaml]
+      no_access: [vision.md, spec.md]
+    purpose: Deploy to production and update plan
+```
 
-- **Product Manager**: Plans review, issue creation, project management
-- **Engineer**: Implementation, testing, refactoring
-- **QA Engineer**: Quality assurance, acceptance testing
-- **Human**: Final validation at checkpoints
+### Key Principles
+
+1. **Context Isolation**: Each role can only see what they need - Engineers never see the vision to avoid bias, PMs never see code to maintain abstraction
+2. **Automated Progression**: Steps flow automatically with only 2 human checkpoints
+3. **Verification at Each Step**: Orchestrator tracks artifacts and verifies completion
+4. **Cross-Role Communication**: Orchestrator serves as shared space for critical information without breaking isolation
 
 ## Optional Features
 
@@ -335,21 +416,12 @@ The framework uses YAML files for state persistence:
 - **orchestrator.yaml**: Maintains project health and cross-role communication
 - **verification_rules.yaml**: Defines automated checks for each step
 
-### Role-Based Access Control
+### Why This Architecture?
 
-Each role has specific permissions:
-
-```yaml
-PM:
-  read: [vision.md, spec.md, plan.md, issues/, state.yaml]
-  write: [plan.md, issues/, state.yaml]
-  no_access: [src/]
-
-Engineer:
-  read: [issues/, src/, state.yaml]
-  write: [src/, state.yaml]
-  no_access: [vision.md, spec.md]
-```
+1. **Prevents Context Contamination**: Engineers implement based on clear requirements, not interpretations of vision
+2. **Ensures Traceability**: Every code change traces back to an issue, which traces to spec/vision
+3. **Maintains Quality**: Multiple verification points catch issues early
+4. **Enables Automation**: Clear role boundaries allow AI to execute most steps autonomously
 
 ### Verification System
 
@@ -360,13 +432,3 @@ Automated checks prevent common issues:
 - Build success verification
 - Acceptance criteria tracking
 
-## Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-For major changes, please open an issue first to discuss what you would like to change.
