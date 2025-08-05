@@ -5,7 +5,7 @@ All notable changes to the Vibe Coding Framework will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.2.0] - 2024-12-20
+## [0.3.2] - 2024-12-20
 
 ### Added
 - Quick Fix Mode for rapid minor adjustments outside the normal development cycle
@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated framework version management
 - Enhanced documentation with Quick Fix Mode usage
 
-## [3.1.0] - 2024-12-20
+## [0.3.1] - 2024-12-20
 
 ### Added
 - E2E testing support with Playwright integration
@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced QA process with E2E testing capabilities
 - Improved user feedback with sound notifications
 
-## [3.0.0] - 2024-12-19
+## [0.3.0] - 2024-12-19
 
 ### Added
 - Orchestrator Context for cross-role coordination
@@ -51,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Context isolation issues between roles
 - Missing feedback loops between steps
 
-## [2.0.0] - 2024-12-15
+## [0.2.0] - 2024-12-15
 
 ### Added
 - Modular architecture with separate lib/ directory
@@ -70,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Directory creation race conditions
 - Permission issues on some systems
 
-## [1.0.0] - 2024-12-01
+## [0.1.0] - 2024-12-01
 
 ### Added
 - Initial release of Vibe Coding Framework
@@ -81,8 +81,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TDD enforcement
 - Automated progression with human checkpoints
 
-[3.2.0]: https://github.com/mizkun/vibeflow/compare/v3.1.0...v3.2.0
-[3.1.0]: https://github.com/mizkun/vibeflow/compare/v3.0.0...v3.1.0
-[3.0.0]: https://github.com/mizkun/vibeflow/compare/v2.0.0...v3.0.0
-[2.0.0]: https://github.com/mizkun/vibeflow/compare/v1.0.0...v2.0.0
-[1.0.0]: https://github.com/mizkun/vibeflow/releases/tag/v1.0.0
+[0.3.2]: https://github.com/mizkun/vibeflow/compare/v0.3.1...v0.3.2
+[0.3.1]: https://github.com/mizkun/vibeflow/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/mizkun/vibeflow/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/mizkun/vibeflow/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/mizkun/vibeflow/releases/tag/v0.1.0

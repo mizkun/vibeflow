@@ -4,7 +4,7 @@
 # This script handles framework versioning
 
 # Current framework version
-FRAMEWORK_VERSION="3.2.0"
+FRAMEWORK_VERSION="0.3.2"
 FRAMEWORK_NAME="Orchestrator Context with E2E, Notifications & Quick Fix"
 FRAMEWORK_RELEASE_DATE="2024-12-20"
 
@@ -19,7 +19,7 @@ framework:
   installed_at: "$(date -Iseconds 2>/dev/null || date '+%Y-%m-%dT%H:%M:%S%z')"
   
   # Version compatibility
-  minimum_compatible: "3.0.0"
+  minimum_compatible: "0.3.0"
   
   # Features enabled
   features:

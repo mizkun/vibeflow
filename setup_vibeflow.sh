@@ -38,7 +38,7 @@ if [ -f "${LIB_DIR}/create_notifications.sh" ]; then
 fi
 
 # Global variables
-VERSION="3.2"
+VERSION="0.3.2"
 FORCE_INSTALL=false
 BACKUP_ENABLED=true
 VERBOSE=false
@@ -118,7 +118,7 @@ show_welcome() {
     print_color "$CYAN" "
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║     🚀 Vibe Coding Framework Setup Script v${VERSION}              ║
+║     🚀 Vibe Coding Framework Setup Script v${VERSION}            ║
 ║                                                              ║
 ║     An AI-driven development methodology with                ║
 ║     role separation and structured workflow automation       ║
