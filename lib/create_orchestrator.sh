@@ -6,6 +6,7 @@
 # Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
+source "${SCRIPT_DIR}/framework_version.sh"
 
 # Function to create orchestrator.yaml
 create_orchestrator() {
@@ -177,6 +178,9 @@ verification_rules:
         error_message: "Changes not merged to main branch"
 EOF
 
+    # Create framework version file
+    write_version_file "."
+    
     success "Orchestrator Context を作成しました"
 }
 

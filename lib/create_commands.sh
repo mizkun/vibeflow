@@ -90,8 +90,8 @@ create_slash_commands() {
                 ;;
             "run-e2e")
                 # Use the file directly from lib/commands/
-                if [ -f "${SCRIPT_DIR}/lib/commands/run-e2e.md" ]; then
-                    cp "${SCRIPT_DIR}/lib/commands/run-e2e.md" ".claude/commands/run-e2e.md"
+                if [ -f "${SCRIPT_DIR}/../lib/commands/run-e2e.md" ]; then
+                    cp "${SCRIPT_DIR}/../lib/commands/run-e2e.md" ".claude/commands/run-e2e.md"
                 fi
                 ;;
             "quickfix")

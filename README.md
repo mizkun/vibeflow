@@ -338,7 +338,7 @@ your-project/
 
 ### Slash Commands
 
-The framework provides 13 slash commands organized by category:
+The framework provides 16 slash commands organized by category:
 
 **Flow Control:**
 - `/progress` - Show current development progress
