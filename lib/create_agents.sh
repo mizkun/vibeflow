@@ -107,12 +107,21 @@ Automatically execute the planning phase:
 
 3. **Step 1 - Plan Review**:
    - Compare completed items in plan.md against previous issues
-   - Update TODO list based on:
-     - Uncompleted items from plan.md
-     - Next logical steps according to spec.md
-     - Priorities aligned with vision.md
-   - Mark completed items
-   - Save updated `/plan.md`
+   - **CRITICAL**: Update plan.md with:
+     - Move completed tasks to "## Completed" section with completion date
+     - Update TODO list based on spec.md and remaining work
+     - Add any new discoveries or priorities
+   - Mark completed items with checkmarks and dates:
+     ```markdown
+     ## Completed
+     - [x] Task 1 (2024-12-20)
+     - [x] Task 2 (2024-12-20)
+     
+     ## TODO
+     - [ ] Remaining task 1
+     - [ ] New task based on learnings
+     ```
+   - **MUST save the updated `/plan.md` before proceeding**
 
 4. **Step 2 - Issue Breakdown**:
    - Select next items from TODO list
@@ -134,7 +143,14 @@ Automatically execute the planning phase:
    - Update project health status
 
 6. **Stop for Human Review**:
-   - Update `.vibe/state.yaml` to `current_step: 2a_issue_validation`
+   - **MANDATORY**: Update `.vibe/state.yaml` with:
+     ```yaml
+     current_step: 2a_issue_validation
+     next_step: 3_branch_creation
+     issues_created: [count]
+     issues_list: [list of created issue filenames]
+     ```
+   - Verify state.yaml was actually written by reading it back
    - Display created issues summary
    - Message: "✅ 今回のスプリント用に X 個のIssueを作成しました。確認して問題なければ「続けて」と言ってください。"
 
@@ -292,7 +308,13 @@ Automatically execute the implementation phase:
    - If verification fails, record failure in orchestrator
 
 7. **Auto-proceed to QA**:
-   - Update `.vibe/state.yaml` to `current_step: 6a_code_sanity_check`
+   - **CRITICAL**: Update `.vibe/state.yaml` with:
+     ```yaml
+     current_step: 6a_code_sanity_check
+     next_step: 7_acceptance_test
+     ```
+   - Read back state.yaml to verify it was written
+   - If update fails, retry with error message
    - Trigger qa-auto subagent
 
 ## Code Standards
@@ -401,7 +423,13 @@ Handle all quality checks and reviews:
 6. Update orchestrator with all test results
 
 7. **Stop for Human Check**:
-   - Update state to `7a_runnable_check`
+   - **MANDATORY**: Update state.yaml:
+     ```yaml
+     current_step: 7a_runnable_check
+     checkpoint_status:
+       7a_runnable_check: pending
+     ```
+   - Verify update by reading state.yaml back
    - Message: "🧪 すべての自動テストが成功しました。以下の機能を手動でテストしてください: [機能リスト]。動作確認できたら「OK」、問題があれば「動かない」と言ってください。"
 
 ### Step 7b - Failure Analysis (if needed)
@@ -440,6 +468,7 @@ Handle all quality checks and reviews:
 3. Focus on functionality over style
 4. Always verify against original requirements
 5. Stop only at Step 7a for human testing
+6. **VERIFY ALL WRITES**: After updating any file (especially state.yaml), read it back to confirm changes were saved
 6. ALWAYS update orchestrator with quality findings
 7. Check orchestrator for accumulated warnings before proceeding
 8. If project health is "critical", escalate immediately'
@@ -543,8 +572,20 @@ Complete the deployment pipeline:
    - Archive cycle artifacts
 
 5. **Cycle Complete**:
-   - Update state: `current_step: 1_plan_review`
-   - Increment cycle number
+   - **CRITICAL**: Update plan.md to mark completed issues:
+     ```markdown
+     ## Completed
+     - [x] Issue #1: Feature A (Sprint 1 - 2024-12-20)
+     - [x] Issue #2: Feature B (Sprint 1 - 2024-12-20)
+     ```
+   - **MANDATORY**: Update state.yaml:
+     ```yaml
+     current_step: 1_plan_review
+     current_cycle: [increment]
+     current_issue: null
+     completed_items: [append completed issues]
+     ```
+   - Verify both files were updated by reading them back
    - Message: "✅ デプロイが完了しました！スプリントサイクルが終了しました。次のサイクルを開始する準備ができています。"
 
 ## Deployment Checklist
@@ -560,7 +601,7 @@ Complete the deployment pipeline:
 1. Never skip deployment verification
 2. Always squash commits for clean history
 3. If deployment fails, rollback immediately
-4. Update state.yaml after each step
+4. **CRITICAL**: Always update state.yaml after EVERY step - verify by reading it back
 5. Auto-proceed through all deployment steps
 6. Check orchestrator health before critical operations
 7. Record all deployment metrics in orchestrator
