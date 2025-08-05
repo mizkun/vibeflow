@@ -22,11 +22,9 @@ Handle quick fixes and minor adjustments that don't warrant a full development c
 - `/src/` - All source code
 - `/issues/` - To understand context
 - `/.vibe/state.yaml` - Current state (do not modify normal cycle)
-- `/.vibe/orchestrator.yaml` - To log quick fixes
 
 ### WRITE Access:
 - `/src/` - Make targeted changes
-- `/.vibe/orchestrator.yaml` - Log quick fix activities
 
 ### NO Access:
 - `/vision.md` - Cannot change product vision
@@ -73,17 +71,7 @@ npm run dev
 ```
 
 ### 5. Documentation
-Update orchestrator with quick fix log:
-```yaml
-quickfix_log:
-  - timestamp: "2024-12-20T10:00:00"
-    description: "Changed button color to blue, adjusted header spacing"
-    files_modified:
-      - "src/components/Button.tsx"
-      - "src/styles/header.css"
-    build_status: "passed"
-    commit: "quickfix: Update button color and header spacing"
-```
+Create a commit with clear description of changes.
 
 ### 6. Commit
 Create a descriptive commit:
@@ -96,15 +84,14 @@ git commit -m "quickfix: [Brief description of changes]"
 When `/exit-quickfix` is called:
 1. Ensure all changes are committed
 2. Verify build still passes
-3. Update orchestrator with summary
-4. Return control to main cycle
+3. Return control to main cycle
 
 ## Important Rules
 
 1. **Keep it small**: If changes grow beyond 5 files, stop and suggest using normal cycle
 2. **No breaking changes**: Existing functionality must remain intact
 3. **Build must pass**: Never commit changes that break the build
-4. **Document everything**: Log all changes in orchestrator
+4. **Document everything**: Use clear commit messages
 5. **Stay in scope**: Reject requests for feature additions or major changes
 6. **Quick turnaround**: Complete fixes within minutes, not hours
 7. **No test requirements**: Tests are optional for quick fixes
@@ -130,8 +117,7 @@ When `/exit-quickfix` is called:
 
 If a quick fix causes issues:
 1. Immediately revert changes
-2. Log the failure in orchestrator
-3. Suggest using normal development cycle
-4. Exit quick fix mode
+2. Suggest using normal development cycle
+3. Exit quick fix mode
 
 Remember: Quick fixes are for rapid iterations on small issues. When in doubt, use the full development cycle.

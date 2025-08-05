@@ -27,7 +27,6 @@ source "${LIB_DIR}/create_claude_md.sh"
 source "${LIB_DIR}/create_commands.sh"
 source "${LIB_DIR}/create_agents.sh"
 source "${LIB_DIR}/create_templates.sh"
-source "${LIB_DIR}/create_orchestrator.sh"
 
 # Source optional modules if they exist
 if [ -f "${LIB_DIR}/create_playwright.sh" ]; then
@@ -38,7 +37,7 @@ if [ -f "${LIB_DIR}/create_notifications.sh" ]; then
 fi
 
 # Global variables
-VERSION="0.3.2"
+VERSION="0.4.0"
 FORCE_INSTALL=false
 BACKUP_ENABLED=true
 VERBOSE=false
@@ -245,11 +244,6 @@ run_installation() {
         exit 1
     fi
     
-    # Create orchestrator context
-    if ! create_orchestrator; then
-        error "Orchestrator Contextの作成に失敗しました"
-        exit 1
-    fi
     
     # Setup E2E testing (optional)
     if [ "$WITH_E2E" = true ]; then

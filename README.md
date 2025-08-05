@@ -13,7 +13,6 @@ Vibe Coding Framework is an AI-driven development methodology designed for use w
 - **Role-Driven Development Cycle**: 11-step workflow with automatic role switching based on current step
 - **Minimal Human Intervention**: Only 2 checkpoints where human validation is required
 - **Automated Setup**: Complete development environment with a single command
-- **Orchestrator Context**: Shared coordination space that tracks project health, artifacts, and cross-role communication
 - **Automated Verification**: Each step verifies artifacts exist before proceeding, preventing "success theater"
 
 ## Quick Start
@@ -245,8 +244,8 @@ workflow:
 
 1. **Context Isolation**: Each role can only see what they need - Engineers never see the vision to avoid bias, PMs never see code to maintain abstraction
 2. **Automated Progression**: Steps flow automatically with only 2 human checkpoints
-3. **Verification at Each Step**: Orchestrator tracks artifacts and verifies completion
-4. **Cross-Role Communication**: Orchestrator serves as shared space for critical information without breaking isolation
+3. **Verification at Each Step**: Each role verifies their own artifacts before proceeding
+4. **Clear State Management**: state.yaml tracks current position and progress
 
 ## Optional Features
 

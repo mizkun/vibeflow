@@ -230,8 +230,6 @@ steps:
 ├── src/              # Source code (Engineers only)
 └── .vibe/
     ├── state.yaml    # Current cycle state
-    ├── orchestrator.yaml # Project health and cross-role coordination
-    ├── verification_rules.yaml # Automated verification rules
     └── workflow.yaml # Framework definitions
 ```
 
@@ -246,22 +244,6 @@ checkpoint_status:
   7a_runnable_check: pending
 ```
 
-## 🌐 Orchestrator Context
-
-The Orchestrator Context (`.vibe/orchestrator.yaml`) is a shared space that all roles can access to:
-- Track overall project health (healthy/warning/critical)
-- Share critical information between roles
-- Record artifacts and verification results
-- Accumulate warnings and risks
-- Enable better decision-making
-
-This solves the "success theater" problem where subagents report completion without actual verification.
-
-### Key Features:
-1. **Artifact Registry**: Tracks what files were created at each step
-2. **Health Monitoring**: Accumulated warnings trigger escalation
-3. **Cross-Role Communication**: Engineers can inform PM of technical constraints
-4. **Verification Log**: Automated checks ensure real progress
 
 ## 🤖 Automated Subagents
 
@@ -271,6 +253,7 @@ The following specialized subagents handle different phases automatically:
 2. **engineer-auto**: Implements features using TDD (Step 3-6)
 3. **qa-auto**: Ensures quality and compliance (Step 6a, 7, 9)
 4. **deploy-auto**: Manages PR, merge, and deployment (Step 8, 10-11)
+5. **quickfix-auto**: Handles minor fixes outside the main cycle
 
 ## 🛑 Human Checkpoints
 
@@ -289,11 +272,11 @@ You only need to intervene at:
 ## 📋 Available Commands
 
 - `/progress` - Check current position in cycle (現在の進捗確認)
-- `/healthcheck` - Verify alignment between vision, spec, plan, and code (整合性チェック)
+- `/healthcheck` - Verify state consistency with actual project (状態整合性チェック)
+- `/next` - Proceed to next step (次のステップへ進む)
 - `/abort` - Stop current cycle (緊急停止)
-- `/verify-step` - Verify current step artifacts (現在のステップを検証)
-- `/orchestrator-status` - View project health and warnings (Orchestrator状態表示)
-- `/health-check` - Comprehensive project health check (プロジェクト健全性チェック)
+- `/quickfix` - Enter Quick Fix mode for minor changes (軽微な修正モード)
+- `/exit-quickfix` - Exit Quick Fix mode (Quick Fixモード終了)
 
 Or just ask in Japanese:
 - "今どこまで進んでる？" (Where are we now?)
@@ -307,7 +290,6 @@ Or just ask in Japanese:
 3. **Automatic Progression**: Non-human steps proceed without intervention
 4. **TDD Enforcement**: Tests are always written before implementation
 5. **Verification Required**: Each step must verify artifacts before proceeding
-6. **Health Monitoring**: Critical project health stops progression
 
 ## 🎯 Starting Your First Cycle
 

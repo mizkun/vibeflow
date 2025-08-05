@@ -4,8 +4,8 @@
 # This script handles framework versioning
 
 # Current framework version
-FRAMEWORK_VERSION="0.3.2"
-FRAMEWORK_NAME="Orchestrator Context with E2E, Notifications & Quick Fix"
+FRAMEWORK_VERSION="0.4.0"
+FRAMEWORK_NAME="Simplified State Management with E2E, Notifications & Quick Fix"
 FRAMEWORK_RELEASE_DATE="2024-12-20"
 
 # Function to write version file
@@ -23,10 +23,11 @@ framework:
   
   # Features enabled
   features:
-    orchestrator_context: true
+    simplified_state: true
     verification_system: true
-    health_monitoring: true
-    cross_role_communication: true
+    quick_fix_mode: true
+    e2e_testing: true
+    notifications: true
   
   # Change log reference
   changelog_url: "https://github.com/mizkun/vibeflow/blob/main/CHANGELOG.md"

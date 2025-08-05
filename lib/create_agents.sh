@@ -84,13 +84,11 @@ Automatically execute the planning phase:
 - `/spec.md` - Specifications and technical design (READ ONLY)  
 - `/plan.md` - Development plan and TODOs
 - `/.vibe/state.yaml` - Current cycle state
-- `/.vibe/orchestrator.yaml` - Project health and cross-role information
 
 ### WRITE Access:
 - `/plan.md` - Update progress and TODOs
 - `/issues/` - Create new issue files
 - `/.vibe/state.yaml` - Update current step
-- `/.vibe/orchestrator.yaml` - Record decisions, risks, and artifacts
 
 ### NO Access:
 - `/src/` - Source code (NEVER access)
@@ -100,13 +98,11 @@ Automatically execute the planning phase:
 
 1. **Start**: 
    - Read `.vibe/state.yaml` to confirm current state
-   - Read `.vibe/orchestrator.yaml` to check project health and any warnings
 
 2. **MANDATORY CONTEXT READING**:
    - First, read `/vision.md` completely - understand the product vision
    - Second, read `/spec.md` completely - understand all requirements and technical design
    - Third, read `/plan.md` - check current progress and TODOs
-   - Check orchestrator for any critical decisions or constraints
    - If any of these files are missing or unreadable, STOP and report error
 
 3. **Step 1 - Plan Review**:
@@ -140,13 +136,7 @@ Automatically execute the planning phase:
      - Technical hints based on spec.md architecture
      - Priority level based on plan.md
 
-5. **Update Orchestrator**:
-   - Record created issues in orchestrator step_registry
-   - Note any technical constraints discovered
-   - Log any risks or complex dependencies
-   - Update project health status
-
-6. **Stop for Human Review**:
+5. **Stop for Human Review**:
    - **MANDATORY**: Update `.vibe/state.yaml` with:
      ```yaml
      current_step: 2a_issue_validation
@@ -189,12 +179,10 @@ Automatically execute the planning phase:
 
 1. NEVER access or read source code
 2. ALWAYS read vision.md, spec.md, and plan.md BEFORE creating any issues
-3. ALWAYS check orchestrator for project health and warnings
-4. Each issue MUST directly relate to the project vision and specifications
-5. Each issue should be completable in 1-4 hours
-6. Always stop at Step 2a for human validation
-7. If vision/spec seem unclear, create clarification issues first
-8. Record all important decisions and risks in orchestrator
+3. Each issue MUST directly relate to the project vision and specifications
+4. Each issue should be completable in 1-4 hours
+5. Always stop at Step 2a for human validation
+6. If vision/spec seem unclear, create clarification issues first
 
 ## Common Mistakes to Avoid
 ❌ Creating generic issues like "Add database" without checking spec.md for the specified database
@@ -257,12 +245,10 @@ Automatically execute the implementation phase:
 - `/issues/` - Current issue details
 - `/src/` - All source code
 - `/.vibe/state.yaml` - Current cycle state
-- `/.vibe/orchestrator.yaml` - Project health and previous step artifacts
 
 ### WRITE Access:
 - `/src/` - Create and modify code
 - `/.vibe/state.yaml` - Update current step
-- `/.vibe/orchestrator.yaml` - Record implementation details and discoveries
 
 ### NO Access:
 - `/vision.md` - Product vision
@@ -273,8 +259,6 @@ Automatically execute the implementation phase:
 
 1. **Start**: 
    - Read current issue from `.vibe/state.yaml`
-   - Check `.vibe/orchestrator.yaml` for any warnings or constraints
-   - Verify previous step artifacts exist
 
 2. **Step 3 - Branch Creation**:
    ```bash
@@ -288,28 +272,21 @@ Automatically execute the implementation phase:
      - Happy path
      - Edge cases
      - Error handling
-   - Update orchestrator with test creation details
 
 4. **Step 5 - Implementation (TDD Green)**:
    - Write minimal code to make tests pass
    - Focus on functionality over optimization
    - Run tests frequently
-   - Record any technical discoveries in orchestrator
 
 5. **Step 6 - Refactoring**:
    - Improve code structure
    - Extract functions/components
    - Add comments where needed
    - Ensure tests still pass
-   - Update orchestrator with final artifact locations
 
 6. **Verify and Record**:
    - Run verification checks (test pass, files exist)
-   - Update orchestrator with:
-     - Created files list
-     - Test results
-     - Any technical constraints discovered
-   - If verification fails, record failure in orchestrator
+   - If verification fails, document the failure
 
 7. **Auto-proceed to QA**:
    - **CRITICAL**: Update `.vibe/state.yaml` with:
@@ -337,8 +314,7 @@ Automatically execute the implementation phase:
 4. Don'\''t skip tests - they ensure quality
 5. Auto-proceed through all engineering steps without stopping
 6. ALWAYS verify artifacts exist before proceeding
-7. Record all important findings in orchestrator
-8. If tests don'\''t pass, update orchestrator with failure details'
+7. If tests don'\''t pass, document failure details'
     
     create_file_with_backup ".claude/agents/engineer-auto.md" "$content"
 }
@@ -377,12 +353,10 @@ Handle all quality checks and reviews:
 - `/issues/` - To check acceptance criteria
 - `/src/` - All source code
 - `/.vibe/state.yaml` - Current cycle state
-- `/.vibe/orchestrator.yaml` - Check previous artifacts and warnings
 
 ### WRITE Access:
 - `/.vibe/state.yaml` - Update current step
 - `/.vibe/test-results.log` - Record test outcomes
-- `/.vibe/orchestrator.yaml` - Record quality findings and risks
 
 ### NO Access:
 - Cannot modify any source code
@@ -391,7 +365,7 @@ Handle all quality checks and reviews:
 ## Automatic Execution Flow
 
 ### Step 6a - Code Sanity Check
-1. Check orchestrator for implementation artifacts
+1. Check state.yaml for current status
 2. Verify expected files exist
 3. Run automated checks:
    - Linting
@@ -405,12 +379,7 @@ Handle all quality checks and reviews:
    - Commented out code blocks
    - TODO comments
 
-3. Update orchestrator:
-   - Record test coverage percentage
-   - Log any quality warnings
-   - Note security concerns
-
-4. Decision:
+3. Decision:
    - If major issues → Return to Step 6 (refactoring)
    - If minor/no issues → Proceed to Step 7
 
@@ -424,9 +393,8 @@ Handle all quality checks and reviews:
    - Verify critical user flows
    - Check cross-browser compatibility
    - Capture screenshots of failures
-6. Update orchestrator with all test results
 
-7. **Stop for Human Check**:
+6. **Stop for Human Check**:
    - **MANDATORY**: Update state.yaml:
      ```yaml
      current_step: 7a_runnable_check
@@ -439,9 +407,8 @@ Handle all quality checks and reviews:
 ### Step 7b - Failure Analysis (if needed)
 1. Analyze why requirements weren'\''t met
 2. Create detailed failure report
-3. Update orchestrator with failure analysis
-4. Record specific issues for engineer to address
-5. Return to Step 5 (implementation)
+3. Record specific issues for engineer to address
+4. Return to Step 5 (implementation)
 
 ### Step 9 - Code Review
 1. Review code changes for:
@@ -472,10 +439,7 @@ Handle all quality checks and reviews:
 3. Focus on functionality over style
 4. Always verify against original requirements
 5. Stop only at Step 7a for human testing
-6. **VERIFY ALL WRITES**: After updating any file (especially state.yaml), read it back to confirm changes were saved
-6. ALWAYS update orchestrator with quality findings
-7. Check orchestrator for accumulated warnings before proceeding
-8. If project health is "critical", escalate immediately'
+6. **VERIFY ALL WRITES**: After updating any file (especially state.yaml), read it back to confirm changes were saved'
     
     create_file_with_backup ".claude/agents/qa-auto.md" "$content"
 }
@@ -505,11 +469,9 @@ Complete the deployment pipeline:
 - `/issues/` - For PR description
 - `/src/` - All source code
 - `/.vibe/state.yaml` - Current cycle state
-- `/.vibe/orchestrator.yaml` - Check project health before deployment
 
 ### WRITE Access:
 - `/.vibe/state.yaml` - Update current step
-- `/.vibe/orchestrator.yaml` - Record deployment status and metrics
 
 ### NO Access:
 - Cannot modify vision, spec, or plan
@@ -518,10 +480,7 @@ Complete the deployment pipeline:
 ## Automatic Execution Flow
 
 ### Step 8 - Pull Request Creation
-1. Check orchestrator health status
-   - If "critical", stop and alert
-   - If "warning", include warnings in PR description
-2. Create PR with:
+1. Create PR with:
    ```bash
    gh pr create --title "Issue #X: [Title]" --body "[Generated description]"
    ```
@@ -545,8 +504,7 @@ Complete the deployment pipeline:
    - [x] Ready for merge
    ```
 
-3. Update orchestrator with PR URL and status
-4. After PR creation, automatically trigger qa-auto for Step 9 (review)
+3. After PR creation, automatically trigger qa-auto for Step 9 (review)
 
 ### Step 10 - Merge
 1. After approval from Step 9:
@@ -557,25 +515,18 @@ Complete the deployment pipeline:
    ```
 
 ### Step 11 - Deployment
-1. Final health check from orchestrator
-2. Run deployment scripts:
+1. Run deployment scripts:
    ```bash
    npm run build
    npm run deploy:staging
    ```
 
-3. Verify deployment:
+2. Verify deployment:
    - Check deployment logs
    - Confirm service is running
    - Run smoke tests if available
 
-4. Update orchestrator:
-   - Record deployment timestamp
-   - Update metrics (cycle time, success rate)
-   - Clear resolved warnings
-   - Archive cycle artifacts
-
-5. **Cycle Complete**:
+3. **Cycle Complete**:
    - **CRITICAL**: Update plan.md to mark completed issues:
      ```markdown
      ## Completed
@@ -606,10 +557,7 @@ Complete the deployment pipeline:
 2. Always squash commits for clean history
 3. If deployment fails, rollback immediately
 4. **CRITICAL**: Always update state.yaml after EVERY step - verify by reading it back
-5. Auto-proceed through all deployment steps
-6. Check orchestrator health before critical operations
-7. Record all deployment metrics in orchestrator
-8. If project health is "critical", do not deploy'
+5. Auto-proceed through all deployment steps'
     
     create_file_with_backup ".claude/agents/deploy-auto.md" "$content"
 }
@@ -640,11 +588,9 @@ Handle quick fixes and minor adjustments that don'\''t warrant a full developmen
 - `/src/` - All source code
 - `/issues/` - To understand context
 - `/.vibe/state.yaml` - Current state (do not modify normal cycle)
-- `/.vibe/orchestrator.yaml` - To log quick fixes
 
 ### WRITE Access:
 - `/src/` - Make targeted changes
-- `/.vibe/orchestrator.yaml` - Log quick fix activities
 
 ### NO Access:
 - `/vision.md` - Cannot change product vision
@@ -691,17 +637,7 @@ npm run dev
 ```
 
 ### 5. Documentation
-Update orchestrator with quick fix log:
-```yaml
-quickfix_log:
-  - timestamp: "2024-12-20T10:00:00"
-    description: "Changed button color to blue, adjusted header spacing"
-    files_modified:
-      - "src/components/Button.tsx"
-      - "src/styles/header.css"
-    build_status: "passed"
-    commit: "quickfix: Update button color and header spacing"
-```
+Create a commit with clear description of changes.
 
 ### 6. Commit
 Create a descriptive commit:
@@ -714,15 +650,14 @@ git commit -m "quickfix: [Brief description of changes]"
 When `/exit-quickfix` is called:
 1. Ensure all changes are committed
 2. Verify build still passes
-3. Update orchestrator with summary
-4. Return control to main cycle
+3. Return control to main cycle
 
 ## Important Rules
 
 1. **Keep it small**: If changes grow beyond 5 files, stop and suggest using normal cycle
 2. **No breaking changes**: Existing functionality must remain intact
 3. **Build must pass**: Never commit changes that break the build
-4. **Document everything**: Log all changes in orchestrator
+4. **Document everything**: Use clear commit messages
 5. **Stay in scope**: Reject requests for feature additions or major changes
 6. **Quick turnaround**: Complete fixes within minutes, not hours
 7. **No test requirements**: Tests are optional for quick fixes
@@ -748,9 +683,8 @@ When `/exit-quickfix` is called:
 
 If a quick fix causes issues:
 1. Immediately revert changes
-2. Log the failure in orchestrator
-3. Suggest using normal development cycle
-4. Exit quick fix mode
+2. Suggest using normal development cycle
+3. Exit quick fix mode
 
 Remember: Quick fixes are for rapid iterations on small issues. When in doubt, use the full development cycle.'
     

@@ -12,31 +12,12 @@ create_slash_commands() {
     section "スラッシュコマンドを作成中"
     
     local commands=(
-        # 基本的なフロー制御
         "progress:現在の進捗確認"
+        "healthcheck:状態ファイルと実際の整合性チェック"
         "next:次のステップへ進む"
-        "restart-cycle:現在のIssueで最初からやり直し"
         "abort:緊急停止（現在の処理を中断）"
-        "skip-tests:TDDをスキップ（非推奨）"
-        
-        # 状態確認・診断
-        "vibe-status:フレームワーク設定確認"
-        "health-check:プロジェクト健全性の総合チェック"
-        "orchestrator-status:全体的なプロジェクト状態と警告"
-        "verify-step:現在のステップの成果物を検証"
-        
-        # テスト関連
-        "run-e2e:E2Eテストを実行（Playwright使用）"
-        
-        # Quick Fix モード
         "quickfix:Quick Fixモードに入る（軽微な修正用）"
         "exit-quickfix:Quick Fixモードを終了"
-        
-        # ロール切り替え
-        "role-product_manager:PMロールに切り替え"
-        "role-engineer:エンジニアロールに切り替え"
-        "role-qa_engineer:QAロールに切り替え"
-        "role-reset:通常モードに戻る"
     )
     
     local total=${#commands[@]}
@@ -52,47 +33,14 @@ create_slash_commands() {
             "progress")
                 create_progress_command
                 ;;
-            "abort")
-                create_abort_command
+            "healthcheck")
+                create_healthcheck_command
                 ;;
             "next")
                 create_next_command
                 ;;
-            "restart-cycle")
-                create_restart_cycle_command
-                ;;
-            "skip-tests")
-                create_skip_tests_command
-                ;;
-            "vibe-status")
-                create_vibe_status_command
-                ;;
-            "role-product_manager")
-                create_role_pm_command
-                ;;
-            "role-engineer")
-                create_role_engineer_command
-                ;;
-            "role-qa_engineer")
-                create_role_qa_command
-                ;;
-            "role-reset")
-                create_role_reset_command
-                ;;
-            "verify-step")
-                create_verify_step_command
-                ;;
-            "orchestrator-status")
-                create_orchestrator_status_command
-                ;;
-            "health-check")
-                create_health_check_command
-                ;;
-            "run-e2e")
-                # Use the file directly from lib/commands/
-                if [ -f "${SCRIPT_DIR}/../lib/commands/run-e2e.md" ]; then
-                    cp "${SCRIPT_DIR}/../lib/commands/run-e2e.md" ".claude/commands/run-e2e.md"
-                fi
+            "abort")
+                create_abort_command
                 ;;
             "quickfix")
                 create_quickfix_command
@@ -117,9 +65,36 @@ Read .vibe/state.yaml and provide a comprehensive progress report including: cur
 }
 
 create_healthcheck_command() {
-    local content='# 整合性チェック
+    local content='# 状態整合性チェック
 
-Perform a comprehensive health check of the project by: 1) Reading vision.md, spec.md, and plan.md to understand project goals, 2) Checking if spec.md aligns with vision.md, 3) Verifying plan.md reflects the spec properly, 4) Analyzing if completed issues match the plan, 5) Checking if implemented code follows the specified architecture. Report any discrepancies found and provide recommendations. Use ✅ for aligned items, ⚠️ for minor issues, and ❌ for major discrepancies. Present results in Japanese.'
+Check the consistency between .vibe/state.yaml and the actual project state:
+
+1. **Read state.yaml** to get:
+   - current_step
+   - current_issue
+   - current_cycle
+   - checkpoint_status
+
+2. **Verify actual state**:
+   - If current_issue is set, check if that issue file exists in issues/
+   - Check Git branch matches expected pattern (feature/issue-XXX) if step >= 3
+   - Verify expected artifacts exist based on current_step:
+     - Step 2: Issue files should exist
+     - Step 4: Test files should exist
+     - Step 5-6: Implementation files should exist
+   - Check if checkpoint status matches actual progress
+
+3. **Report discrepancies**:
+   - ✅ State matches reality
+   - ⚠️ Minor inconsistencies (e.g., branch name)
+   - ❌ Major problems (e.g., missing issue file, wrong step)
+
+4. **Suggest fixes** if problems found:
+   - Correct state.yaml values
+   - Missing files that should be created
+   - Next logical action to take
+
+Present results in Japanese with clear status indicators.'
     
     create_file_with_backup ".claude/commands/healthcheck.md" "$content"
 }

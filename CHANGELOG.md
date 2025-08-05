@@ -5,6 +5,25 @@ All notable changes to the Vibe Coding Framework will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2024-12-20
+
+### Changed
+- **BREAKING**: Removed orchestrator.yaml completely
+- **BREAKING**: Simplified state.yaml to only contain current state
+- Reduced slash commands from 16 to 6 essential ones
+- Updated healthcheck command to verify state consistency
+- All subagents updated to remove orchestrator dependencies
+
+### Removed
+- orchestrator.yaml file and all related functionality
+- Redundant slash commands for role switching
+- Complex state tracking in favor of simple current state
+
+### Fixed
+- State management complexity issues
+- Overlapping functionality between orchestrator and state
+- Command bloat with unnecessary options
+
 ## [0.3.2] - 2024-12-20
 
 ### Added
@@ -81,6 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TDD enforcement
 - Automated progression with human checkpoints
 
+[0.4.0]: https://github.com/mizkun/vibeflow/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/mizkun/vibeflow/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/mizkun/vibeflow/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/mizkun/vibeflow/compare/v0.2.0...v0.3.0
