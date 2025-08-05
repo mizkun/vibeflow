@@ -28,6 +28,10 @@ create_slash_commands() {
         # テスト関連
         "run-e2e:E2Eテストを実行（Playwright使用）"
         
+        # Quick Fix モード
+        "quickfix:Quick Fixモードに入る（軽微な修正用）"
+        "exit-quickfix:Quick Fixモードを終了"
+        
         # ロール切り替え
         "role-product_manager:PMロールに切り替え"
         "role-engineer:エンジニアロールに切り替え"
@@ -89,6 +93,12 @@ create_slash_commands() {
                 if [ -f "${SCRIPT_DIR}/lib/commands/run-e2e.md" ]; then
                     cp "${SCRIPT_DIR}/lib/commands/run-e2e.md" ".claude/commands/run-e2e.md"
                 fi
+                ;;
+            "quickfix")
+                create_quickfix_command
+                ;;
+            "exit-quickfix")
+                create_exit_quickfix_command
                 ;;
         esac
     done
@@ -248,6 +258,64 @@ Provide a health report with:
 Report in Japanese with clear status indicators and actionable recommendations.'
     
     create_file_with_backup ".claude/commands/health-check.md" "$content"
+}
+
+create_quickfix_command() {
+    local content='# Quick Fix モード
+
+通常の開発サイクルを一時停止し、軽微な修正を素早く行うモードに入ります。
+
+## 使用方法
+`/quickfix [修正内容の説明]`
+
+例:
+- `/quickfix ボタンの色を青に変更`
+- `/quickfix ヘッダーの余白を調整`
+- `/quickfix タイポを修正`
+
+## 許可される変更
+- UIスタイルの調整（色、間隔、フォント）
+- テキストの修正（タイポ、ラベル変更）
+- 小さなバグ修正（50行以内）
+- エラーメッセージの改善
+
+## 制限事項
+- 新機能の追加は不可
+- データベース構造の変更は不可
+- APIの変更は不可
+- 5ファイル以上の変更は不可
+
+このコマンドを実行すると:
+1. quickfix-auto サブエージェントが起動
+2. 指定された修正を実装
+3. ビルドチェックを実行
+4. 変更をコミット
+5. orchestrator.yamlに記録
+
+通常のサイクルに戻るには `/exit-quickfix` を使用してください。'
+    
+    create_file_with_backup ".claude/commands/quickfix.md" "$content"
+}
+
+create_exit_quickfix_command() {
+    local content='# Quick Fix モード終了
+
+Quick Fixモードを終了し、通常の開発サイクルに戻ります。
+
+実行される処理:
+1. 未コミットの変更があれば確認
+2. ビルドの最終チェック
+3. orchestrator.yamlに Quick Fix セッションのサマリーを記録
+4. 通常モードに復帰
+
+Quick Fix中の変更内容:
+- 変更されたファイルのリスト
+- 実行されたコミット
+- ビルドステータス
+
+これらの情報は `.vibe/orchestrator.yaml` の `quickfix_log` セクションに記録されます。'
+    
+    create_file_with_backup ".claude/commands/exit-quickfix.md" "$content"
 }
 
 # Main function (called if script is run directly)

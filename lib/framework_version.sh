@@ -4,8 +4,8 @@
 # This script handles framework versioning
 
 # Current framework version
-FRAMEWORK_VERSION="3.1.0"
-FRAMEWORK_NAME="Orchestrator Context with E2E & Notifications"
+FRAMEWORK_VERSION="3.2.0"
+FRAMEWORK_NAME="Orchestrator Context with E2E, Notifications & Quick Fix"
 FRAMEWORK_RELEASE_DATE="2024-12-20"
 
 # Version history
@@ -14,6 +14,7 @@ declare -A VERSION_HISTORY=(
     ["2.0.0"]="Modular architecture, error handling"
     ["3.0.0"]="Orchestrator Context, verification system"
     ["3.1.0"]="E2E testing with Playwright, notification sounds"
+    ["3.2.0"]="Quick Fix Mode for rapid minor adjustments"
 )
 
 # Breaking changes by version

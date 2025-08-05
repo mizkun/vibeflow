@@ -191,6 +191,28 @@ To enable notifications:
 2. Restart Claude Code
 3. Test with: `.vibe/hooks/task_complete.sh`
 
+### Quick Fix Mode
+
+Quick Fix Mode allows rapid minor adjustments outside the normal development cycle:
+
+- **Purpose**: UI tweaks, typo fixes, small bug fixes without full TDD process
+- **Activation**: `/quickfix [description of changes]`
+- **Deactivation**: `/exit-quickfix`
+
+**Allowed changes:**
+- CSS/style adjustments
+- Text content updates
+- Small logic fixes (< 50 lines)
+- UI component tweaks
+
+**Restrictions:**
+- No new features
+- No database changes
+- No API modifications
+- Maximum 5 files per fix
+
+All quick fixes are logged in `.vibe/orchestrator.yaml` for tracking.
+
 ## Project Structure
 
 After setup, the following structure is created:
@@ -202,11 +224,12 @@ your-project/
 │   │   ├── pm-auto.md
 │   │   ├── engineer-auto.md
 │   │   ├── qa-auto.md
-│   │   └── deploy-auto.md
+│   │   ├── deploy-auto.md
+│   │   └── quickfix-auto.md
 │   └── commands/       # Slash commands
 │       ├── progress.md
 │       ├── healthcheck.md
-│       └── ... (11 commands total)
+│       └── ... (15 commands total)
 ├── .vibe/
 │   ├── state.yaml      # Cycle state management
 │   ├── orchestrator.yaml # Project health and cross-role coordination
@@ -247,6 +270,10 @@ The framework provides 13 slash commands organized by category:
 - `/role-engineer` - Switch to Engineer role
 - `/role-qa_engineer` - Switch to QA Engineer role
 - `/role-reset` - Reset role to default
+
+**Quick Fix Mode:**
+- `/quickfix` - Enter Quick Fix mode for minor UI adjustments
+- `/exit-quickfix` - Exit Quick Fix mode and return to normal cycle
 
 ### Script Options
 
