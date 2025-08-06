@@ -1,14 +1,22 @@
 #!/bin/bash
 
-# Vibe Coding Framework - Subagents Creation
-# This script creates specialized subagents for different development phases
+# Vibe Coding Framework - Subagents Creation [DEPRECATED]
+# This script is deprecated in favor of role-based context-continuous development
+# Subagents are no longer used for sequential workflows to maintain context continuity
+# Only use subagents for truly parallel tasks that don't need shared context
 
 # Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 
-# Function to create all subagents
+# Function to create all subagents - DISABLED
 create_subagents() {
+    info "Subagent creation is disabled. Using role-based system instead."
+    return 0
+}
+
+# Original implementation kept for reference but not executed
+create_subagents_deprecated() {
     section "Subagent ファイルを作成中"
     
     local agents=(

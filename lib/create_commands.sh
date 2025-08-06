@@ -17,6 +17,7 @@ create_slash_commands() {
         "next:次のステップへ進む"
         "quickfix:Quick Fixモードに入る（軽微な修正用）"
         "exit-quickfix:Quick Fixモードを終了"
+        "parallel-test:並列テスト実行（Subagent使用）"
     )
     
     local total=${#commands[@]}
@@ -43,6 +44,9 @@ create_slash_commands() {
                 ;;
             "exit-quickfix")
                 create_exit_quickfix_command
+                ;;
+            "parallel-test")
+                create_parallel_test_command
                 ;;
         esac
     done
@@ -119,25 +123,105 @@ Present comprehensive results in Japanese with actionable recommendations.'
 }
 
 create_next_command() {
-    local content='# 次のステップへ / 開発サイクルを開始
+    local content='---
+description: Proceed to next step with role-based execution
+---
 
-Read .vibe/state.yaml to determine the current step and automatically proceed to the next step according to the Vibe Coding workflow. 
+Execute the next step in the Vibe Coding development cycle:
 
-This command can be used to:
-- Start a new development cycle from the beginning (Step 1: Plan Review)
-- Continue to the next step in an ongoing cycle
-- Resume after a human checkpoint
+## Step 1: Load Current State
+Read .vibe/state.yaml to understand:
+- current_cycle
+- current_step  
+- current_issue
+- current_role
+- last_completed_step
 
-If at a human checkpoint, remind the user what needs to be done. Otherwise, delegate to the appropriate subagent for the next step.'
+## Step 2: Determine Next Step and Role
+Based on current_step, identify:
+- Next step number and name
+- Required role (PM, Engineer, or QA)
+- Files that role can access
+
+## Step 3: Announce Role Transition
+Print clear transition message:
+========================================
+🔄 ROLE TRANSITION
+Previous Step: [step_X] ([role])
+Current Step:  [step_Y] ([new_role])
+Issue:         [current_issue]
+Now operating as: [NEW_ROLE]
+Access granted to: [list of accessible files]
+========================================
+
+## Step 4: Execute Step with Role Constraints
+
+### For Product Manager Role (steps 1-2):
+- Must Read: vision.md, spec.md, plan.md, state.yaml, qa-reports/*
+- Can Edit: plan.md, issues/*, state.yaml
+- Can Create: issues/*
+- Think like a PM: Focus on user value and requirements
+
+### For Engineer Role (steps 3-6, 8, 10-11):  
+- Must Read: spec.md, issues/*, src/*, state.yaml
+- Can Edit: src/*, *.test.*, state.yaml
+- Can Create: src/*, *.test.*
+- Think like an engineer: Focus on implementation quality
+- Note: Cannot access vision.md to avoid scope creep
+
+### For QA Engineer Role (steps 6a, 7, 9):
+- Must Read: spec.md, issues/*, src/*, state.yaml, qa-reports/*
+- Can Edit: test-results.log, qa-reports/*, state.yaml
+- Can Create: qa-reports/*, test-results.log
+- Think like QA: Focus on validation and edge cases
+
+## Step 5: Update State
+Update .vibe/state.yaml with:
+- current_step: [next_step_number]
+- current_role: [new_role]
+- last_role_transition: [timestamp]
+- last_completed_step: [previous_step]
+- issues_created/issues_completed: update as needed
+
+## Step 6: Checkpoint Handling
+If step requires human validation:
+- Print clear message about what needs review
+- Save checkpoint state
+- Wait for user confirmation before proceeding
+
+IMPORTANT: Maintain all context in the main conversation. Do NOT use subagents for sequential workflow steps.'
     
     create_file_with_backup ".claude/commands/next.md" "$content"
 }
 
 
 create_quickfix_command() {
-    local content='# Quick Fix モード
+    local content='---
+description: Enter quick fix mode for minor adjustments
+---
 
-通常の開発サイクルを一時停止し、軽微な修正を素早く行うモードに入ります。
+Enter Quick Fix Mode - a streamlined mode for minor changes:
+
+## Activation
+Print mode change:
+🔧 ENTERING QUICK FIX MODE
+
+Bypassing normal workflow for minor adjustments
+Allowed: UI tweaks, typos, small bug fixes
+Max scope: 5 files, <50 lines total changes
+
+## Constraints in Quick Fix Mode
+- Can modify any file directly
+- Must document all changes
+- Cannot add new features
+- Cannot modify database schema
+- Must exit properly with /exit-quickfix
+
+## Process
+1. Make the requested minor changes
+2. Run relevant tests if any
+3. Document changes in state.yaml under "quick_fixes"
+4. Commit with prefix: "quickfix: [description]"
 
 ## 使用方法
 `/quickfix [修正内容の説明]`
@@ -147,25 +231,7 @@ create_quickfix_command() {
 - `/quickfix ヘッダーの余白を調整`
 - `/quickfix タイポを修正`
 
-## 許可される変更
-- UIスタイルの調整（色、間隔、フォント）
-- テキストの修正（タイポ、ラベル変更）
-- 小さなバグ修正（50行以内）
-- エラーメッセージの改善
-
-## 制限事項
-- 新機能の追加は不可
-- データベース構造の変更は不可
-- APIの変更は不可
-- 5ファイル以上の変更は不可
-
-このコマンドを実行すると:
-1. quickfix-auto サブエージェントが起動
-2. 指定された修正を実装
-3. ビルドチェックを実行
-4. 変更をコミット
-
-通常のサイクルに戻るには `/exit-quickfix` を使用してください。'
+Note: This mode operates in the main context, not as a subagent. All changes are made directly while maintaining context continuity.'
     
     create_file_with_backup ".claude/commands/quickfix.md" "$content"
 }
@@ -188,6 +254,39 @@ Quick Fix中の変更内容:
 これらの情報はGitコミットメッセージに記録されます。'
     
     create_file_with_backup ".claude/commands/exit-quickfix.md" "$content"
+}
+
+create_parallel_test_command() {
+    local content='---
+description: Run independent tests in parallel using subagents
+---
+
+Run multiple independent test suites in parallel:
+
+This is one of the few cases where we DO use subagents, because:
+- Tests are independent and don'\''t need shared context
+- Parallel execution saves significant time
+- Results can be aggregated after completion
+
+Execute:
+1. Create subagent tasks for:
+   - Unit tests
+   - Integration tests  
+   - E2E tests \(if configured\)
+   
+2. Each subagent should:
+   - Run its specific test suite
+   - Report results to a designated output file
+   - Return success/failure status
+
+3. After all complete:
+   - Aggregate results
+   - Update test-results.log
+   - Report summary to user
+
+Note: This is the ONLY command where we intentionally use subagents in the Vibe Coding workflow, as parallel test execution benefits from true parallelism without context sharing requirements.'
+    
+    create_file_with_backup ".claude/commands/parallel-test.md" "$content"
 }
 
 # Main function (called if script is run directly)

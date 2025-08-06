@@ -25,7 +25,7 @@ source "${LIB_DIR}/common.sh"
 source "${LIB_DIR}/create_structure.sh"
 source "${LIB_DIR}/create_claude_md.sh"
 source "${LIB_DIR}/create_commands.sh"
-source "${LIB_DIR}/create_agents.sh"
+# source "${LIB_DIR}/create_agents.sh" # Deprecated - using role-based system instead
 source "${LIB_DIR}/create_templates.sh"
 
 # Source optional modules if they exist
@@ -127,10 +127,10 @@ show_welcome() {
     echo ""
     info "このスクリプトは以下を実行します："
     echo "  • ディレクトリ構造の作成"
-    echo "  • CLAUDE.mdドキュメントの生成"
+    echo "  • CLAUDE.mdドキュメントの生成（ロールベースシステム）"
     echo "  • スラッシュコマンドの設定"
-    echo "  • 4つのSubagentの作成"
-    echo "  • テンプレートファイルの生成"
+    echo "  • テンプレートファイルの生成（拡張state.yaml）"
+    echo "  • ロールベースのコンテキスト継続型開発環境"
     echo ""
 }
 
@@ -232,11 +232,10 @@ run_installation() {
         exit 1
     fi
     
-    # Step 4: Create subagents
-    if ! create_subagents; then
-        error "Subagentの作成に失敗しました"
-        exit 1
-    fi
+    # Step 4: Create subagents - SKIPPED (using role-based system)
+    # Subagents are deprecated in favor of role-based context-continuous development
+    # Only use subagents for truly parallel tasks (e.g., parallel-test command)
+    info "ロールベースシステムを使用（Subagent作成をスキップ）"
     
     # Step 5: Create templates
     if ! create_templates; then

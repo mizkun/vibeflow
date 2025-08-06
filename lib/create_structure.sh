@@ -15,6 +15,7 @@ create_vibe_structure() {
         ".claude/agents"
         ".claude/commands"
         ".vibe/templates"
+        ".vibe/roles"
         "issues"
         "src"
     )
@@ -80,6 +81,7 @@ verify_structure() {
         ".claude/agents"
         ".claude/commands"
         ".vibe/templates"
+        ".vibe/roles"
         "issues"
         "src"
     )

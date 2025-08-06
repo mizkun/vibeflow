@@ -1,6 +1,29 @@
-# Quick Fix モード
+---
+description: Enter quick fix mode for minor adjustments
+---
 
-通常の開発サイクルを一時停止し、軽微な修正を素早く行うモードに入ります。
+Enter Quick Fix Mode - a streamlined mode for minor changes:
+
+## Activation
+Print mode change:
+🔧 ENTERING QUICK FIX MODE
+
+Bypassing normal workflow for minor adjustments
+Allowed: UI tweaks, typos, small bug fixes
+Max scope: 5 files, <50 lines total changes
+
+## Constraints in Quick Fix Mode
+- Can modify any file directly
+- Must document all changes
+- Cannot add new features
+- Cannot modify database schema
+- Must exit properly with /exit-quickfix
+
+## Process
+1. Make the requested minor changes
+2. Run relevant tests if any
+3. Document changes in state.yaml under "quick_fixes"
+4. Commit with prefix: "quickfix: [description]"
 
 ## 使用方法
 `/quickfix [修正内容の説明]`
@@ -10,22 +33,4 @@
 - `/quickfix ヘッダーの余白を調整`
 - `/quickfix タイポを修正`
 
-## 許可される変更
-- UIスタイルの調整（色、間隔、フォント）
-- テキストの修正（タイポ、ラベル変更）
-- 小さなバグ修正（50行以内）
-- エラーメッセージの改善
-
-## 制限事項
-- 新機能の追加は不可
-- データベース構造の変更は不可
-- APIの変更は不可
-- 5ファイル以上の変更は不可
-
-このコマンドを実行すると:
-1. quickfix-auto サブエージェントが起動
-2. 指定された修正を実装
-3. ビルドチェックを実行
-4. 変更をコミット
-
-通常のサイクルに戻るには `/exit-quickfix` を使用してください。
+Note: This mode operates in the main context, not as a subagent. All changes are made directly while maintaining context continuity.
