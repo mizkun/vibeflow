@@ -10,10 +10,12 @@ Vibe Coding Framework is an AI-driven development methodology designed for use w
 
 - **Context-Based Access Control**: Each step has a specific role with defined read/edit/create permissions for different contexts
 - **Strict Context Isolation**: Roles have defined read/edit/create permissions (e.g., Engineers can only edit code, PMs can only edit plan/issues)
-- **Role-Driven Development Cycle**: 11-step workflow with automatic role switching based on current step
+- **Role-Based Context-Continuous System**: No separate agent files - role switching handled seamlessly within main context
+- **11-Step Development Workflow**: Automatic progression through development cycle with role-based permissions
 - **Minimal Human Intervention**: Only 2 checkpoints where human validation is required
 - **Automated Setup**: Complete development environment with a single command
 - **Automated Verification**: Each step verifies artifacts exist before proceeding, preventing "success theater"
+- **Parallel Test Execution**: Run independent test suites in parallel for faster feedback
 
 ## Quick Start
 
@@ -143,7 +145,7 @@ Define development plan and TODOs:
 
 ### Core Concept: Role-Based Development Workflow
 
-The most important innovation of Vibe Coding Framework is the **strict role separation with context-based access control**. Each step in the development cycle is executed by a specific role with precisely defined permissions:
+The most important innovation of Vibe Coding Framework is the **context-continuous role-based system**. Unlike traditional approaches with separate agent files, all roles operate within a single context with dynamic permission switching. Each step in the development cycle is executed by a specific role with precisely defined permissions:
 
 ```yaml
 # Step-by-Step Role and Permission Definition
@@ -242,10 +244,11 @@ workflow:
 
 ### Key Principles
 
-1. **Context Isolation**: Each role has defined permissions - Engineers only edit code, PMs only edit plans/issues, QA only creates reports
-2. **Automated Progression**: Steps flow automatically with only 2 human checkpoints
-3. **Verification at Each Step**: Each role verifies their own artifacts before proceeding
-4. **Clear State Management**: state.yaml tracks current position and progress
+1. **Context-Continuous Operation**: All roles operate within the same context with dynamic permission switching
+2. **No Separate Agent Files**: Role-based permissions are embedded in the `/next` command logic
+3. **Automated Progression**: Steps flow automatically with only 2 human checkpoints
+4. **Verification at Each Step**: Each role verifies their own artifacts before proceeding
+5. **Clear State Management**: state.yaml tracks current position and progress
 
 ## Optional Features
 
@@ -310,15 +313,13 @@ After setup, the following structure is created:
 ```
 your-project/
 ├── .claude/
-│   ├── agents/         # Subagent definitions
-│   │   ├── pm-auto.md
-│   │   ├── engineer-auto.md
-│   │   ├── qa-auto.md
-│   │   └── quickfix-auto.md
 │   └── commands/       # Slash commands
 │       ├── progress.md
 │       ├── healthcheck.md
-│       └── ... (5 commands total)
+│       ├── next.md
+│       ├── quickfix.md
+│       ├── exit-quickfix.md
+│       └── parallel-test.md
 ├── .vibe/
 │   ├── state.yaml      # Cycle state management
 │   └── templates/      # Issue templates
@@ -334,16 +335,15 @@ your-project/
 
 ### Slash Commands
 
-The framework provides 5 slash commands organized by category:
+The framework provides 6 slash commands organized by category:
 
 **Core Commands:**
 - `/progress` - Check current progress and position
 - `/healthcheck` - Verify repository consistency
-- `/next` - Proceed to next step
+- `/next` - Proceed to next step (handles all role switching)
 - `/quickfix` - Enter Quick Fix mode for minor adjustments
 - `/exit-quickfix` - Exit Quick Fix mode and return to normal cycle
-
-**Note**: The setup script mentions `/vibe-status` but this command is not actually implemented.
+- `/parallel-test` - Run independent test suites in parallel using subagents
 
 ### Script Options
 
@@ -404,12 +404,23 @@ The framework uses YAML files for state persistence:
 - **state.yaml**: Tracks current cycle, step, and issue
 - **templates/**: Contains issue templates for different types of development tasks
 
+### Role-Based System Architecture
+
+The framework has evolved from separate subagent files to a **context-continuous role-based system**:
+
+- **No Agent Files**: Subagents are deprecated in favor of embedded role switching
+- **Dynamic Permissions**: The `/next` command dynamically applies role-based permissions
+- **Single Context**: All roles operate within the same conversation context
+- **Parallel Execution**: Only `/parallel-test` uses true subagents for parallel tasks
+
 ### Why This Architecture?
 
-1. **Prevents Context Contamination**: Engineers implement based on clear requirements, not interpretations of vision
-2. **Ensures Traceability**: Every code change traces back to an issue, which traces to spec requirements
-3. **Maintains Quality**: Multiple verification points catch issues early
-4. **Enables Automation**: Clear role boundaries allow AI to execute most steps autonomously
+1. **Context Continuity**: Maintains conversation flow while enforcing role boundaries
+2. **Prevents Context Contamination**: Engineers implement based on clear requirements, not interpretations of vision
+3. **Ensures Traceability**: Every code change traces back to an issue, which traces to spec requirements
+4. **Maintains Quality**: Multiple verification points catch issues early
+5. **Enables Automation**: Clear role boundaries allow AI to execute most steps autonomously
+6. **Simplified Management**: No need to manage separate agent files or contexts
 
 ### Verification System
 
