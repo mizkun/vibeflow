@@ -25,7 +25,6 @@ source "${LIB_DIR}/common.sh"
 source "${LIB_DIR}/create_structure.sh"
 source "${LIB_DIR}/create_claude_md.sh"
 source "${LIB_DIR}/create_commands.sh"
-# source "${LIB_DIR}/create_agents.sh" # Deprecated - using role-based system instead
 source "${LIB_DIR}/create_templates.sh"
 
 # Source optional modules if they exist
@@ -323,7 +322,9 @@ show_completion() {
     echo "利用可能なコマンド:"
     echo "   /progress    - 現在の進捗確認"
     echo "   /healthcheck - 整合性チェック"
-    echo "   /vibe-status - 設定確認"
+    echo "   /next        - 次のステップへ進む"
+    echo "   /quickfix    - Quick Fixモードへ"
+    echo "   /parallel-test - 並列テスト実行"
     echo ""
     print_color "$PURPLE" "🎉 Happy Vibe Coding!"
 }

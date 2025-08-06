@@ -11,7 +11,6 @@ Perform comprehensive repository consistency verification:
 ## 2. **Repository Structure Check**  
 - **Required files exist**: vision.md, spec.md, plan.md, CLAUDE.md
 - **Directory structure**: .vibe/, .claude/, issues/, src/
-- **Agent files**: All subagents (.claude/agents/) are present
 - **Command files**: All slash commands (.claude/commands/) are present
 
 ## 3. **Git State Verification**

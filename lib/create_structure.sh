@@ -12,7 +12,6 @@ create_vibe_structure() {
     section "ディレクトリ構造を作成中"
     
     local directories=(
-        ".claude/agents"
         ".claude/commands"
         ".vibe/templates"
         ".vibe/roles"
@@ -78,7 +77,6 @@ verify_structure() {
     info "ディレクトリ構造を検証中..."
     
     local required_dirs=(
-        ".claude/agents"
         ".claude/commands"
         ".vibe/templates"
         ".vibe/roles"

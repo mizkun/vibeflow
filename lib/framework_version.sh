@@ -4,7 +4,7 @@
 # This script handles framework versioning
 
 # Current framework version
-FRAMEWORK_VERSION="0.4.0"
+FRAMEWORK_VERSION="0.4.1"
 FRAMEWORK_NAME="Simplified State Management with E2E, Notifications & Quick Fix"
 FRAMEWORK_RELEASE_DATE="2024-12-20"
 
@@ -29,8 +29,8 @@ framework:
     e2e_testing: true
     notifications: true
   
-  # Change log reference
-  changelog_url: "https://github.com/mizkun/vibeflow/blob/main/CHANGELOG.md"
+  # Project repository
+  repository_url: "https://github.com/mizkun/vibeflow"
 EOF
 }
 
