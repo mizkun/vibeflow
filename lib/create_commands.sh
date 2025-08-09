@@ -240,7 +240,15 @@ Note: This mode operates in the main context, not as a subagent. All changes are
 }
 
 create_exit_quickfix_command() {
-    local content='# Quick Fix モード終了
+    local target_file=".claude/commands/exit-quickfix.md"
+    mkdir -p ".claude/commands"
+    if [ -f "$target_file" ]; then
+        local backup_file="${target_file}.backup.$(date +%Y%m%d_%H%M%S)"
+        cp "$target_file" "$backup_file"
+        warning "既存ファイルをバックアップしました: $backup_file"
+    fi
+    cat > "$target_file" << 'EOF'
+# Quick Fix モード終了
 
 Quick Fixモードを終了し、通常の開発サイクルに戻ります。
 
@@ -268,9 +276,9 @@ Quick Fix中の変更内容:
 - 実行されたコミット
 - ビルドステータス
 
-これらの情報はGitコミットメッセージに記録されます。'
-    
-    create_file_with_backup ".claude/commands/exit-quickfix.md" "$content"
+これらの情報はGitコミットメッセージに記録されます。
+EOF
+    success "exit-quickfixコマンドドキュメントを作成しました"
 }
 
 create_parallel_test_command() {
