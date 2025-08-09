@@ -1,11 +1,12 @@
 #!/bin/bash
 
 # Vibe Coding Framework Setup Script
-# Version: 2.0
+# Version: 0.4.1
 # This is the main setup script that orchestrates the installation
 
 set -e  # Exit on error
 set -u  # Exit on undefined variable
+set -o pipefail
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -20,6 +21,7 @@ fi
 
 # Source common functions
 source "${LIB_DIR}/common.sh"
+source "${LIB_DIR}/framework_version.sh"
 
 # Source all modules
 source "${LIB_DIR}/create_structure.sh"
@@ -138,8 +140,8 @@ check_repository_location() {
     local current_dir="$(pwd)"
     local script_parent_dir="$(dirname "$SCRIPT_DIR")"
     
-    # Check if we're in the vibeflow repository itself
-    if [ -f "$current_dir/setup_vibeflow.sh" ] && [ -d "$current_dir/lib" ] && [ -d "$current_dir/docs" ]; then
+    # Detect execution inside the vibeflow repository itself
+    if [[ "$current_dir" == "$SCRIPT_DIR" || "$current_dir" == "$script_parent_dir" ]]; then
         warning "Vibe Codingリポジトリ内で実行しようとしています！"
         echo ""
         echo "  推奨される使い方："
@@ -290,6 +292,33 @@ verify_installation() {
             all_good=false
         fi
     done
+
+    # Verify commands directory and key command files
+    if [ -d ".claude/commands" ]; then
+        success ".claude/commands: OK"
+        local cmds=(
+            ".claude/commands/progress.md"
+            ".claude/commands/healthcheck.md"
+            ".claude/commands/next.md"
+            ".claude/commands/quickfix.md"
+            ".claude/commands/exit-quickfix.md"
+            ".claude/commands/parallel-test.md"
+        )
+        for c in "${cmds[@]}"; do
+            if [ -f "$c" ]; then
+                success "$c: OK"
+            else
+                warning "$c: Missing"
+            fi
+        done
+        # Optional: run-e2e
+        if [ -f ".claude/commands/run-e2e.md" ]; then
+            success ".claude/commands/run-e2e.md: OK"
+        fi
+    else
+        error ".claude/commands: NG"
+        all_good=false
+    fi
     
     if [ "$all_good" = true ]; then
         success "すべての検証に合格しました！"
@@ -324,6 +353,7 @@ show_completion() {
     echo "   /healthcheck - 整合性チェック"
     echo "   /next        - 次のステップへ進む"
     echo "   /quickfix    - Quick Fixモードへ"
+    echo "   /run-e2e     - E2Eテスト実行（Playwright導入時）"
     echo "   /parallel-test - 並列テスト実行"
     echo ""
     print_color "$PURPLE" "🎉 Happy Vibe Coding!"
@@ -333,6 +363,10 @@ show_completion() {
 main() {
     # Parse command line arguments
     parse_arguments "$@"
+    # Enable verbose trace when requested
+    if [ "$VERBOSE" = true ]; then
+        set -x
+    fi
     
     # Show welcome message
     show_welcome
@@ -359,6 +393,8 @@ main() {
     
     # Verify installation
     if verify_installation; then
+        # Write framework version file
+        write_version_file "."
         show_completion
     else
         error "インストールの検証に失敗しました"

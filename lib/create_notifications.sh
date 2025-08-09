@@ -5,24 +5,22 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 
-# Detect operating system
-detect_os() {
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "macos"
-    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        echo "linux"
-    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-        echo "windows"
-    else
-        echo "unknown"
-    fi
+# Use common detect_os from common.sh (normalize to lowercase)
+normalize_os() {
+    local os=$(detect_os)
+    case "$os" in
+        macOS) echo "macos" ;;
+        Linux) echo "linux" ;;
+        Windows) echo "windows" ;;
+        *) echo "unknown" ;;
+    esac
 }
 
 # Create notification sound scripts
 create_notification_scripts() {
     section "Setting up notification sounds"
     
-    local os_type=$(detect_os)
+    local os_type=$(normalize_os)
     info "Detected OS: $os_type"
     
     # Create hooks directory
@@ -324,6 +322,10 @@ setup_notifications() {
     create_claude_settings
     create_notification_readme
     
+    # Copy hooks to global location for settings template compatibility
+    mkdir -p "${HOME}/.vibe/hooks"
+    cp -f .vibe/hooks/*.sh "${HOME}/.vibe/hooks/" 2>/dev/null || true
+
     info "Notification setup complete!"
     echo
     warning "To enable notifications in Claude Code:"

@@ -18,6 +18,7 @@ create_slash_commands() {
         "quickfix:Quick Fixモードに入る（軽微な修正用）"
         "exit-quickfix:Quick Fixモードを終了"
         "parallel-test:並列テスト実行（Subagent使用）"
+        "run-e2e:E2Eテストを実行"
     )
     
     local total=${#commands[@]}
@@ -47,6 +48,9 @@ create_slash_commands() {
                 ;;
             "parallel-test")
                 create_parallel_test_command
+                ;;
+            "run-e2e")
+                create_run_e2e_command
                 ;;
         esac
     done
@@ -245,6 +249,20 @@ Quick Fixモードを終了し、通常の開発サイクルに戻ります。
 2. ビルドの最終チェック
 3. 通常モードに復帰
 
+Quick Fixの制約チェック（自動ガード例）:
+```bash
+# 直近の変更（未コミット含む）の統計
+git diff --shortstat HEAD 2>/dev/null || git diff --shortstat
+
+# 変更行数・変更ファイル数の簡易チェック（50行/5ファイル以内）
+changed_files=$(git diff --name-only | wc -l | tr -d ' ')
+changed_lines=$(git diff --numstat | awk '{add+=$1;del+=$2} END{print add+del+0}')
+if [ "${changed_files}" -gt 5 ] || [ "${changed_lines}" -gt 50 ]; then
+  echo "❌ Quick Fixの上限を超えています（ファイル:${changed_files}, 行:${changed_lines}）。通常フローに戻してください。"
+  exit 1
+fi
+```
+
 Quick Fix中の変更内容:
 - 変更されたファイルのリスト
 - 実行されたコミット
@@ -286,6 +304,21 @@ Execute:
 Note: This is the ONLY command where we intentionally use subagents in the Vibe Coding workflow, as parallel test execution benefits from true parallelism without context sharing requirements.'
     
     create_file_with_backup ".claude/commands/parallel-test.md" "$content"
+}
+
+# run-e2e command creation
+create_run_e2e_command() {
+    local src="${SCRIPT_DIR}/commands/run-e2e.md"
+    if [ -f "$src" ]; then
+        mkdir -p ".claude/commands"
+        cp "$src" ".claude/commands/run-e2e.md"
+        success "run-e2eコマンドドキュメントを作成しました"
+    else
+        local content='# E2Eテストを実行
+
+プロジェクトにPlaywrightが導入されている場合、`/run-e2e` で E2E テストを実行します。未導入の場合は導入手順（`npm install -D @playwright/test && npx playwright install`）を案内してください。'
+        create_file_with_backup ".claude/commands/run-e2e.md" "$content"
+    fi
 }
 
 # Main function (called if script is run directly)

@@ -109,9 +109,8 @@ create_file_with_backup() {
         warning "既存ファイルをバックアップしました: $backup_file"
     fi
     
-    # Create the file
-    echo "$content" > "$file"
-    if [ $? -eq 0 ]; then
+    # Create the file (robust against special characters)
+    if printf '%s' "$content" > "$file"; then
         success "ファイルを作成しました: $file"
         return 0
     else

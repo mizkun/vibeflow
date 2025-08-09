@@ -5,6 +5,40 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 
+# Check prerequisites for E2E (Node/npm)
+check_e2e_prerequisites() {
+    local missing=()
+    command_exists node || missing+=("node")
+    command_exists npm || missing+=("npm")
+    if [ ${#missing[@]} -gt 0 ]; then
+        warning "E2Eセットアップの前提が不足しています: ${missing[*]}"
+        warning "Node.js と npm をインストールしてから再実行してください"
+        return 1
+    fi
+    return 0
+}
+
+# Merge E2E scripts/devDependencies into existing package.json if present
+merge_e2e_scripts_into_package_json() {
+    if [ ! -f "package.json" ]; then
+        info "package.json が見つかりません。E2E スクリプトは .vibe/templates/e2e-scripts.json を参照してください"
+        return 0
+    fi
+    if ! command_exists jq; then
+        warning "jq が見つかりませんでした。package.json へのスクリプト自動マージをスキップします"
+        return 0
+    fi
+    if [ ! -f ".vibe/templates/e2e-scripts.json" ]; then
+        warning ".vibe/templates/e2e-scripts.json が見つかりません。スキップします"
+        return 0
+    fi
+    local tmp_file="package.json.__vibe_tmp__"
+    jq -s '.[0] as $orig | .[1] as $tpl | $orig
+      | .scripts = ($orig.scripts + ($tpl.scripts // {}))
+      | .devDependencies = ($orig.devDependencies + ($tpl.devDependencies // {}))' \
+      package.json .vibe/templates/e2e-scripts.json > "$tmp_file" && mv "$tmp_file" package.json && success "package.json に E2E スクリプトを統合しました"
+}
+
 # Create Playwright configuration
 create_playwright_config() {
     section "Setting up Playwright E2E Testing"
@@ -260,8 +294,8 @@ update_verification_for_e2e() {
     
     # Add E2E test verification to existing rules
     if [ -f ".vibe/verification_rules.yaml" ]; then
-        # Check if E2E rules already exist
-        if ! grep -q "e2e_tests" ".vibe/verification_rules.yaml"; then
+        # Check if E2E rules already exist (by key name)
+        if ! grep -q "7_acceptance_test_e2e" ".vibe/verification_rules.yaml"; then
             cat >> .vibe/verification_rules.yaml << 'EOF'
 
   # E2E Test Verification
@@ -286,9 +320,11 @@ EOF
 
 # Main function to set up Playwright
 setup_playwright() {
+    check_e2e_prerequisites || true
     create_playwright_config
     create_e2e_structure
     create_e2e_scripts
+    merge_e2e_scripts_into_package_json
     update_verification_for_e2e
 }
 
@@ -298,3 +334,5 @@ export -f create_playwright_config
 export -f create_e2e_structure
 export -f create_e2e_scripts
 export -f update_verification_for_e2e
+export -f check_e2e_prerequisites
+export -f merge_e2e_scripts_into_package_json
