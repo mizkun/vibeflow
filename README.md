@@ -38,10 +38,7 @@ cd my-project
 - [How It Works](#how-it-works)
   - [Core Concept: Role-Based Development Workflow](#core-concept-role-based-development-workflow)
   - [Key Principles](#key-principles)
-- [Optional Features](#optional-features)
-  - [E2E Testing with Playwright](#e2e-testing-with-playwright)
-  - [Notification Sounds](#notification-sounds)
-  - [Quick Fix Mode](#quick-fix-mode)
+- [Built-in Features](#built-in-features)
 - [Project Structure](#project-structure)
 - [Available Commands](#available-commands)
   - [Slash Commands](#slash-commands)
@@ -93,14 +90,11 @@ cd my-project
    # Skip backup
    ./setup_vibeflow.sh --no-backup
    
-   # Install with E2E testing support (Playwright)
-   ./setup_vibeflow.sh --with-e2e
+   # Install without E2E testing support
+   ./setup_vibeflow.sh --without-e2e
    
-   # Install with notification sounds
-   ./setup_vibeflow.sh --with-notifications
-   
-   # Install with all features
-   ./setup_vibeflow.sh --with-e2e --with-notifications
+   # Install without notification sounds
+   ./setup_vibeflow.sh --without-notifications
    
    # Check version
    ./setup_vibeflow.sh --version
@@ -253,58 +247,14 @@ workflow:
 ## Built-in Features
 
 ### E2E Testing with Playwright
+Includes Playwright configuration, test structure (`tests/e2e/`), and `/run-e2e` command by default. Install with `npm install @playwright/test` and `npx playwright install`.
 
-The framework includes E2E testing support by default:
+### Notification Sounds  
+OS-specific notification scripts and Claude Code hook configurations for task completion, waiting input, and error alerts. Enable by copying `.vibe/templates/claude-settings.json` to `~/.config/claude/settings.json`.
 
-- Playwright configuration for cross-browser testing
-- E2E test directory structure (`tests/e2e/`)
-- Sample test files and page objects
-- Integration with the QA verification process
-- New command: `/run-e2e` to execute E2E tests
+### Role-Based Permissions
+Strict context isolation with Must Read/Can Edit/Can Create permissions for each role.
 
-To use E2E testing:
-1. Install dependencies: `npm install @playwright/test`
-2. Install browsers: `npx playwright install`
-3. Write tests in `tests/e2e/`
-4. Run tests: `npm run test:e2e` or `/run-e2e`
-
-### Notification Sounds
-
-The framework includes notification sounds by default:
-
-- OS-specific notification scripts
-- Claude Code hook configurations
-- Sound notifications for:
-  - Task completion
-  - Waiting for user input
-  - Error occurrences
-
-To enable notifications:
-1. Copy `.vibe/templates/claude-settings.json` to `~/.config/claude/settings.json`
-2. Restart Claude Code
-3. Test with: `.vibe/hooks/task_complete.sh`
-
-### Quick Fix Mode
-
-Quick Fix Mode allows rapid minor adjustments outside the normal development cycle:
-
-- **Purpose**: UI tweaks, typo fixes, small bug fixes without full TDD process
-- **Activation**: `/quickfix [description of changes]`
-- **Deactivation**: `/exit-quickfix`
-
-**Allowed changes:**
-- CSS/style adjustments
-- Text content updates
-- Small logic fixes (< 50 lines)
-- UI component tweaks
-
-**Restrictions:**
-- No new features
-- No database changes
-- No API modifications
-- Maximum 5 files per fix
-
-All quick fixes are documented in git commit messages for tracking.
 
 ## Project Structure
 
@@ -355,15 +305,11 @@ your-project/
 
 ### Slash Commands
 
-The framework provides 7 slash commands organized by category:
+The framework provides 4 slash commands:
 
-**Core Commands:**
 - `/progress` - Check current progress and position
 - `/healthcheck` - Verify repository consistency
 - `/next` - Proceed to next step (handles all role switching)
-- `/quickfix` - Enter Quick Fix mode for minor adjustments
-- `/exit-quickfix` - Exit Quick Fix mode and return to normal cycle
-- `/parallel-test` - Run independent test suites in parallel using subagents
 - `/run-e2e` - Execute E2E tests with Playwright
 
 ### Script Options

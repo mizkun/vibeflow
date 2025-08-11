@@ -15,9 +15,6 @@ create_slash_commands() {
         "progress:現在の進捗確認"
         "healthcheck:状態ファイルと実際の整合性チェック"
         "next:次のステップへ進む"
-        "quickfix:Quick Fixモードに入る（軽微な修正用）"
-        "exit-quickfix:Quick Fixモードを終了"
-        "parallel-test:並列テスト実行（Subagent使用）"
         "run-e2e:E2Eテスト実行"
     )
     
@@ -39,15 +36,6 @@ create_slash_commands() {
                 ;;
             "next")
                 create_next_command
-                ;;
-            "quickfix")
-                create_quickfix_command
-                ;;
-            "exit-quickfix")
-                create_exit_quickfix_command
-                ;;
-            "parallel-test")
-                create_parallel_test_command
                 ;;
             "run-e2e")
                 create_run_e2e_command
@@ -197,99 +185,6 @@ IMPORTANT: Maintain all context in the main conversation. Do NOT use subagents f
 }
 
 
-create_quickfix_command() {
-    local content='---
-description: Enter quick fix mode for minor adjustments
----
-
-Enter Quick Fix Mode - a streamlined mode for minor changes:
-
-## Activation
-Print mode change:
-🔧 ENTERING QUICK FIX MODE
-
-Bypassing normal workflow for minor adjustments
-Allowed: UI tweaks, typos, small bug fixes
-Max scope: 5 files, <50 lines total changes
-
-## Constraints in Quick Fix Mode
-- Can modify any file directly
-- Must document all changes
-- Cannot add new features
-- Cannot modify database schema
-- Must exit properly with /exit-quickfix
-
-## Process
-1. Make the requested minor changes
-2. Run relevant tests if any
-3. Document changes in state.yaml under "quick_fixes"
-4. Commit with prefix: "quickfix: [description]"
-
-## 使用方法
-`/quickfix [修正内容の説明]`
-
-例:
-- `/quickfix ボタンの色を青に変更`
-- `/quickfix ヘッダーの余白を調整`
-- `/quickfix タイポを修正`
-
-Note: This mode operates in the main context, not as a subagent. All changes are made directly while maintaining context continuity.'
-    
-    create_file_with_backup ".claude/commands/quickfix.md" "$content"
-}
-
-create_exit_quickfix_command() {
-    local content='# Quick Fix モード終了
-
-Quick Fixモードを終了し、通常の開発サイクルに戻ります。
-
-実行される処理:
-1. 未コミットの変更があれば確認
-2. ビルドの最終チェック
-3. 通常モードに復帰
-
-Quick Fix中の変更内容:
-- 変更されたファイルのリスト
-- 実行されたコミット
-- ビルドステータス
-
-これらの情報はGitコミットメッセージに記録されます。'
-    
-    create_file_with_backup ".claude/commands/exit-quickfix.md" "$content"
-}
-
-create_parallel_test_command() {
-    local content='---
-description: Run independent tests in parallel using subagents
----
-
-Run multiple independent test suites in parallel:
-
-This is one of the few cases where we DO use subagents, because:
-- Tests are independent and don'\''t need shared context
-- Parallel execution saves significant time
-- Results can be aggregated after completion
-
-Execute:
-1. Create subagent tasks for:
-   - Unit tests
-   - Integration tests  
-   - E2E tests \(if configured\)
-   
-2. Each subagent should:
-   - Run its specific test suite
-   - Report results to a designated output file
-   - Return success/failure status
-
-3. After all complete:
-   - Aggregate results
-   - Update test-results.log
-   - Report summary to user
-
-Note: This is the ONLY command where we intentionally use subagents in the Vibe Coding workflow, as parallel test execution benefits from true parallelism without context sharing requirements.'
-    
-    create_file_with_backup ".claude/commands/parallel-test.md" "$content"
-}
 
 create_run_e2e_command() {
     local content='---

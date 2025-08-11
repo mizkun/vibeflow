@@ -159,22 +159,15 @@ Can modify: [list of editable files]
 4. **Human Checkpoints**: Only at step 2a (issue validation) and 7a (manual testing)
 5. **Permission Enforcement**: Strictly follow role-based file access permissions
 6. **State Management**: Always update state.yaml after completing each step
+7. **Human Intervention Required**: When human action is required (e.g., API key setup, external service configuration, manual verification), ALWAYS stop and explicitly request human assistance. Do not proceed automatically or make assumptions about external dependencies.
 
 ## Available Commands
 
 - `/next` - Proceed to next step with role transition
 - `/progress` - Check current progress and role status
 - `/healthcheck` - Verify repository consistency
-- `/quickfix` - Enter quick fix mode for minor adjustments
-- `/exit-quickfix` - Exit quick fix mode
-- `/parallel-test` - Run tests in parallel
+- `/run-e2e` - Execute E2E tests with Playwright
 
-## Quick Fix Mode
-
-A streamlined mode for minor changes outside the normal workflow:
-- **Execution**: Runs in main context with relaxed permissions
-- **Allowed Changes**: UI styling, typo fixes, small bug fixes
-- **Restrictions**: <5 files, <50 lines total changes
 
 ## State Management Structure
 
