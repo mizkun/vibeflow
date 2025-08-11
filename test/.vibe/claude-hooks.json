@@ -1,9 +1,0 @@
-{
-  "description": "Vibe Coding Framework notification hooks",
-  "hooks": {
-    "task_complete": ".vibe/hooks/task_complete.sh",
-    "waiting_input": ".vibe/hooks/waiting_input.sh",
-    "error_occurred": ".vibe/hooks/error_occurred.sh"
-  },
-  "usage": "Copy settings from .vibe/templates/claude-settings.json to ~/.config/claude/settings.json"
-}

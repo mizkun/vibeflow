@@ -37,3 +37,6 @@ yarn-error.log*
 # Backup directories
 *_backup_*
 .vibe_backup_*
+
+# Test directory (for local testing only)
+test/
