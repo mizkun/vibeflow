@@ -15,7 +15,6 @@ Vibe Coding Framework is an AI-driven development methodology designed for use w
 - **Minimal Human Intervention**: Only 2 checkpoints where human validation is required
 - **Automated Setup**: Complete development environment with a single command
 - **Automated Verification**: Each step verifies artifacts exist before proceeding, preventing "success theater"
-- **Parallel Test Execution**: Run independent test suites in parallel for faster feedback
 
 ## Quick Start
 
@@ -267,9 +266,6 @@ your-project/
 │       ├── progress.md
 │       ├── healthcheck.md
 │       ├── next.md
-│       ├── quickfix.md
-│       ├── exit-quickfix.md
-│       ├── parallel-test.md
 │       └── run-e2e.md      # E2E test execution
 ├── .vibe/
 │   ├── state.yaml          # Cycle state management
@@ -384,7 +380,6 @@ The framework has evolved from separate subagent files to a **context-continuous
 - **No Agent Files**: Subagents are deprecated in favor of embedded role switching
 - **Dynamic Permissions**: The `/next` command dynamically applies role-based permissions
 - **Single Context**: All roles operate within the same conversation context
-- **Parallel Execution**: Only `/parallel-test` uses true subagents for parallel tasks
 
 ### Why This Architecture?
 

@@ -51,8 +51,7 @@ checkpoint_status:
 issues_created: []
 issues_completed: []
 
-# Quick fixes tracking
-quick_fixes: []'
+'
     
     create_file_with_backup ".vibe/state.yaml" "$state_content"
 }

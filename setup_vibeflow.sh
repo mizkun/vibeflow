@@ -233,7 +233,7 @@ run_installation() {
     
     # Step 4: Create subagents - SKIPPED (using role-based system)
     # Subagents are deprecated in favor of role-based context-continuous development
-    # Only use subagents for truly parallel tasks (e.g., parallel-test command)
+    # Only use subagents for truly parallel tasks (if needed in future)
     info "ロールベースシステムを使用（Subagent作成をスキップ）"
     
     # Step 5: Create templates
@@ -323,8 +323,7 @@ show_completion() {
     echo "   /progress    - 現在の進捗確認"
     echo "   /healthcheck - 整合性チェック"
     echo "   /next        - 次のステップへ進む"
-    echo "   /quickfix    - Quick Fixモードへ"
-    echo "   /parallel-test - 並列テスト実行"
+    echo "   /run-e2e     - E2Eテスト実行"
     echo ""
     print_color "$PURPLE" "🎉 Happy Vibe Coding!"
 }
