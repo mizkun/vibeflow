@@ -330,39 +330,40 @@ The framework provides 4 slash commands:
 ./setup_vibeflow.sh --version
 ```
 
-## Examples
+## Example
 
-### Creating a Todo App
+The `examples/` directory contains a complete template showing the framework structure:
 
-1. Setup project:
+### Using the Example Template
+
+1. **Copy the example structure**:
    ```bash
-   mkdir todo-app
-   cd todo-app
+   cp -r vibeflow/examples/* your-project/
+   cd your-project
+   ```
+
+2. **Edit the template files**:
+   - `vision.md` - Define your product vision and goals
+   - `spec.md` - Specify functional and technical requirements  
+   - `plan.md` - Create development milestones and tasks
+
+3. **Start development**:
+   ```bash
+   /next
+   ```
+
+### Creating from Scratch
+
+Alternatively, create a new project:
+
+1. **Setup project**:
+   ```bash
+   mkdir my-project
+   cd my-project
    ../vibeflow/setup_vibeflow.sh
    ```
 
-2. Define vision.md:
-   ```markdown
-   # Todo App Vision
-   
-   ## Problem
-   Users need a simple, fast way to manage daily tasks
-   
-   ## Target Users
-   Busy professionals who need quick task management
-   
-   ## Success Criteria
-   - Users can create/edit/delete tasks in < 2 seconds
-   - 95% uptime
-   - Works on mobile and desktop
-   ```
-
-3. Define spec.md and plan.md similarly
-
-4. Start development:
-   ```
-   /next
-   ```
+2. **Fill in the generated templates** following the same pattern as the examples directory
 
 ## Technical Architecture
 
