@@ -153,92 +153,92 @@ workflow:
   step_1_plan_review:
     role: Product Manager
     access:
-      read: [vision.md, spec.md, plan.md, state.yaml, qa-reports/*]
-      write: [plan.md, state.yaml]
-      no_access: [src/*, *.test.*]
+      must_read: [vision.md, spec.md, plan.md, state.yaml, qa-reports/*]
+      can_edit: [plan.md, state.yaml]
+      can_create: []
     purpose: Review and update development plan based on vision/spec
     
   step_2_issue_breakdown:
     role: Product Manager  
     access:
-      read: [vision.md, spec.md, plan.md, state.yaml, qa-reports/*]
-      write: [issues/*, state.yaml]
-      no_access: [src/*, *.test.*]
+      must_read: [vision.md, spec.md, plan.md, state.yaml, qa-reports/*]
+      can_edit: [issues/*, state.yaml]
+      can_create: [issues/*]
     purpose: Create detailed, implementable issues from plan
     checkpoint: 2a_human_validation (required)
     
   step_3_branch_creation:
     role: Engineer
     access:
-      read: [spec.md, issues/*, state.yaml]
-      write: [.git/*, state.yaml]
-      no_access: []
+      must_read: [spec.md, issues/*, state.yaml]
+      can_edit: [.git/*, state.yaml]
+      can_create: []
     purpose: Create feature branch for implementation
     
   step_4_test_writing:
     role: Engineer
     access:
-      read: [spec.md, issues/*, src/*, state.yaml]
-      write: [*.test.*, state.yaml]
-      no_access: []
+      must_read: [spec.md, issues/*, src/*, state.yaml]
+      can_edit: [*.test.*, state.yaml]
+      can_create: [*.test.*]
     purpose: Write failing tests first (TDD Red phase)
     
   step_5_implementation:
     role: Engineer
     access:
-      read: [spec.md, issues/*, src/*, *.test.*, state.yaml]
-      write: [src/*, state.yaml]
-      no_access: []
+      must_read: [spec.md, issues/*, src/*, *.test.*, state.yaml]
+      can_edit: [src/*, state.yaml]
+      can_create: [src/*]
     purpose: Implement code to pass tests (TDD Green phase)
     
   step_6_refactoring:
     role: Engineer
     access:
-      read: [spec.md, issues/*, src/*, *.test.*, state.yaml]
-      write: [src/*, state.yaml]
-      no_access: []
+      must_read: [spec.md, issues/*, src/*, *.test.*, state.yaml]
+      can_edit: [src/*, state.yaml]
+      can_create: []
     purpose: Improve code quality (TDD Refactor phase)
     checkpoint: 6a_code_sanity_check (automated)
     
   step_7_acceptance_test:
     role: QA Engineer
     access:
-      read: [spec.md, issues/*, src/*, *.test.*, state.yaml, qa-reports/*]
-      write: [test-results.log, qa-reports/*, state.yaml]
-      no_access: [vision.md, plan.md]
+      must_read: [spec.md, issues/*, src/*, *.test.*, state.yaml, qa-reports/*]
+      can_edit: [test-results.log, qa-reports/*, state.yaml]
+      can_create: [qa-reports/*, test-results.log]
     purpose: Verify implementation meets requirements
     checkpoint: 7a_human_runnable_check (required)
     
   step_8_pull_request:
     role: Engineer
     access:
-      read: [spec.md, issues/*, src/*, state.yaml]
-      write: [.git/*, state.yaml]
-      no_access: []
+      must_read: [spec.md, issues/*, src/*, state.yaml]
+      can_edit: [.git/*, state.yaml]
+      can_create: []
     purpose: Create PR with proper documentation
     
   step_9_review:
     role: QA Engineer
     access:
-      read: [spec.md, issues/*, src/*, state.yaml, qa-reports/*]
-      write: [qa-reports/*, state.yaml]
-      no_access: []
+      must_read: [spec.md, issues/*, src/*, state.yaml, qa-reports/*]
+      can_edit: [qa-reports/*, state.yaml]
+      can_create: [qa-reports/*]
     purpose: Code review and quality check
     
   step_10_merge:
     role: Engineer
     access:
-      read: [spec.md, src/*, state.yaml]
-      write: [.git/*, state.yaml]
-      no_access: []
+      must_read: [spec.md, src/*, state.yaml]
+      can_edit: [.git/*, state.yaml]
+      can_create: []
     purpose: Merge approved changes to main
     
   step_11_deployment:
     role: Engineer
     access:
-      read: [spec.md, src/*, state.yaml]
-      write: [deployment.log, state.yaml]
-      no_access: []
+      must_read: [spec.md, src/*, state.yaml]
+      can_edit: [deployment.log, state.yaml]
+      can_create: [deployment.log]
     purpose: Deploy to production
 ```
 
@@ -250,11 +250,11 @@ workflow:
 4. **Verification at Each Step**: Each role verifies their own artifacts before proceeding
 5. **Clear State Management**: state.yaml tracks current position and progress
 
-## Optional Features
+## Built-in Features
 
 ### E2E Testing with Playwright
 
-When installed with `--with-e2e`, the framework includes:
+The framework includes E2E testing support by default:
 
 - Playwright configuration for cross-browser testing
 - E2E test directory structure (`tests/e2e/`)
@@ -270,7 +270,7 @@ To use E2E testing:
 
 ### Notification Sounds
 
-When installed with `--with-notifications`, the framework includes:
+The framework includes notification sounds by default:
 
 - OS-specific notification scripts
 - Claude Code hook configurations
@@ -313,29 +313,49 @@ After setup, the following structure is created:
 ```
 your-project/
 ├── .claude/
-│   └── commands/       # Slash commands
+│   └── commands/           # Slash commands
 │       ├── progress.md
 │       ├── healthcheck.md
 │       ├── next.md
 │       ├── quickfix.md
 │       ├── exit-quickfix.md
-│       └── parallel-test.md
+│       ├── parallel-test.md
+│       └── run-e2e.md      # E2E test execution
 ├── .vibe/
-│   ├── state.yaml      # Cycle state management
-│   └── templates/      # Issue templates
-├── issues/             # Implementation tasks
-├── src/                # Source code
-├── CLAUDE.md           # Framework documentation
-├── vision.md           # Product vision
-├── spec.md             # Specifications
-└── plan.md             # Development plan
+│   ├── state.yaml          # Cycle state management
+│   ├── claude-hooks.json   # Hook configuration
+│   ├── hooks/              # Notification scripts
+│   │   ├── task_complete.sh
+│   │   ├── waiting_input.sh
+│   │   └── error_occurred.sh
+│   ├── roles/              # Role documentation
+│   │   ├── product-manager.md
+│   │   ├── engineer.md
+│   │   └── qa-engineer.md
+│   └── templates/          # Templates and config
+│       ├── issue-templates.md
+│       ├── claude-settings.json
+│       └── e2e-scripts.json
+├── tests/                  # E2E tests
+│   └── e2e/
+│       ├── auth/
+│       ├── features/
+│       ├── pageobjects/
+│       └── utils/
+├── issues/                 # Implementation tasks
+├── src/                    # Source code
+├── playwright.config.js    # Playwright configuration
+├── CLAUDE.md               # Framework documentation
+├── vision.md               # Product vision
+├── spec.md                 # Specifications
+└── plan.md                 # Development plan
 ```
 
 ## Available Commands
 
 ### Slash Commands
 
-The framework provides 6 slash commands organized by category:
+The framework provides 7 slash commands organized by category:
 
 **Core Commands:**
 - `/progress` - Check current progress and position
@@ -344,6 +364,7 @@ The framework provides 6 slash commands organized by category:
 - `/quickfix` - Enter Quick Fix mode for minor adjustments
 - `/exit-quickfix` - Exit Quick Fix mode and return to normal cycle
 - `/parallel-test` - Run independent test suites in parallel using subagents
+- `/run-e2e` - Execute E2E tests with Playwright
 
 ### Script Options
 
@@ -356,6 +377,12 @@ The framework provides 6 slash commands organized by category:
 
 # Skip backup creation
 ./setup_vibeflow.sh --no-backup
+
+# Install without E2E testing
+./setup_vibeflow.sh --without-e2e
+
+# Install without notification sounds
+./setup_vibeflow.sh --without-notifications
 
 # Display version
 ./setup_vibeflow.sh --version

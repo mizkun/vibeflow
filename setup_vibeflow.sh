@@ -40,8 +40,8 @@ VERSION="0.4.1"
 FORCE_INSTALL=false
 BACKUP_ENABLED=true
 VERBOSE=false
-WITH_E2E=false
-WITH_NOTIFICATIONS=false
+WITH_E2E=true
+WITH_NOTIFICATIONS=true
 
 # Function to show usage
 show_usage() {
@@ -56,15 +56,15 @@ Options:
     -n, --no-backup     Skip backup of existing files
     -v, --verbose       Enable verbose output
     -V, --version       Show version information
-    --with-e2e          Include Playwright E2E testing setup
-    --with-notifications Enable notification sounds for hooks
+    --without-e2e       Disable Playwright E2E testing setup (enabled by default)
+    --without-notifications Disable notification sounds for hooks (enabled by default)
 
 Examples:
-    $0                  Normal installation with confirmations
+    $0                  Normal installation (includes E2E and notifications)
     $0 --force          Install without asking for confirmation
     $0 --no-backup      Install without creating backups
-    $0 --with-e2e       Install with E2E testing support
-    $0 --with-notifications Install with sound notifications
+    $0 --without-e2e    Install without E2E testing support
+    $0 --without-notifications Install without sound notifications
 
 EOF
 }
@@ -93,12 +93,12 @@ parse_arguments() {
                 echo "Vibe Coding Framework Setup Script v${VERSION}"
                 exit 0
                 ;;
-            --with-e2e)
-                WITH_E2E=true
+            --without-e2e)
+                WITH_E2E=false
                 shift
                 ;;
-            --with-notifications)
-                WITH_NOTIFICATIONS=true
+            --without-notifications)
+                WITH_NOTIFICATIONS=false
                 shift
                 ;;
             *)

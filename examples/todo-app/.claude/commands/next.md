@@ -42,7 +42,6 @@ Access granted to: [list of accessible files]
 - Can Edit: src/*, *.test.*, state.yaml
 - Can Create: src/*, *.test.*
 - Think like an engineer: Focus on implementation quality
-- Note: Cannot access vision.md to avoid scope creep
 
 ### For QA Engineer Role (steps 6a, 7, 9):
 - Must Read: spec.md, issues/*, src/*, state.yaml, qa-reports/*
