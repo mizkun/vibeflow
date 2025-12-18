@@ -13,8 +13,11 @@ create_vibe_structure() {
     
     local directories=(
         ".claude/commands"
+        ".claude/skills"
+        ".claude/agents"
         ".vibe/templates"
         ".vibe/roles"
+        ".vibe/hooks"
         "issues"
         "src"
     )
@@ -64,7 +67,10 @@ yarn-error.log*
 .idea/
 
 # Vibe Coding
-.vibe/test-results.log'
+.vibe/test-results.log
+
+# Claude Code local settings (not committed)
+.claude/settings.local.json'
 
     create_file_with_backup ".gitignore" "$gitignore_content"
     
@@ -78,8 +84,11 @@ verify_structure() {
     
     local required_dirs=(
         ".claude/commands"
+        ".claude/skills"
+        ".claude/agents"
         ".vibe/templates"
         ".vibe/roles"
+        ".vibe/hooks"
         "issues"
         "src"
     )

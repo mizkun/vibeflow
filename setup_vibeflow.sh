@@ -1,11 +1,13 @@
 #!/bin/bash
 
 # Vibe Coding Framework Setup Script
-# Version: 2.0
+# Version: 0.5.0
 # This is the main setup script that orchestrates the installation
+# Includes: Hooks, Subagents, Skills integration for Claude Code
 
 set -e  # Exit on error
 set -u  # Exit on undefined variable
+set -o pipefail
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -20,6 +22,7 @@ fi
 
 # Source common functions
 source "${LIB_DIR}/common.sh"
+source "${LIB_DIR}/framework_version.sh"
 
 # Source all modules
 source "${LIB_DIR}/create_structure.sh"
@@ -35,13 +38,27 @@ if [ -f "${LIB_DIR}/create_notifications.sh" ]; then
     source "${LIB_DIR}/create_notifications.sh"
 fi
 
+# Source new Claude Code integration modules
+if [ -f "${LIB_DIR}/create_access_guard.sh" ]; then
+    source "${LIB_DIR}/create_access_guard.sh"
+fi
+if [ -f "${LIB_DIR}/create_claude_settings.sh" ]; then
+    source "${LIB_DIR}/create_claude_settings.sh"
+fi
+if [ -f "${LIB_DIR}/create_skills.sh" ]; then
+    source "${LIB_DIR}/create_skills.sh"
+fi
+if [ -f "${LIB_DIR}/create_subagents.sh" ]; then
+    source "${LIB_DIR}/create_subagents.sh"
+fi
+
 # Global variables
-VERSION="0.4.1"
+VERSION="0.5.0"
 FORCE_INSTALL=false
 BACKUP_ENABLED=true
 VERBOSE=false
-WITH_E2E=true
-WITH_NOTIFICATIONS=true
+WITH_E2E=false
+# Note: --with-notifications is deprecated; hooks are now integrated by default
 
 # Function to show usage
 show_usage() {
@@ -56,15 +73,19 @@ Options:
     -n, --no-backup     Skip backup of existing files
     -v, --verbose       Enable verbose output
     -V, --version       Show version information
-    --without-e2e       Disable Playwright E2E testing setup (enabled by default)
-    --without-notifications Disable notification sounds for hooks (enabled by default)
+    --with-e2e          Include Playwright E2E testing setup
+
+Features (included by default):
+    - Hooks: Access control via validate_access.py (PreToolUse)
+    - Skills: vibeflow-issue-template, vibeflow-tdd
+    - Subagents: qa-acceptance, code-reviewer, test-runner
+    - Notification sounds (PostToolUse, Stop hooks)
 
 Examples:
-    $0                  Normal installation (includes E2E and notifications)
+    $0                  Normal installation with confirmations
     $0 --force          Install without asking for confirmation
     $0 --no-backup      Install without creating backups
-    $0 --without-e2e    Install without E2E testing support
-    $0 --without-notifications Install without sound notifications
+    $0 --with-e2e       Install with E2E testing support
 
 EOF
 }
@@ -93,12 +114,13 @@ parse_arguments() {
                 echo "Vibe Coding Framework Setup Script v${VERSION}"
                 exit 0
                 ;;
-            --without-e2e)
-                WITH_E2E=false
+            --with-e2e)
+                WITH_E2E=true
                 shift
                 ;;
-            --without-notifications)
-                WITH_NOTIFICATIONS=false
+            --with-notifications)
+                # Deprecated: notifications are now included by default
+                warning "--with-notifications は廃止されました。通知はデフォルトで有効です。"
                 shift
                 ;;
             *)
@@ -112,7 +134,7 @@ parse_arguments() {
 
 # Function to show welcome message
 show_welcome() {
-    clear
+    # clear - disabled for non-interactive use
     print_color "$CYAN" "
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
@@ -138,8 +160,8 @@ check_repository_location() {
     local current_dir="$(pwd)"
     local script_parent_dir="$(dirname "$SCRIPT_DIR")"
     
-    # Check if we're in the vibeflow repository itself
-    if [ -f "$current_dir/setup_vibeflow.sh" ] && [ -d "$current_dir/lib" ] && [ -d "$current_dir/docs" ]; then
+    # Detect execution inside the vibeflow repository itself
+    if [[ "$current_dir" == "$SCRIPT_DIR" || "$current_dir" == "$script_parent_dir" ]]; then
         warning "Vibe Codingリポジトリ内で実行しようとしています！"
         echo ""
         echo "  推奨される使い方："
@@ -231,17 +253,51 @@ run_installation() {
         exit 1
     fi
     
-    # Step 4: Create subagents - SKIPPED (using role-based system)
-    # Subagents are deprecated in favor of role-based context-continuous development
-    # Only use subagents for truly parallel tasks (if needed in future)
-    info "ロールベースシステムを使用（Subagent作成をスキップ）"
-    
-    # Step 5: Create templates
+    # Step 4: Create templates
     if ! create_templates; then
         error "テンプレートの作成に失敗しました"
         exit 1
     fi
     
+    # Step 5: Create Access Guard Hook (validates role-based file access)
+    if type create_access_guard &>/dev/null; then
+        if ! create_access_guard; then
+            warning "アクセスガードフックの作成に失敗しましたが、インストールは続行します"
+        fi
+    else
+        warning "アクセスガードモジュールが見つかりません"
+    fi
+    
+    # Step 6: Create Claude Code Settings (hooks configuration)
+    if type create_claude_settings &>/dev/null; then
+        if ! create_claude_settings; then
+            warning "Claude Code設定の作成に失敗しましたが、インストールは続行します"
+        fi
+        # Also create notification hook scripts
+        if type create_notification_hooks &>/dev/null; then
+            create_notification_hooks
+        fi
+    else
+        warning "Claude Code設定モジュールが見つかりません"
+    fi
+    
+    # Step 7: Create Skills
+    if type create_skills &>/dev/null; then
+        if ! create_skills; then
+            warning "Skillsの作成に失敗しましたが、インストールは続行します"
+        fi
+    else
+        warning "Skillsモジュールが見つかりません"
+    fi
+    
+    # Step 8: Create Subagents
+    if type create_subagents &>/dev/null; then
+        if ! create_subagents; then
+            warning "Subagentsの作成に失敗しましたが、インストールは続行します"
+        fi
+    else
+        warning "Subagentsモジュールが見つかりません"
+    fi
     
     # Setup E2E testing (optional)
     if [ "$WITH_E2E" = true ]; then
@@ -251,17 +307,6 @@ run_installation() {
             fi
         else
             warning "E2Eセットアップスクリプトが見つかりません"
-        fi
-    fi
-    
-    # Setup notifications (optional)
-    if [ "$WITH_NOTIFICATIONS" = true ]; then
-        if type setup_notifications &>/dev/null; then
-            if ! setup_notifications; then
-                warning "通知機能のセットアップに失敗しましたが、インストールは続行します"
-            fi
-        else
-            warning "通知セットアップスクリプトが見つかりません"
         fi
     fi
 }
@@ -290,6 +335,86 @@ verify_installation() {
             all_good=false
         fi
     done
+
+    # Verify commands directory and key command files
+    if [ -d ".claude/commands" ]; then
+        success ".claude/commands: OK"
+        local cmds=(
+            ".claude/commands/progress.md"
+            ".claude/commands/healthcheck.md"
+            ".claude/commands/next.md"
+            ".claude/commands/quickfix.md"
+            ".claude/commands/exit-quickfix.md"
+            ".claude/commands/parallel-test.md"
+        )
+        for c in "${cmds[@]}"; do
+            if [ -f "$c" ]; then
+                success "$c: OK"
+            else
+                warning "$c: Missing"
+            fi
+        done
+        # Optional: run-e2e
+        if [ -f ".claude/commands/run-e2e.md" ]; then
+            success ".claude/commands/run-e2e.md: OK"
+        fi
+    else
+        error ".claude/commands: NG"
+        all_good=false
+    fi
+    
+    # Verify Claude Code settings
+    if [ -f ".claude/settings.json" ]; then
+        success ".claude/settings.json: OK"
+        # Verify JSON syntax
+        if python3 -c "import json; json.load(open('.claude/settings.json'))" 2>/dev/null; then
+            success ".claude/settings.json 構文: OK"
+        else
+            warning ".claude/settings.json 構文: JSON形式エラー"
+        fi
+    else
+        warning ".claude/settings.json: Missing (Hooks無効)"
+    fi
+    
+    # Verify Access Guard Hook
+    if [ -f ".vibe/hooks/validate_access.py" ]; then
+        success ".vibe/hooks/validate_access.py: OK"
+        if [ -x ".vibe/hooks/validate_access.py" ]; then
+            success ".vibe/hooks/validate_access.py 実行権限: OK"
+        else
+            warning ".vibe/hooks/validate_access.py 実行権限: Missing"
+        fi
+    else
+        warning ".vibe/hooks/validate_access.py: Missing (アクセス制御無効)"
+    fi
+    
+    # Verify Skills
+    if type verify_skills &>/dev/null; then
+        verify_skills
+    else
+        if [ -d ".claude/skills" ]; then
+            local skill_count=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l)
+            if [ "$skill_count" -gt 0 ]; then
+                success ".claude/skills: $skill_count skill(s) found"
+            else
+                warning ".claude/skills: No skills found"
+            fi
+        fi
+    fi
+    
+    # Verify Subagents
+    if type verify_subagents &>/dev/null; then
+        verify_subagents
+    else
+        if [ -d ".claude/agents" ]; then
+            local agent_count=$(find .claude/agents -name "*.md" 2>/dev/null | wc -l)
+            if [ "$agent_count" -gt 0 ]; then
+                success ".claude/agents: $agent_count agent(s) found"
+            else
+                warning ".claude/agents: No agents found"
+            fi
+        fi
+    fi
     
     if [ "$all_good" = true ]; then
         success "すべての検証に合格しました！"
@@ -323,7 +448,9 @@ show_completion() {
     echo "   /progress    - 現在の進捗確認"
     echo "   /healthcheck - 整合性チェック"
     echo "   /next        - 次のステップへ進む"
-    echo "   /run-e2e     - E2Eテスト実行"
+    echo "   /quickfix    - Quick Fixモードへ"
+    echo "   /run-e2e     - E2Eテスト実行（Playwright導入時）"
+    echo "   /parallel-test - 並列テスト実行"
     echo ""
     print_color "$PURPLE" "🎉 Happy Vibe Coding!"
 }
@@ -332,6 +459,10 @@ show_completion() {
 main() {
     # Parse command line arguments
     parse_arguments "$@"
+    # Enable verbose trace when requested
+    if [ "$VERBOSE" = true ]; then
+        set -x
+    fi
     
     # Show welcome message
     show_welcome
@@ -358,6 +489,8 @@ main() {
     
     # Verify installation
     if verify_installation; then
+        # Write framework version file
+        write_version_file "."
         show_completion
     else
         error "インストールの検証に失敗しました"

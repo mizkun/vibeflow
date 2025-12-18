@@ -15,7 +15,10 @@ create_slash_commands() {
         "progress:現在の進捗確認"
         "healthcheck:状態ファイルと実際の整合性チェック"
         "next:次のステップへ進む"
-        "run-e2e:E2Eテスト実行"
+        "quickfix:Quick Fixモードに入る（軽微な修正用）"
+        "exit-quickfix:Quick Fixモードを終了"
+        "parallel-test:並列テスト実行（Subagent使用）"
+        "run-e2e:E2Eテストを実行"
     )
     
     local total=${#commands[@]}
@@ -36,6 +39,15 @@ create_slash_commands() {
                 ;;
             "next")
                 create_next_command
+                ;;
+            "quickfix")
+                create_quickfix_command
+                ;;
+            "exit-quickfix")
+                create_exit_quickfix_command
+                ;;
+            "parallel-test")
+                create_parallel_test_command
                 ;;
             "run-e2e")
                 create_run_e2e_command
@@ -158,6 +170,7 @@ Access granted to: [list of accessible files]
 - Can Edit: src/*, *.test.*, state.yaml
 - Can Create: src/*, *.test.*
 - Think like an engineer: Focus on implementation quality
+- Note: Cannot access vision.md to avoid scope creep
 
 ### For QA Engineer Role (steps 6a, 7, 9):
 - Must Read: spec.md, issues/*, src/*, state.yaml, qa-reports/*
@@ -185,56 +198,135 @@ IMPORTANT: Maintain all context in the main conversation. Do NOT use subagents f
 }
 
 
-
-create_run_e2e_command() {
+create_quickfix_command() {
     local content='---
-description: Execute E2E tests with Playwright
+description: Enter quick fix mode for minor adjustments
 ---
 
-Execute E2E tests using Playwright:
+Enter Quick Fix Mode - a streamlined mode for minor changes:
 
-## Prerequisites Check
-1. Verify Playwright is installed:
-   - Check if `node_modules/@playwright/test` exists
-   - If not, run: `npm install @playwright/test`
-   - Install browsers if needed: `npx playwright install`
+## Activation
+Print mode change:
+🔧 ENTERING QUICK FIX MODE
 
-## Test Execution
-1. **Environment Setup**
-   - Ensure development server is running (if required)
-   - Check test database is prepared (if applicable)
-   - Verify test environment variables
+Bypassing normal workflow for minor adjustments
+Allowed: UI tweaks, typos, small bug fixes
+Max scope: 5 files, <50 lines total changes
 
-2. **Run E2E Tests**
-   ```bash
-   # Run all E2E tests
-   npm run test:e2e
-   
-   # Or directly with Playwright
-   npx playwright test
-   ```
+## Constraints in Quick Fix Mode
+- Can modify any file directly
+- Must document all changes
+- Cannot add new features
+- Cannot modify database schema
+- Must exit properly with /exit-quickfix
 
-3. **Test Results**
-   - Review test output and screenshots
-   - Check for failed tests and error details
-   - Generate test report if configured
+## Process
+1. Make the requested minor changes
+2. Run relevant tests if any
+3. Document changes in state.yaml under "quick_fixes"
+4. Commit with prefix: "quickfix: [description]"
 
-## Test Structure
-Tests are organized in `tests/e2e/`:
-- `auth/` - Authentication related tests
-- `features/` - Feature-specific test scenarios  
-- `pageobjects/` - Page Object Model classes
-- `utils/` - Test utilities and helpers
+## 使用方法
+`/quickfix [修正内容の説明]`
 
-## Common Issues
-- **Port conflicts**: Ensure dev server runs on expected port
-- **Timing issues**: Review wait strategies in failing tests
-- **Browser issues**: Update browsers with `npx playwright install`
-- **Screenshots**: Check `test-results/` for failure screenshots
+例:
+- `/quickfix ボタンの色を青に変更`
+- `/quickfix ヘッダーの余白を調整`
+- `/quickfix タイポを修正`
 
-Report results and any failures found during execution.'
+Note: This mode operates in the main context, not as a subagent. All changes are made directly while maintaining context continuity.'
     
-    create_file_with_backup ".claude/commands/run-e2e.md" "$content"
+    create_file_with_backup ".claude/commands/quickfix.md" "$content"
+}
+
+create_exit_quickfix_command() {
+    local target_file=".claude/commands/exit-quickfix.md"
+    mkdir -p ".claude/commands"
+    if [ -f "$target_file" ]; then
+        local backup_file="${target_file}.backup.$(date +%Y%m%d_%H%M%S)"
+        cp "$target_file" "$backup_file"
+        warning "既存ファイルをバックアップしました: $backup_file"
+    fi
+    cat > "$target_file" << 'EOF'
+# Quick Fix モード終了
+
+Quick Fixモードを終了し、通常の開発サイクルに戻ります。
+
+実行される処理:
+1. 未コミットの変更があれば確認
+2. ビルドの最終チェック
+3. 通常モードに復帰
+
+Quick Fixの制約チェック（自動ガード例）:
+```bash
+# 直近の変更（未コミット含む）の統計
+git diff --shortstat HEAD 2>/dev/null || git diff --shortstat
+
+# 変更行数・変更ファイル数の簡易チェック（50行/5ファイル以内）
+changed_files=$(git diff --name-only | wc -l | tr -d ' ')
+changed_lines=$(git diff --numstat | awk '{add+=$1;del+=$2} END{print add+del+0}')
+if [ "${changed_files}" -gt 5 ] || [ "${changed_lines}" -gt 50 ]; then
+  echo "❌ Quick Fixの上限を超えています（ファイル:${changed_files}, 行:${changed_lines}）。通常フローに戻してください。"
+  exit 1
+fi
+```
+
+Quick Fix中の変更内容:
+- 変更されたファイルのリスト
+- 実行されたコミット
+- ビルドステータス
+
+これらの情報はGitコミットメッセージに記録されます。
+EOF
+    success "exit-quickfixコマンドドキュメントを作成しました"
+}
+
+create_parallel_test_command() {
+    local content='---
+description: Run independent tests in parallel using subagents
+---
+
+Run multiple independent test suites in parallel:
+
+This is one of the few cases where we DO use subagents, because:
+- Tests are independent and don'\''t need shared context
+- Parallel execution saves significant time
+- Results can be aggregated after completion
+
+Execute:
+1. Create subagent tasks for:
+   - Unit tests
+   - Integration tests  
+   - E2E tests \(if configured\)
+   
+2. Each subagent should:
+   - Run its specific test suite
+   - Report results to a designated output file
+   - Return success/failure status
+
+3. After all complete:
+   - Aggregate results
+   - Update test-results.log
+   - Report summary to user
+
+Note: This is the ONLY command where we intentionally use subagents in the Vibe Coding workflow, as parallel test execution benefits from true parallelism without context sharing requirements.'
+    
+    create_file_with_backup ".claude/commands/parallel-test.md" "$content"
+}
+
+# run-e2e command creation
+create_run_e2e_command() {
+    local src="${SCRIPT_DIR}/commands/run-e2e.md"
+    if [ -f "$src" ]; then
+        mkdir -p ".claude/commands"
+        cp "$src" ".claude/commands/run-e2e.md"
+        success "run-e2eコマンドドキュメントを作成しました"
+    else
+        local content='# E2Eテストを実行
+
+プロジェクトにPlaywrightが導入されている場合、`/run-e2e` で E2E テストを実行します。未導入の場合は導入手順（`npm install -D @playwright/test && npx playwright install`）を案内してください。'
+        create_file_with_backup ".claude/commands/run-e2e.md" "$content"
+    fi
 }
 
 # Main function (called if script is run directly)

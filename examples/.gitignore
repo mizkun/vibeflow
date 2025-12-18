@@ -29,3 +29,7 @@ yarn-error.log*
 
 # Vibe Coding
 .vibe/test-results.log
+
+# Claude Code local settings (not committed)
+.claude/settings.local.json
+

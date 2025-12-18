@@ -1,22 +1,8 @@
-#!/bin/bash
-
-# Vibe Coding Framework - Version Management
-# This script handles framework versioning
-
-# Current framework version
-FRAMEWORK_VERSION="0.5.0"
-FRAMEWORK_NAME="Hooks, Subagents, Skills Integration"
-FRAMEWORK_RELEASE_DATE="2025-12-18"
-
-# Function to write version file
-write_version_file() {
-    local target_dir=$1
-    cat > "${target_dir}/.vibe/framework_version.yaml" << EOF
 # Vibe Coding Framework Version Information
 framework:
-  version: "${FRAMEWORK_VERSION}"
-  name: "${FRAMEWORK_NAME}"
-  installed_at: "$(date -Iseconds 2>/dev/null || date '+%Y-%m-%dT%H:%M:%S%z')"
+  version: "0.5.0"
+  name: "Hooks, Subagents, Skills Integration"
+  installed_at: "2025-12-18T00:00:00+09:00"
   
   # Version compatibility
   minimum_compatible: "0.4.0"
@@ -51,8 +37,4 @@ framework:
   
   # Project repository
   repository_url: "https://github.com/mizkun/vibeflow"
-EOF
-}
 
-# Export function
-export -f write_version_file

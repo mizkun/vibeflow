@@ -159,15 +159,23 @@ Can modify: [list of editable files]
 4. **Human Checkpoints**: Only at step 2a (issue validation) and 7a (manual testing)
 5. **Permission Enforcement**: Strictly follow role-based file access permissions
 6. **State Management**: Always update state.yaml after completing each step
-7. **Human Intervention Required**: When human action is required (e.g., API key setup, external service configuration, manual verification), ALWAYS stop and explicitly request human assistance. Do not proceed automatically or make assumptions about external dependencies.
 
 ## Available Commands
 
 - `/next` - Proceed to next step with role transition
 - `/progress` - Check current progress and role status
 - `/healthcheck` - Verify repository consistency
-- `/run-e2e` - Execute E2E tests with Playwright
+- `/quickfix` - Enter quick fix mode for minor adjustments
+- `/exit-quickfix` - Exit quick fix mode
+- `/parallel-test` - Run tests in parallel
+- `/run-e2e` - Run E2E tests with Playwright
 
+## Quick Fix Mode
+
+A streamlined mode for minor changes outside the normal workflow:
+- **Execution**: Runs in main context with relaxed permissions
+- **Allowed Changes**: UI styling, typo fixes, small bug fixes
+- **Restrictions**: <5 files, <50 lines total changes
 
 ## State Management Structure
 
@@ -201,3 +209,66 @@ quick_fixes: []
 3. **Context Inheritance**: Ensure outputs from previous steps are utilized
 4. **Explicit Transitions**: Always declare role changes clearly
 5. **Quality Focus**: Each role ensures quality within their domain
+
+## User Interaction Requirements
+
+1. Stop immediately: If any step requires user action, halt execution and wait for explicit user confirmation.
+2. Step-by-step guidance: Provide clear, step-by-step instructions in Japanese for the user's actions.
+3. Real data only: Never use mock data or dummy IDs; always work with real, provided data.
+4. Explicit confirmation: When IDs, keys, or credentials are required, explicitly ask the user and confirm before proceeding.
+
+### Situations that require stopping
+- When configuration in Firebase Console is required
+- When API keys or credentials are required
+- When user-specific information (e.g., admin UID) is required
+- When integration with external services must be configured
+- When deploying or making changes to production environments
+
+### Prohibited actions
+- Using mock IDs or dummy data
+- Using placeholders like "your-api-key" in implementation
+- Assuming external service configuration without user confirmation
+- Running tests without real credentials
+
+## Hooks, Subagents, and Skills
+
+### Hooks (Automatic Guardrails)
+
+The framework uses Claude Code hooks for automatic safety and notification:
+
+- **PreToolUse** (`validate_access.py`): Access control that blocks unauthorized file edits based on current role. Exit code 2 blocks the tool call.
+- **PostToolUse** (`task_complete.sh`): Plays notification sound on Edit/Write/MultiEdit/TodoWrite completion.
+- **Stop** (`waiting_input.sh`): Plays notification sound when waiting for user input.
+
+Configuration: `.claude/settings.json`
+
+### Available Subagents
+
+Use these subagents for independent, context-isolated tasks:
+
+- `qa-acceptance`: Validate acceptance criteria and generate QA reports under `.vibe/qa-reports/`
+- `code-reviewer`: Read-only code review with checklist output (tools: Read, Grep, Glob only)
+- `test-runner`: Parallel test execution for unit/integration/e2e tests
+
+Invoke with: `/agents` command in Claude Code
+
+### Available Skills
+
+Skills are reusable procedure templates loaded on demand:
+
+- `vibeflow-issue-template`: Create structured issue files with all required sections
+- `vibeflow-tdd`: TDD Red-Green-Refactor cycle guidance
+
+Skills location: `.claude/skills/*/SKILL.md`
+
+### Disabling Hooks (Emergency)
+
+If hooks cause issues, create `.claude/settings.local.json`:
+```json
+{
+  "disableAllHooks": true
+}
+```
+
+Template available at: `.vibe/templates/settings.local.json`
+

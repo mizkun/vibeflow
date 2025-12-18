@@ -1,37 +1,25 @@
 # Development Plan
 
-## マイルストーン
+## Current Sprint
+Sprint 1: [Sprint goal]
 
-### Phase 1: MVP (2週間)
-- [ ] 基本機能の実装
-- [ ] 最小限のUI
+## TODOs
 
-### Phase 2: 機能拡張 (2週間)
-- [ ] 追加機能の実装
-- [ ] UIの改善
+### High Priority
+- [ ] Task 1
+- [ ] Task 2
 
-### Phase 3: 本番準備 (1週間)
-- [ ] パフォーマンス最適化
-- [ ] セキュリティ対策
+### Medium Priority
+- [ ] Task 3
+- [ ] Task 4
 
-## TODO リスト
+### Low Priority
+- [ ] Task 5
 
-### 高優先度
-- [ ] [タスク1]
-- [ ] [タスク2]
-- [ ] [タスク3]
+## Completed
+- [x] Project setup
+- [x] Initial architecture design
 
-### 中優先度
-- [ ] [タスクA]
-- [ ] [タスクB]
+## Notes
+[Any additional planning notes]
 
-### 低優先度
-- [ ] [タスクX]
-- [ ] [タスクY]
-
-## 完了項目
-- [x] プロジェクトセットアップ
-- [x] Vibe Coding環境構築
-
-## 次のスプリント予定
-[次に取り組む予定の項目]

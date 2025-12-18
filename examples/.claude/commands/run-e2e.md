@@ -1,46 +1,44 @@
----
-description: Execute E2E tests with Playwright
----
+# E2Eテストを実行
 
-Execute E2E tests using Playwright:
+Run end-to-end tests using Playwright to verify the application works correctly from a user's perspective.
 
-## Prerequisites Check
-1. Verify Playwright is installed:
-   - Check if `node_modules/@playwright/test` exists
-   - If not, run: `npm install @playwright/test`
-   - Install browsers if needed: `npx playwright install`
+## What this command does:
 
-## Test Execution
-1. **Environment Setup**
-   - Ensure development server is running (if required)
-   - Check test database is prepared (if applicable)
-   - Verify test environment variables
+1. Check if E2E tests are set up
+2. Start the development server if needed
+3. Run Playwright tests
+4. Show test results
+5. Open HTML report if tests fail
 
-2. **Run E2E Tests**
-   ```bash
-   # Run all E2E tests
-   npm run test:e2e
-   
-   # Or directly with Playwright
-   npx playwright test
-   ```
+## Prerequisites:
 
-3. **Test Results**
-   - Review test output and screenshots
-   - Check for failed tests and error details
-   - Generate test report if configured
+- Playwright must be installed (`npm run playwright:install`)
+- Application must be runnable (`npm run dev`)
+- E2E tests must exist in `tests/e2e/`
 
-## Test Structure
-Tests are organized in `tests/e2e/`:
-- `auth/` - Authentication related tests
-- `features/` - Feature-specific test scenarios  
-- `pageobjects/` - Page Object Model classes
-- `utils/` - Test utilities and helpers
+## Command Flow:
 
-## Common Issues
-- **Port conflicts**: Ensure dev server runs on expected port
-- **Timing issues**: Review wait strategies in failing tests
-- **Browser issues**: Update browsers with `npx playwright install`
-- **Screenshots**: Check `test-results/` for failure screenshots
+```bash
+# Check if Playwright is installed
+if ! npm list @playwright/test >/dev/null 2>&1; then
+    echo "Playwright is not installed. Run: npm run playwright:install"
+    exit 1
+fi
 
-Report results and any failures found during execution.
+# Run E2E tests
+npm run test:e2e
+
+# If tests fail, open the report
+if [ $? -ne 0 ]; then
+    npm run test:e2e:report
+fi
+```
+
+## Options:
+
+- Run in headed mode: `npm run test:e2e:headed`
+- Debug tests: `npm run test:e2e:debug`
+- Run specific test: `npm run test:e2e auth/login.spec.js`
+
+Report results in Japanese with clear pass/fail status.
+

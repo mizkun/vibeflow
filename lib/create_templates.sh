@@ -24,6 +24,9 @@ create_templates() {
     
     # Create role documentation
     create_role_documents
+
+    # Create policy template (machine-readable permissions)
+    create_policy_template
     
     success "テンプレートファイルの作成が完了しました"
     return 0
@@ -51,7 +54,8 @@ checkpoint_status:
 issues_created: []
 issues_completed: []
 
-'
+# Quick fixes tracking
+quick_fixes: []'
     
     create_file_with_backup ".vibe/state.yaml" "$state_content"
 }
@@ -520,6 +524,54 @@ create_role_documents() {
     create_qa_engineer_doc
     
     success "ロール別ドキュメントの作成が完了しました"
+}
+
+# Create machine-readable policy template
+create_policy_template() {
+    info "policy.yaml テンプレートを作成中..."
+    local policy_content='# Role-based Access Policy (machine-readable)
+roles:
+  product_manager:
+    can_read:
+      - "vision.md"
+      - "spec.md"
+      - "plan.md"
+      - ".vibe/state.yaml"
+      - ".vibe/qa-reports/**"
+    can_write:
+      - "plan.md"
+      - "issues/**"
+      - ".vibe/state.yaml"
+    can_create:
+      - "issues/**"
+  engineer:
+    can_read:
+      - "spec.md"
+      - "issues/**"
+      - "src/**"
+      - ".vibe/state.yaml"
+    can_write:
+      - "src/**"
+      - "**/*.test.*"
+      - ".vibe/state.yaml"
+    can_create:
+      - "src/**"
+      - "**/*.test.*"
+  qa_engineer:
+    can_read:
+      - "spec.md"
+      - "issues/**"
+      - "src/**"
+      - ".vibe/state.yaml"
+      - ".vibe/qa-reports/**"
+    can_write:
+      - ".vibe/test-results.log"
+      - ".vibe/qa-reports/**"
+      - ".vibe/state.yaml"
+    can_create:
+      - ".vibe/qa-reports/**"
+      - ".vibe/test-results.log"'
+    create_file_with_backup ".vibe/policy.yaml" "$policy_content"
 }
 
 # Create Product Manager role documentation

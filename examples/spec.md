@@ -1,44 +1,31 @@
-# Specification Document
+# Technical Specification
 
-## 機能要件
+## Overview
+[Technical overview of the system]
 
-### 必須機能
-1. [機能1]
-2. [機能2]
-3. [機能3]
+## Architecture
+[High-level architecture description]
 
-### あったら良い機能
-1. [機能A]
-2. [機能B]
+## Technology Stack
+- Frontend: [technology]
+- Backend: [technology]
+- Database: [technology]
+- Infrastructure: [technology]
 
-## 非機能要件
+## Key Components
+1. [Component 1]
+2. [Component 2]
+3. [Component 3]
 
-### パフォーマンス
-- [レスポンスタイムなど]
+## API Design
+[API endpoints and contracts]
 
-### セキュリティ
-- [認証・認可など]
+## Data Model
+[Database schema and relationships]
 
-### 可用性
-- [稼働率など]
+## Security Considerations
+[Authentication, authorization, data protection]
 
-## 技術スタック
+## Performance Requirements
+[Expected load, response times, etc.]
 
-### フロントエンド
-- [例: React, Next.js]
-
-### バックエンド
-- [例: Node.js, Python]
-
-### データベース
-- [例: PostgreSQL, MongoDB]
-
-### インフラ
-- [例: AWS, Vercel]
-
-## アーキテクチャ
-[システム構成の説明]
-
-## 制約事項
-- [技術的制約]
-- [ビジネス的制約]

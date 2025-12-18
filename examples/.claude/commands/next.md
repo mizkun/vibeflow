@@ -1,47 +1,48 @@
----
-description: Proceed to next step with role-based execution
----
+# 次のステップへ進む
 
-Execute the next step in the Vibe Coding development cycle:
+Execute the next workflow step following the VibeFlow role-based development system. This command should ALWAYS run in the main context, never as a subagent.
 
-## Step 1: Load Current State
-Read .vibe/state.yaml to understand:
+## Step 1: Read Current State
+Load .vibe/state.yaml to understand:
 - current_cycle
 - current_step  
-- current_issue
 - current_role
-- last_completed_step
+- next_step
+- checkpoint_status
 
-## Step 2: Determine Next Step and Role
+## Step 2: Determine Next Action
 Based on current_step, identify:
-- Next step number and name
-- Required role (PM, Engineer, or QA)
-- Files that role can access
+- What needs to be done
+- Which role should execute it
+- Required permissions for this role
 
-## Step 3: Announce Role Transition
-Print clear transition message:
+## Step 3: Role Transition
+Print role transition banner:
+
 ========================================
 🔄 ROLE TRANSITION
-Previous Step: [step_X] ([role])
-Current Step:  [step_Y] ([new_role])
+Previous Step: [step_name] ([previous_role])
+Current Step:  [next_step] ([new_role])
 Issue:         [current_issue]
 Now operating as: [NEW_ROLE]
-Access granted to: [list of accessible files]
+Must read: [list of mandatory files]
+Can modify: [list of editable files]
 ========================================
 
-## Step 4: Execute Step with Role Constraints
+## Step 4: Execute as Role
+Follow role-specific permissions strictly:
 
-### For Product Manager Role (steps 1-2):
+### For Product Manager Role (steps 1, 2):
 - Must Read: vision.md, spec.md, plan.md, state.yaml, qa-reports/*
 - Can Edit: plan.md, issues/*, state.yaml
 - Can Create: issues/*
-- Think like a PM: Focus on user value and requirements
+- Think like PM: Focus on user value and priorities
 
-### For Engineer Role (steps 3-6, 8, 10-11):  
+### For Engineer Role (steps 3, 4, 5, 6, 8, 10, 11):
 - Must Read: spec.md, issues/*, src/*, state.yaml
 - Can Edit: src/*, *.test.*, state.yaml
 - Can Create: src/*, *.test.*
-- Think like an engineer: Focus on implementation quality
+- Think like Engineer: Focus on implementation and code quality
 
 ### For QA Engineer Role (steps 6a, 7, 9):
 - Must Read: spec.md, issues/*, src/*, state.yaml, qa-reports/*
@@ -64,3 +65,4 @@ If step requires human validation:
 - Wait for user confirmation before proceeding
 
 IMPORTANT: Maintain all context in the main conversation. Do NOT use subagents for sequential workflow steps.
+

@@ -1,28 +1,36 @@
 #!/bin/bash
 # Vibe Coding Framework - Notification Setup
+#
+# DEPRECATED: This module is deprecated as of v0.5.0
+# Notifications are now integrated into lib/create_claude_settings.sh
+# This file is kept for backward compatibility only.
+#
+# New implementation:
+# - .claude/settings.json contains hooks configuration
+# - .vibe/hooks/task_complete.sh (PostToolUse)
+# - .vibe/hooks/waiting_input.sh (Stop)
+# - Access guard: .vibe/hooks/validate_access.py (PreToolUse)
 
 # Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 
-# Detect operating system
-detect_os() {
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "macos"
-    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        echo "linux"
-    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-        echo "windows"
-    else
-        echo "unknown"
-    fi
+# Use common detect_os from common.sh (normalize to lowercase)
+normalize_os() {
+    local os=$(detect_os)
+    case "$os" in
+        macOS) echo "macos" ;;
+        Linux) echo "linux" ;;
+        Windows) echo "windows" ;;
+        *) echo "unknown" ;;
+    esac
 }
 
 # Create notification sound scripts
 create_notification_scripts() {
     section "Setting up notification sounds"
     
-    local os_type=$(detect_os)
+    local os_type=$(normalize_os)
     info "Detected OS: $os_type"
     
     # Create hooks directory
@@ -319,17 +327,24 @@ EOF
 }
 
 # Main setup function
+# DEPRECATED: Use lib/create_claude_settings.sh instead
 setup_notifications() {
+    warning "setup_notifications は廃止されました。通知機能はデフォルトで統合されています。"
+    info "新しい実装: lib/create_claude_settings.sh"
+    
+    # For backward compatibility, still create the scripts
     create_notification_scripts
     create_claude_settings
     create_notification_readme
     
+    # Copy hooks to global location for settings template compatibility
+    mkdir -p "${HOME}/.vibe/hooks"
+    cp -f .vibe/hooks/*.sh "${HOME}/.vibe/hooks/" 2>/dev/null || true
+
     info "Notification setup complete!"
     echo
-    warning "To enable notifications in Claude Code:"
-    echo "1. Copy settings from .vibe/templates/claude-settings.json"
-    echo "2. Paste into ~/.config/claude/settings.json"
-    echo "3. Restart Claude Code"
+    info "通知はプロジェクトの .claude/settings.json に統合されました。"
+    info "Claude Code を再起動して設定を反映してください。"
     echo
     info "Test sounds with: .vibe/hooks/task_complete.sh"
 }
