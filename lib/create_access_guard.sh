@@ -43,6 +43,7 @@ ROLE_EDIT_ALLOW = {
         "spec.md",
         "vision.md",
         "issues/*",
+        ".vibe/discussions/*",
         ".vibe/state.yaml",
     ],
     "Engineer": [
@@ -58,10 +59,13 @@ ROLE_EDIT_ALLOW = {
         ".vibe/test-results.log",
         ".vibe/state.yaml",
     ],
-    # Discussion Partner - only discussions and state
+    # Discussion Partner - discussions, state, and vision/spec/plan (for /conclude reflection)
     "Discussion Partner": [
         ".vibe/discussions/*",
         ".vibe/state.yaml",
+        "vision.md",
+        "spec.md",
+        "plan.md",
     ],
     # Infrastructure Manager - hooks and state
     "Infrastructure Manager": [
