@@ -39,6 +39,18 @@ ROLE_EDIT_ALLOW = {
         ".vibe/test-results.log",
         ".vibe/state.yaml",
     ],
+    # Discussion Partner - only discussions and state
+    "Discussion Partner": [
+        ".vibe/discussions/*",
+        ".vibe/state.yaml",
+    ],
+    # Infrastructure Manager - hooks and state
+    "Infrastructure Manager": [
+        ".vibe/hooks/*",
+        "validate-write*",
+        "validate_write*",
+        ".vibe/state.yaml",
+    ],
     # Human checkpoint - only state updates allowed
     "Human": [
         ".vibe/state.yaml",

@@ -18,6 +18,7 @@ create_vibe_structure() {
         ".vibe/templates"
         ".vibe/roles"
         ".vibe/hooks"
+        ".vibe/discussions"
         "issues"
         "src"
     )
@@ -89,6 +90,7 @@ verify_structure() {
         ".vibe/templates"
         ".vibe/roles"
         ".vibe/hooks"
+        ".vibe/discussions"
         "issues"
         "src"
     )

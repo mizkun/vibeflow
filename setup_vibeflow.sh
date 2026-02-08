@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Vibe Coding Framework Setup Script
-# Version: 0.5.0
+# Version: 2.0.0
 # This is the main setup script that orchestrates the installation
-# Includes: Hooks, Subagents, Skills integration for Claude Code
+# Includes: Discovery Phase, Agent Team, Safety Rules, Hooks, Subagents, Skills
 
 set -e  # Exit on error
 set -u  # Exit on undefined variable
@@ -53,7 +53,7 @@ if [ -f "${LIB_DIR}/create_subagents.sh" ]; then
 fi
 
 # Global variables
-VERSION="0.5.0"
+VERSION="2.0.0"
 FORCE_INSTALL=false
 BACKUP_ENABLED=true
 VERBOSE=false
@@ -76,7 +76,10 @@ Options:
     --with-e2e          Include Playwright E2E testing setup
 
 Features (included by default):
-    - Hooks: Access control via validate_access.py (PreToolUse)
+    - Discovery Phase: /discuss, /conclude commands for brainstorming
+    - Safety Rules: UI/CSS atomic mode, destructive op guard, write guard
+    - Agent Team support: mode: team/fork (requires CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1)
+    - Hooks: Access control (validate_access.py), Write guard (validate_write.sh)
     - Skills: vibeflow-issue-template, vibeflow-tdd
     - Subagents: qa-acceptance, code-reviewer, test-runner
     - Notification sounds (PostToolUse, Stop hooks)
@@ -268,6 +271,15 @@ run_installation() {
         warning "アクセスガードモジュールが見つかりません"
     fi
     
+    # Step 5b: Create Write Guard Hook (validates plans/ directory block)
+    if type create_write_guard &>/dev/null; then
+        if ! create_write_guard; then
+            warning "書き込みガードフックの作成に失敗しましたが、インストールは続行します"
+        fi
+    else
+        warning "書き込みガードモジュールが見つかりません"
+    fi
+
     # Step 6: Create Claude Code Settings (hooks configuration)
     if type create_claude_settings &>/dev/null; then
         if ! create_claude_settings; then
@@ -376,6 +388,34 @@ verify_installation() {
         warning ".claude/settings.json: Missing (Hooks無効)"
     fi
     
+    # Verify Write Guard Hook
+    if [ -f ".vibe/hooks/validate_write.sh" ]; then
+        success ".vibe/hooks/validate_write.sh: OK"
+        if [ -x ".vibe/hooks/validate_write.sh" ]; then
+            success ".vibe/hooks/validate_write.sh 実行権限: OK"
+        else
+            warning ".vibe/hooks/validate_write.sh 実行権限: Missing"
+        fi
+    else
+        warning ".vibe/hooks/validate_write.sh: Missing (書き込みガード無効)"
+    fi
+
+    # Verify new v2 files
+    local v2_files=(
+        ".vibe/discussions"
+        ".vibe/roles/discussion-partner.md"
+        ".vibe/roles/infra.md"
+        ".claude/commands/discuss.md"
+        ".claude/commands/conclude.md"
+    )
+    for v2_item in "${v2_files[@]}"; do
+        if [ -e "$v2_item" ]; then
+            success "$v2_item: OK"
+        else
+            warning "$v2_item: Missing"
+        fi
+    done
+
     # Verify Access Guard Hook
     if [ -f ".vibe/hooks/validate_access.py" ]; then
         success ".vibe/hooks/validate_access.py: OK"
@@ -445,12 +485,18 @@ show_completion() {
     print_color "$YELLOW" '   /next'
     echo ""
     echo "利用可能なコマンド:"
+    echo "   /next        - 次のステップへ進む"
+    echo "   /discuss     - 壁打ち（Discovery Phase）を開始"
+    echo "   /conclude    - 議論を終了し開発フェーズに戻る"
     echo "   /progress    - 現在の進捗確認"
     echo "   /healthcheck - 整合性チェック"
-    echo "   /next        - 次のステップへ進む"
     echo "   /quickfix    - Quick Fixモードへ"
     echo "   /run-e2e     - E2Eテスト実行（Playwright導入時）"
     echo "   /parallel-test - 並列テスト実行"
+    echo ""
+    echo "Agent Team モード（オプション）:"
+    echo "   export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1"
+    echo "   Claude Code 2.1.20+ が必要です"
     echo ""
     print_color "$PURPLE" "🎉 Happy Vibe Coding!"
 }
@@ -491,6 +537,8 @@ main() {
     if verify_installation; then
         # Write framework version file
         write_version_file "."
+        # Write simple version file for upgrade tracking
+        echo "$VERSION" > ".vibe/version"
         show_completion
     else
         error "インストールの検証に失敗しました"

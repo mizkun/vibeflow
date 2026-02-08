@@ -1,12 +1,12 @@
 # Vibe Coding Framework Version Information
 framework:
-  version: "0.5.0"
-  name: "Hooks, Subagents, Skills Integration"
-  installed_at: "2025-12-18T00:00:00+09:00"
-  
+  version: "2.0.0"
+  name: "Discovery Phase, Agent Team, Safety Rules"
+  installed_at: "2026-02-08T00:00:00+09:00"
+
   # Version compatibility
-  minimum_compatible: "0.4.0"
-  
+  minimum_compatible: "1.0.0"
+
   # Features enabled
   features:
     simplified_state: true
@@ -14,17 +14,25 @@ framework:
     quick_fix_mode: true
     e2e_testing: true
     notifications: true
-    # New in 0.5.0
     hooks: true
     subagents: true
     skills: true
     access_guard: true
-  
+    # New in 2.0.0
+    discovery_phase: true
+    agent_team_mode: true
+    context_fork_mode: true
+    safety_rules: true
+    write_guard: true
+    discussion_partner_role: true
+    infra_manager_role: true
+
   # Claude Code integration
   claude_code:
     settings_file: ".claude/settings.json"
     hooks:
       - PreToolUse (validate_access.py)
+      - PreToolUse (validate_write.sh)
       - PostToolUse (task_complete.sh)
       - Stop (waiting_input.sh)
     skills:
@@ -34,7 +42,6 @@ framework:
       - qa-acceptance
       - code-reviewer
       - test-runner
-  
+
   # Project repository
   repository_url: "https://github.com/mizkun/vibeflow"
-

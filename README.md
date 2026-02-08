@@ -1,47 +1,53 @@
-# Vibe Coding Framework
+# VibeFlow
 
-AI-driven development methodology setup tool for Claude Code
+AI-driven development methodology for Claude Code
 
 ## Overview
 
-Vibe Coding Framework is an AI-driven development methodology designed for use with Claude Code. It enables efficient, high-quality development through role separation, automated workflows, and clear checkpoints.
+VibeFlow is an AI-driven development methodology designed for use with Claude Code. It enables efficient, high-quality development through role separation, automated workflows, and clear checkpoints.
 
 ## Features
 
-- **Context-Based Access Control**: Each step has a specific role with defined read/edit/create permissions for different contexts
-- **Strict Context Isolation**: Roles have defined read/edit/create permissions (e.g., Engineers can only edit code, PMs can only edit plan/issues)
+- **Context-Based Access Control**: Each step has a specific role with defined read/edit/create permissions
+- **Strict Context Isolation**: Roles have defined permissions (e.g., Engineers can only edit code, PMs can only edit plan/issues)
 - **Role-Based Context-Continuous System**: No separate agent files - role switching handled seamlessly within main context
+- **Discovery Phase**: Brainstorming mode (`/discuss`, `/conclude`) for product direction and technical decisions before development
+- **Agent Team / context: fork**: Multi-perspective discussions (Agent Team) and delegated execution (context: fork) for key steps
+- **Safety Rules**: Atomic UI changes, destructive operation protection, retry limits, plans/ directory blocking
 - **11-Step Development Workflow**: Automatic progression through development cycle with role-based permissions
 - **Minimal Human Intervention**: Only 2 checkpoints where human validation is required
-- **Automated Setup**: Complete development environment with a single command
-- **Automated Verification**: Each step verifies artifacts exist before proceeding, preventing "success theater"
+- **Automated Setup & Upgrade**: Complete development environment with a single command, and migration framework for version upgrades
 
 ## Quick Start
 
 ```bash
-# Clone the repository
-git clone https://github.com/mizkun/vibeflow.git
+# Install VibeFlow
+git clone https://github.com/mizkun/vibeflow.git ~/vibeflow
+cd ~/vibeflow && ./install.sh
 
-# Create a new project directory
-mkdir my-project
-cd my-project
+# Create a new project
+mkdir my-project && cd my-project
+vibeflow setup
 
-# Run setup
-../vibeflow/setup_vibeflow.sh
+# Start development
+# Use /discuss for brainstorming, /next for development cycle
 ```
 
 ## Table of Contents
 
 - [Installation](#installation)
+- [Upgrading Existing Projects](#upgrading-existing-projects)
 - [Detailed Setup Guide](#detailed-setup-guide)
 - [How It Works](#how-it-works)
+  - [Development Phases](#development-phases)
   - [Core Concept: Role-Based Development Workflow](#core-concept-role-based-development-workflow)
+  - [Execution Modes](#execution-modes)
   - [Key Principles](#key-principles)
 - [Built-in Features](#built-in-features)
 - [Project Structure](#project-structure)
 - [Available Commands](#available-commands)
+  - [CLI Commands](#cli-commands)
   - [Slash Commands](#slash-commands)
-  - [Script Options](#script-options)
 - [Examples](#examples)
 - [Technical Architecture](#technical-architecture)
   - [State Management](#state-management)
@@ -54,50 +60,96 @@ cd my-project
 
 - macOS or Linux
 - Bash shell
-- Git (optional, for project management)
+- Git
 - Claude Code
+- yq (`brew install yq` / `snap install yq`)
 
-### Installation Steps
+### Install
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/mizkun/vibeflow.git
-   cd vibeflow
-   ```
+```bash
+git clone https://github.com/mizkun/vibeflow.git ~/vibeflow
+cd ~/vibeflow && ./install.sh
+```
 
-2. **Create a new project directory**:
-   
-   **Important**: Run setup_vibeflow.sh in the directory where you want to create your project. Do not run it directly in the repository.
-   
-   ```bash
-   # Create a new project directory
-   mkdir ~/my-vibe-project
-   cd ~/my-vibe-project
-   
-   # Run the setup script
-   ~/path/to/vibeflow/setup_vibeflow.sh
-   ```
+This installs the `vibeflow` command, making it available from anywhere.
 
-3. **Setup options**:
-   ```bash
-   # Show help
-   ./setup_vibeflow.sh --help
-   
-   # Install without confirmation
-   ./setup_vibeflow.sh --force
-   
-   # Skip backup
-   ./setup_vibeflow.sh --no-backup
-   
-   # Install without E2E testing support
-   ./setup_vibeflow.sh --without-e2e
-   
-   # Install without notification sounds
-   ./setup_vibeflow.sh --without-notifications
-   
-   # Check version
-   ./setup_vibeflow.sh --version
-   ```
+### Quick Start
+
+```bash
+# New project
+mkdir my-project && cd my-project
+vibeflow setup
+
+# Update framework and apply to existing project
+cd ~/vibeflow && git pull
+cd ~/my-project && vibeflow upgrade
+```
+
+### CLI Commands
+
+| Command | Description |
+|---|---|
+| `vibeflow setup [options]` | Set up a new project |
+| `vibeflow upgrade [options]` | Upgrade an existing project to latest version |
+| `vibeflow version` | Show version information |
+| `vibeflow doctor` | Diagnose environment issues |
+| `vibeflow help` | Show help |
+
+### Setup Options
+
+```bash
+vibeflow setup --force              # Skip confirmations
+vibeflow setup --no-backup          # Skip backup
+vibeflow setup --without-e2e        # Without E2E testing support
+vibeflow setup --without-notifications  # Without notification sounds
+```
+
+### Uninstall
+
+```bash
+cd ~/vibeflow && ./uninstall.sh
+```
+
+## Upgrading Existing Projects
+
+Upgrade existing VibeFlow projects to the latest version:
+
+```bash
+cd your-project
+vibeflow upgrade
+```
+
+### Upgrade Options
+
+| Option | Description |
+|---|---|
+| `--dry-run` | Show what would be done without making changes |
+| `--force` | Skip confirmation prompts |
+| `--no-backup` | Skip backup (not recommended) |
+
+### How Upgrade Works
+
+1. Compares `.vibe/version` with the framework `VERSION`
+2. Identifies applicable migration scripts
+3. Creates a backup (git commit + file copy)
+4. Applies migrations in order
+5. Updates the version file
+
+Migrations are idempotent. If a migration fails midway, re-running will continue from where it left off.
+
+### Adding Migrations (for contributors)
+
+1. Update the `VERSION` file to the new version
+2. Create `migrations/v{old}_to_v{new}.sh`
+3. Source `"${VIBEFLOW_FRAMEWORK_DIR}/lib/migration_helpers.sh"` for helpers
+4. Use idempotent helper functions:
+   - `copy_if_absent src dst` -- Copy file if destination doesn't exist
+   - `ensure_dir path` -- Create directory if it doesn't exist
+   - `append_section_if_absent file marker content` -- Append section if marker not present
+   - `replace_section file start end content` -- Replace section between markers
+   - `add_yaml_field_if_absent file key value` -- Add YAML field if not present
+   - `insert_hook_rule_if_absent file marker rule position` -- Insert hook rule if marker not present
+5. `chmod +x` the migration script
 
 ## Detailed Setup Guide
 
@@ -131,109 +183,55 @@ Define development plan and TODOs:
 ### Using with Claude Code
 
 1. Open the project directory in Claude Code
-2. Use the `/next` command to start the development cycle
-3. AI will automatically proceed with the development flow
+2. Use `/discuss` to brainstorm and validate product direction
+3. Use `/conclude` to finalize discussion results into vision/spec/plan
+4. Use `/next` to progress through the development cycle
 
 ## How It Works
 
+### Development Phases
+
+VibeFlow has two phases:
+
+**Discovery Phase** (outside development cycle)
+- Activated with `/discuss [topic]`
+- Role: Discussion Partner (all files read-only except `.vibe/discussions/`)
+- Brainstorm product direction, technical decisions, and business strategy
+- End with `/conclude` to reflect conclusions into vision.md / spec.md / plan.md
+
+**Development Cycle** (the main workflow)
+- Activated with `/next`
+- 11 steps with role-based access control
+- 2 human checkpoints (issue validation + runnable check)
+
 ### Core Concept: Role-Based Development Workflow
 
-The most important innovation of Vibe Coding Framework is the **context-continuous role-based system**. Unlike traditional approaches with separate agent files, all roles operate within a single context with dynamic permission switching. Each step in the development cycle is executed by a specific role with precisely defined permissions:
+The most important innovation of VibeFlow is the **context-continuous role-based system**. All roles operate within a single context with dynamic permission switching:
 
-```yaml
-# Step-by-Step Role and Permission Definition
-workflow:
-  step_1_plan_review:
-    role: Product Manager
-    access:
-      must_read: [vision.md, spec.md, plan.md, state.yaml, qa-reports/*]
-      can_edit: [plan.md, state.yaml]
-      can_create: []
-    purpose: Review and update development plan based on vision/spec
-    
-  step_2_issue_breakdown:
-    role: Product Manager  
-    access:
-      must_read: [vision.md, spec.md, plan.md, state.yaml, qa-reports/*]
-      can_edit: [issues/*, state.yaml]
-      can_create: [issues/*]
-    purpose: Create detailed, implementable issues from plan
-    checkpoint: 2a_human_validation (required)
-    
-  step_3_branch_creation:
-    role: Engineer
-    access:
-      must_read: [spec.md, issues/*, state.yaml]
-      can_edit: [.git/*, state.yaml]
-      can_create: []
-    purpose: Create feature branch for implementation
-    
-  step_4_test_writing:
-    role: Engineer
-    access:
-      must_read: [spec.md, issues/*, src/*, state.yaml]
-      can_edit: [*.test.*, state.yaml]
-      can_create: [*.test.*]
-    purpose: Write failing tests first (TDD Red phase)
-    
-  step_5_implementation:
-    role: Engineer
-    access:
-      must_read: [spec.md, issues/*, src/*, *.test.*, state.yaml]
-      can_edit: [src/*, state.yaml]
-      can_create: [src/*]
-    purpose: Implement code to pass tests (TDD Green phase)
-    
-  step_6_refactoring:
-    role: Engineer
-    access:
-      must_read: [spec.md, issues/*, src/*, *.test.*, state.yaml]
-      can_edit: [src/*, state.yaml]
-      can_create: []
-    purpose: Improve code quality (TDD Refactor phase)
-    checkpoint: 6a_code_sanity_check (automated)
-    
-  step_7_acceptance_test:
-    role: QA Engineer
-    access:
-      must_read: [spec.md, issues/*, src/*, *.test.*, state.yaml, qa-reports/*]
-      can_edit: [test-results.log, qa-reports/*, state.yaml]
-      can_create: [qa-reports/*, test-results.log]
-    purpose: Verify implementation meets requirements
-    checkpoint: 7a_human_runnable_check (required)
-    
-  step_8_pull_request:
-    role: Engineer
-    access:
-      must_read: [spec.md, issues/*, src/*, state.yaml]
-      can_edit: [.git/*, state.yaml]
-      can_create: []
-    purpose: Create PR with proper documentation
-    
-  step_9_review:
-    role: QA Engineer
-    access:
-      must_read: [spec.md, issues/*, src/*, state.yaml, qa-reports/*]
-      can_edit: [qa-reports/*, state.yaml]
-      can_create: [qa-reports/*]
-    purpose: Code review and quality check
-    
-  step_10_merge:
-    role: Engineer
-    access:
-      must_read: [spec.md, src/*, state.yaml]
-      can_edit: [.git/*, state.yaml]
-      can_create: []
-    purpose: Merge approved changes to main
-    
-  step_11_deployment:
-    role: Engineer
-    access:
-      must_read: [spec.md, src/*, state.yaml]
-      can_edit: [deployment.log, state.yaml]
-      can_create: [deployment.log]
-    purpose: Deploy to production
-```
+| Role | Steps | Responsibilities |
+|---|---|---|
+| Product Manager | 1, 2 | Plan review, issue breakdown |
+| Discussion Partner | Discovery | Brainstorming, direction validation |
+| Infrastructure Manager | 2.5, 6.5 | Hook permission setup/rollback |
+| Engineer | 3, 4, 5, 6, 8, 10, 11 | Branch, TDD, implementation, PR, merge, deploy |
+| QA Engineer | 7, 9 | Acceptance testing, code review |
+
+### Execution Modes
+
+Each step has an execution mode:
+
+- **solo**: Main agent executes directly (default)
+- **team**: Agent Team spawns multiple perspectives (requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)
+- **fork**: context: fork delegates to separate agent inheriting PM context (requires Claude Code 2.1.20+)
+
+Agent Team / fork automatically falls back to solo if unavailable.
+
+| Step | Mode | Team (if applicable) |
+|---|---|---|
+| Step 2: Issue Breakdown | team | PM (lead), Technical Feasibility Analyst, UX Critic, Devil's Advocate |
+| Steps 4, 5, 6: TDD | fork | - |
+| Step 7: Acceptance Test | team | QA Lead, Spec Compliance Checker, Edge Case Hunter, UI Visual Verifier |
+| Step 9: Code Review | team | QA Lead, Security Reviewer, Performance Reviewer, Test Coverage Reviewer |
 
 ### Key Principles
 
@@ -242,18 +240,28 @@ workflow:
 3. **Automated Progression**: Steps flow automatically with only 2 human checkpoints
 4. **Verification at Each Step**: Each role verifies their own artifacts before proceeding
 5. **Clear State Management**: state.yaml tracks current position and progress
+6. **Safety First**: Atomic UI changes, destructive op protection, retry limits
 
 ## Built-in Features
+
+### Discovery Phase
+Brainstorm and validate product direction with `/discuss`. The Discussion Partner role provides counterarguments, questions assumptions, and organizes discussion points. Conclusions are reflected back to vision.md, spec.md, and plan.md via `/conclude`.
+
+### Safety Rules
+- **Atomic UI Changes**: CSS/HTML changes are made one at a time with user confirmation
+- **Destructive Operation Protection**: `rm -rf`, `git reset --hard`, etc. require user confirmation
+- **Retry Limits**: Same approach limited to 2 retries before requiring a different approach
+- **plans/ Directory Blocking**: Write guard hook prevents creating plans/ directory (use plan.md or issues/ instead)
+- **Hook Permission Control**: Infrastructure Manager role manages write permissions per issue
 
 ### E2E Testing with Playwright
 Includes Playwright configuration, test structure (`tests/e2e/`), and `/run-e2e` command by default. Install with `npm install @playwright/test` and `npx playwright install`.
 
-### Notification Sounds  
+### Notification Sounds
 OS-specific notification scripts and Claude Code hook configurations for task completion, waiting input, and error alerts. Enable by copying `.vibe/templates/claude-settings.json` to `~/.config/claude/settings.json`.
 
 ### Role-Based Permissions
-Strict context isolation with Must Read/Can Edit/Can Create permissions for each role.
-
+Strict context isolation with Must Read/Can Edit/Can Create permissions for each role, enforced by `validate_access.py` hook.
 
 ## Project Structure
 
@@ -262,73 +270,69 @@ After setup, the following structure is created:
 ```
 your-project/
 ├── .claude/
-│   └── commands/           # Slash commands
+│   ├── settings.json          # Hook configuration
+│   └── commands/              # Slash commands
 │       ├── progress.md
 │       ├── healthcheck.md
 │       ├── next.md
-│       └── run-e2e.md      # E2E test execution
+│       ├── discuss.md         # Discovery Phase start
+│       ├── conclude.md        # Discovery Phase end
+│       └── run-e2e.md         # E2E test execution
 ├── .vibe/
-│   ├── state.yaml          # Cycle state management
-│   ├── claude-hooks.json   # Hook configuration
-│   ├── hooks/              # Notification scripts
-│   │   ├── task_complete.sh
+│   ├── version                # VibeFlow version tracking
+│   ├── state.yaml             # Cycle state management
+│   ├── policy.yaml            # Role-based access policy
+│   ├── hooks/                 # Access control hooks
+│   │   ├── validate_access.py # Role-based access control
+│   │   ├── validate_write.sh  # Write guard (plans/ block)
+│   │   ├── task_complete.sh   # Notification sounds
 │   │   ├── waiting_input.sh
 │   │   └── error_occurred.sh
-│   ├── roles/              # Role documentation
+│   ├── roles/                 # Role documentation
 │   │   ├── product-manager.md
 │   │   ├── engineer.md
-│   │   └── qa-engineer.md
-│   └── templates/          # Templates and config
+│   │   ├── qa-engineer.md
+│   │   ├── discussion-partner.md
+│   │   └── infra.md
+│   ├── discussions/           # Discovery Phase discussions
+│   ├── backups/               # Upgrade backups
+│   └── templates/             # Templates and config
 │       ├── issue-templates.md
+│       ├── discussion-template.md
 │       ├── claude-settings.json
 │       └── e2e-scripts.json
-├── tests/                  # E2E tests
+├── tests/                     # E2E tests
 │   └── e2e/
-│       ├── auth/
-│       ├── features/
-│       ├── pageobjects/
-│       └── utils/
-├── issues/                 # Implementation tasks
-├── src/                    # Source code
-├── playwright.config.js    # Playwright configuration
-├── CLAUDE.md               # Framework documentation
-├── vision.md               # Product vision
-├── spec.md                 # Specifications
-└── plan.md                 # Development plan
+├── issues/                    # Implementation tasks
+├── src/                       # Source code
+├── CLAUDE.md                  # Framework documentation
+├── vision.md                  # Product vision
+├── spec.md                    # Specifications
+└── plan.md                    # Development plan
 ```
 
 ## Available Commands
 
 ### Slash Commands
 
-The framework provides 4 slash commands:
+The framework provides 6 slash commands:
 
+- `/discuss [topic]` - Start Discovery Phase for brainstorming and direction validation
+- `/conclude` - End Discovery Phase and reflect conclusions to vision/spec/plan
+- `/next` - Proceed to next step in development cycle (handles all role switching)
 - `/progress` - Check current progress and position
 - `/healthcheck` - Verify repository consistency
-- `/next` - Proceed to next step (handles all role switching)
 - `/run-e2e` - Execute E2E tests with Playwright
 
-### Script Options
+### Agent Team Environment Variable
+
+To enable Agent Team mode (multi-perspective discussions at Steps 2, 7, 9):
 
 ```bash
-# Display help
-./setup_vibeflow.sh --help
-
-# Force installation (skip confirmations)
-./setup_vibeflow.sh --force
-
-# Skip backup creation
-./setup_vibeflow.sh --no-backup
-
-# Install without E2E testing
-./setup_vibeflow.sh --without-e2e
-
-# Install without notification sounds
-./setup_vibeflow.sh --without-notifications
-
-# Display version
-./setup_vibeflow.sh --version
+export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 ```
+
+Without this, Agent Team steps fall back to solo mode.
 
 ## Example
 
@@ -344,26 +348,22 @@ The `examples/` directory contains a complete template showing the framework str
 
 2. **Edit the template files**:
    - `vision.md` - Define your product vision and goals
-   - `spec.md` - Specify functional and technical requirements  
+   - `spec.md` - Specify functional and technical requirements
    - `plan.md` - Create development milestones and tasks
 
 3. **Start development**:
    ```bash
-   /next
+   /discuss "Product direction"   # Brainstorm first
+   /conclude                      # Finalize direction
+   /next                          # Start development cycle
    ```
 
 ### Creating from Scratch
 
-Alternatively, create a new project:
-
-1. **Setup project**:
-   ```bash
-   mkdir my-project
-   cd my-project
-   ../vibeflow/setup_vibeflow.sh
-   ```
-
-2. **Fill in the generated templates** following the same pattern as the examples directory
+```bash
+mkdir my-project && cd my-project
+vibeflow setup
+```
 
 ## Technical Architecture
 
@@ -371,16 +371,18 @@ Alternatively, create a new project:
 
 The framework uses YAML files for state persistence:
 
-- **state.yaml**: Tracks current cycle, step, and issue
-- **templates/**: Contains issue templates for different types of development tasks
+- **state.yaml**: Tracks current cycle, step, issue, role, phase, safety settings, and infrastructure log
+- **policy.yaml**: Defines role-based access permissions
+- **templates/**: Contains issue and discussion templates
 
 ### Role-Based System Architecture
 
-The framework has evolved from separate subagent files to a **context-continuous role-based system**:
+The framework uses a **context-continuous role-based system**:
 
 - **No Agent Files**: Subagents are deprecated in favor of embedded role switching
 - **Dynamic Permissions**: The `/next` command dynamically applies role-based permissions
 - **Single Context**: All roles operate within the same conversation context
+- **Hook Enforcement**: `validate_access.py` and `validate_write.sh` enforce permissions at the tool level
 
 ### Why This Architecture?
 
@@ -400,3 +402,6 @@ Automated checks prevent common issues:
 - Build success verification
 - Acceptance criteria tracking
 
+### Note on Bash Compatibility
+
+Some features (e.g., `sort -V` in migration scripts) require Bash 4.0+. macOS ships with Bash 3.x by default. Install a newer version with `brew install bash` if needed.

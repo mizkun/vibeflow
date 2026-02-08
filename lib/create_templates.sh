@@ -25,6 +25,9 @@ create_templates() {
     # Create role documentation
     create_role_documents
 
+    # Create discussion template
+    create_discussion_template
+
     # Create policy template (machine-readable permissions)
     create_policy_template
     
@@ -45,6 +48,9 @@ last_role_transition: null
 last_completed_step: null
 next_step: 2_issue_breakdown
 
+# Workflow phase (development | discovery)
+phase: development
+
 # Human checkpoint status
 checkpoint_status:
   2a_issue_validation: pending
@@ -55,7 +61,27 @@ issues_created: []
 issues_completed: []
 
 # Quick fixes tracking
-quick_fixes: []'
+quick_fixes: []
+
+# Discovery phase tracking
+discovery:
+  id: null
+  started: null
+  topic: null
+  sessions: []
+
+# Safety tracking
+safety:
+  ui_mode: atomic
+  destructive_op: require_confirmation
+  max_fix_attempts: 3
+  failed_approach_log: []
+
+# Infrastructure Manager audit log
+infra_log:
+  step: null
+  hook_changes: []
+  rollback_pending: false'
     
     create_file_with_backup ".vibe/state.yaml" "$state_content"
 }
@@ -510,6 +536,26 @@ User Action → Component → API → Database → Response
 ## Notes
 - [関連Issue]
 - [参考情報]
+```
+
+---
+
+## Implementation Plan Section (全テンプレート共通)
+
+各 Issue テンプレートの末尾に以下のセクションを追加して使用します：
+
+```markdown
+## Implementation Plan
+（Engineer が Step 4 開始時にここに記述）
+- 対象ファイル: [src/..., tests/...]
+- テスト対象: [tests/...]
+- 依存 issue: [なし / Issue-XXX]
+- 並列実行可否: [可 / 不可（理由: ...）]
+
+## Progress
+- [ ] テスト作成
+- [ ] 実装
+- [ ] リファクタリング
 ```'
     
     create_file_with_backup ".vibe/templates/issue-templates.md" "$issue_templates"
@@ -522,6 +568,8 @@ create_role_documents() {
     create_product_manager_doc
     create_engineer_doc
     create_qa_engineer_doc
+    create_discussion_partner_doc
+    create_infra_manager_doc
     
     success "ロール別ドキュメントの作成が完了しました"
 }
@@ -570,7 +618,29 @@ roles:
       - ".vibe/state.yaml"
     can_create:
       - ".vibe/qa-reports/**"
-      - ".vibe/test-results.log"'
+      - ".vibe/test-results.log"
+  discussion_partner:
+    can_read:
+      - "vision.md"
+      - "spec.md"
+      - "plan.md"
+      - ".vibe/state.yaml"
+      - ".vibe/discussions/**"
+    can_write:
+      - ".vibe/discussions/**"
+      - ".vibe/state.yaml"
+    can_create:
+      - ".vibe/discussions/**"
+  infra_manager:
+    can_read:
+      - ".vibe/hooks/**"
+      - ".vibe/state.yaml"
+      - ".claude/settings.json"
+    can_write:
+      - ".vibe/hooks/**"
+      - ".vibe/state.yaml"
+    can_create:
+      - ".vibe/hooks/**"'
     create_file_with_backup ".vibe/policy.yaml" "$policy_content"
 }
 
@@ -581,7 +651,7 @@ create_product_manager_doc() {
 ## Role Overview
 As a Product Manager, you are responsible for maintaining alignment between the product vision, specifications, and development plan. You ensure that all development work contributes to the product goals and that issues are clearly defined for implementation.
 
-## Step 1: Plan Review
+## Step 1: Plan Review (mode: solo)
 
 ### Objective
 Review current progress against the vision and specifications, then update the development plan accordingly.
@@ -633,7 +703,9 @@ Review current progress against the vision and specifications, then update the d
    - Update `.vibe/state.yaml` with current step completion
    - Record any important decisions or changes
 
-## Step 2: Issue Breakdown
+## Step 2: Issue Breakdown (mode: team)
+
+Team config: Lead=PM, Teammates=[Technical Feasibility Analyst, UX Critic, Devil'"'"'s Advocate]
 
 ### Objective
 Transform high-level plan items into detailed, implementable issues that engineers can execute without ambiguity.
@@ -793,7 +865,7 @@ create_engineer_doc() {
 ## Role Overview
 As an Engineer, you are responsible for implementing features, writing tests, and maintaining code quality. You follow Test-Driven Development (TDD) practices and ensure all implementations meet the specified requirements.
 
-## Step 3: Branch Creation
+## Step 3: Branch Creation (mode: solo)
 
 ### Objective
 Create a feature branch for implementing the current issue.
@@ -817,7 +889,7 @@ Create a feature branch for implementing the current issue.
    - Confirm you are on the correct branch
    - Ensure main/master is up to date before branching
 
-## Step 4: Test Writing (TDD Red Phase)
+## Step 4: Test Writing — TDD Red Phase (mode: fork)
 
 ### Objective
 Write comprehensive tests that fail initially, defining the expected behavior before implementation.
@@ -920,7 +992,7 @@ Write comprehensive tests that fail initially, defining the expected behavior be
    git commit -m "test: Add failing tests for user authentication (TDD Red)"
    ```
 
-## Step 5: Implementation (TDD Green Phase)
+## Step 5: Implementation — TDD Green Phase (mode: fork)
 
 ### Objective
 Write the minimal code necessary to make all tests pass.
@@ -981,7 +1053,7 @@ Write the minimal code necessary to make all tests pass.
    git commit -m "feat: Implement user authentication (TDD Green)"
    ```
 
-## Step 6: Refactoring (TDD Refactor Phase)
+## Step 6: Refactoring — TDD Refactor Phase (mode: fork)
 
 ### Objective
 Improve code quality, structure, and maintainability while keeping all tests green.
@@ -1056,7 +1128,7 @@ Improve code quality, structure, and maintainability while keeping all tests gre
    git commit -m "refactor: Improve auth code structure and error handling"
    ```
 
-## Step 8: Pull Request Creation
+## Step 8: Pull Request Creation (mode: solo)
 
 ### Objective
 Create a comprehensive PR with all changes, documentation, and context for review.
@@ -1105,7 +1177,7 @@ Create a comprehensive PR with all changes, documentation, and context for revie
      Closes #001"
    ```
 
-## Step 10: Merge
+## Step 10: Merge (mode: solo)
 
 ### Objective
 Merge approved PR into main branch after all checks pass.
@@ -1137,7 +1209,7 @@ Merge approved PR into main branch after all checks pass.
    git push origin --delete feature/issue-001-user-auth
    ```
 
-## Step 11: Deployment
+## Step 11: Deployment (mode: solo)
 
 ### Objective
 Deploy merged changes to production environment.
@@ -1202,7 +1274,7 @@ create_qa_engineer_doc() {
 ## Role Overview
 As a QA Engineer, you are responsible for ensuring code quality, verifying requirements are met, and maintaining high standards throughout the development process. You act as the quality gatekeeper before code reaches production.
 
-## Step 6a: Code Sanity Check
+## Step 6a: Code Sanity Check (mode: solo)
 
 ### Objective
 Perform automated quality checks on the implemented code to catch obvious issues before deeper testing.
@@ -1287,7 +1359,9 @@ Perform automated quality checks on the implemented code to catch obvious issues
    sanity_check: passed
    ```
 
-## Step 7: Acceptance Test
+## Step 7: Acceptance Test (mode: team)
+
+Team config: Lead=QA Lead, Teammates=[Spec Compliance Checker, Edge Case Hunter, UI Visual Verifier]
 
 ### Objective
 Verify that the implementation meets all requirements specified in the issue and aligns with product specifications.
@@ -1492,7 +1566,9 @@ Verify that the implementation meets all requirements specified in the issue and
    manual_testing: required
    ```
 
-## Step 9: Code Review
+## Step 9: Code Review (mode: team)
+
+Team config: Lead=QA Lead, Teammates=[Security Reviewer, Performance Reviewer, Test Coverage Reviewer]
 
 ### Objective
 Perform thorough code review of the pull request to ensure quality, maintainability, and adherence to standards.
@@ -1659,6 +1735,165 @@ Perform thorough code review of the pull request to ensure quality, maintainabil
    - Memory leaks in event listeners'
     
     create_file_with_backup ".vibe/roles/qa-engineer.md" "$content"
+}
+
+# Create Discussion Partner role documentation
+create_discussion_partner_doc() {
+    local content='# Discussion Partner Role
+
+## Responsibility
+壁打ち相手としてアイデアの深掘り、反論・疑問の提示、論点整理を行う
+
+## Activation
+- `/discuss [トピック]` コマンドで有効化
+- phase が `discovery` に切り替わる
+
+## 行動原則
+
+### 1. ファイル変更禁止
+- **一切のファイル変更を行わない**（state.yaml と discussions/ のみ例外）
+- コードの生成・修正は行わない
+- 議論の内容のみに集中する
+
+### 2. 反論・疑問の提示
+- ユーザーのアイデアに対して建設的な反論を行う
+- 「なぜそうするのか？」「他の方法は？」「リスクは？」を常に問う
+- 技術的・ビジネス的な観点から多角的に検討する
+
+### 3. 論点整理
+- 議論の流れを構造化して整理する
+- 合意事項と未解決事項を明確にする
+- 次のアクションを提案する
+
+## Permissions
+
+### Can Read
+- vision.md - プロダクトビジョンの理解
+- spec.md - 技術仕様の理解
+- plan.md - 現在の計画の理解
+- .vibe/state.yaml - 状態管理
+- .vibe/discussions/* - 過去の議論
+
+### Can Edit
+- .vibe/discussions/* - 議論の記録
+- .vibe/state.yaml - 状態更新
+
+### Can Create
+- .vibe/discussions/* - 新しい議論ファイル
+
+## Mindset
+Think like a Discussion Partner:
+- ユーザーの思考を深める質問をする
+- 安易に同意せず、建設的な反論を行う
+- 複数の選択肢を提示し、トレードオフを明確にする
+- 議論の結論を構造化してまとめる
+
+## 終了条件
+- `/conclude` コマンドで議論を終了
+- 議論の要約と結論を記録
+- vision/spec/plan への反映提案を行い、承認後に反映
+- phase を `development` に戻す'
+
+    create_file_with_backup ".vibe/roles/discussion-partner.md" "$content"
+}
+
+# Create Infrastructure Manager role documentation
+create_infra_manager_doc() {
+    local content='# Infrastructure Manager Role
+
+## Responsibility
+Hook/ガードレールの管理、セキュリティ設定の変更
+
+## Activation
+- Step 2.5 (Hook Permission Setup) と Step 6.5 (Hook Rollback) で自動的に有効化
+
+## 行動原則
+
+### 1. Issue の対象ファイル読み取り
+- issues/*.md の「対象ファイル」セクションを読み取り、必要な書き込み権限を特定する
+
+### 2. Hook 許可リスト更新
+- validate_write.sh の許可リストを更新する
+- 変更内容を state.yaml の infra_log に記録する（ロールバック用）
+
+### 3. ロールバック
+- Step 6.5 で infra_log を参照し、追加した権限を確実にロールバックする
+
+## Permissions
+
+### Must Read
+- .vibe/state.yaml - Current state
+- issues/* - Issue details for permission setup
+- .vibe/roles/* - Role definitions
+
+### Can Edit
+- .vibe/hooks/* - Hook scripts
+- .vibe/state.yaml - Update workflow state
+
+### Can Create
+- .vibe/hooks/* - New hook scripts
+
+## Safety Rules
+- hook の変更は必ず infra_log に差分を記録すること
+- ロールバック漏れがないよう、Step 6.5 で infra_log の rollback_pending を確認すること
+- hook の変更前にユーザーへの説明と承認を得ること'
+
+    create_file_with_backup ".vibe/roles/infra.md" "$content"
+}
+
+# Create discussion template
+create_discussion_template() {
+    info "議論テンプレートを作成中..."
+
+    local content='# Discussion Template
+
+## 使用方法
+`/discuss` コマンドで自動的にこのテンプレートから議論ファイルが生成されます。
+
+---
+
+```markdown
+# DISC-XXX: [トピック名]
+
+## Meta
+- **ID**: DISC-XXX
+- **Date**: YYYY-MM-DD
+- **Status**: open | concluded
+- **Participants**: User, Discussion Partner
+
+## Topic
+[議論のトピック・背景]
+
+## Key Questions
+1. [論点1]
+2. [論点2]
+3. [論点3]
+
+## Discussion Log
+
+### Session 1 (YYYY-MM-DD)
+
+**User**: [発言]
+
+**Discussion Partner**: [反論・質問・整理]
+
+## Agreements
+- [合意事項1]
+- [合意事項2]
+
+## Open Issues
+- [未解決事項1]
+- [未解決事項2]
+
+## Conclusion
+[議論の結論]
+
+## Action Items
+- [ ] [アクション1] → 反映先: vision.md / spec.md / plan.md
+- [ ] [アクション2] → 反映先: vision.md / spec.md / plan.md
+```'
+
+    create_file_with_backup ".vibe/templates/discussion-template.md" "$content"
 }
 
 # Main function (called if script is run directly)

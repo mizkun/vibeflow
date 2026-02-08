@@ -1,4 +1,4 @@
-# Vibe Coding Framework - Current State
+# VibeFlow v2 State
 current_cycle: 1
 current_step: 1_plan_review
 current_issue: null
@@ -7,7 +7,7 @@ last_role_transition: null
 last_completed_step: null
 next_step: 2_issue_breakdown
 
-# Workflow phase (development | discovery)
+# v2: Phase management
 phase: development
 
 # Human checkpoint status
@@ -22,21 +22,21 @@ issues_completed: []
 # Quick fixes tracking
 quick_fixes: []
 
-# Discovery phase tracking
+# v2: Discovery Phase
 discovery:
   id: null
   started: null
   topic: null
   sessions: []
 
-# Safety tracking
+# v2: Safety controls
 safety:
   ui_mode: atomic
   destructive_op: require_confirmation
   max_fix_attempts: 3
   failed_approach_log: []
 
-# Infrastructure Manager audit log
+# v2: Infrastructure Manager log
 infra_log:
   step: null
   hook_changes: []

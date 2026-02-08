@@ -30,6 +30,16 @@ create_claude_settings() {
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.vibe/hooks/validate_write.sh",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "PostToolUse": [

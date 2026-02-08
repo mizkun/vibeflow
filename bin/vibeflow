@@ -1,0 +1,162 @@
+#!/bin/bash
+set -euo pipefail
+
+# VibeFlow CLI
+# Usage: vibeflow <command> [options]
+
+# Resolve symlinks to find the real framework directory
+resolve_framework_dir() {
+  local source="${BASH_SOURCE[0]}"
+  while [ -L "$source" ]; do
+    local dir="$(cd -P "$(dirname "$source")" && pwd)"
+    source="$(readlink "$source")"
+    [[ $source != /* ]] && source="$dir/$source"
+  done
+  local bin_dir="$(cd -P "$(dirname "$source")" && pwd)"
+  echo "$(dirname "$bin_dir")"
+}
+
+FRAMEWORK_DIR="$(resolve_framework_dir)"
+VERSION=$(cat "${FRAMEWORK_DIR}/VERSION" 2>/dev/null || echo "unknown")
+
+# Color output
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+usage() {
+  echo ""
+  echo -e "${BLUE}VibeFlow${NC} v${VERSION} — AI-driven development methodology for Claude Code"
+  echo ""
+  echo "Usage: vibeflow <command> [options]"
+  echo ""
+  echo "Commands:"
+  echo "  setup       新規プロジェクトをセットアップ"
+  echo "  upgrade     既存プロジェクトを最新バージョンにアップグレード"
+  echo "  version     バージョン情報を表示"
+  echo "  doctor      環境の問題を診断"
+  echo "  help        このヘルプを表示"
+  echo ""
+  echo "Setup options:"
+  echo "  vibeflow setup [options]"
+  echo "    --force              確認をスキップ"
+  echo "    --no-backup          バックアップをスキップ"
+  echo "    --with-e2e           E2E テスト付きでセットアップ"
+  echo ""
+  echo "Upgrade options:"
+  echo "  vibeflow upgrade [options]"
+  echo "    --dry-run            変更を実行せず、何が行われるかを表示"
+  echo "    --force              確認をスキップ"
+  echo "    --no-backup          バックアップをスキップ"
+  echo ""
+  echo "Examples:"
+  echo "  mkdir my-project && cd my-project && vibeflow setup"
+  echo "  cd existing-project && vibeflow upgrade"
+  echo "  cd existing-project && vibeflow upgrade --dry-run"
+  echo ""
+}
+
+cmd_version() {
+  echo "VibeFlow v${VERSION}"
+  echo "Framework: ${FRAMEWORK_DIR}"
+
+  if [ -f ".vibe/version" ]; then
+    local project_version=$(cat .vibe/version | tr -d '[:space:]')
+    echo "Project:   v${project_version} ($(pwd))"
+
+    if [ "$project_version" != "$VERSION" ]; then
+      echo ""
+      echo -e "${YELLOW}⚠ プロジェクトがフレームワークより古いバージョンです${NC}"
+      echo "  vibeflow upgrade を実行してください"
+    fi
+  fi
+}
+
+cmd_doctor() {
+  echo "VibeFlow Environment Check"
+  echo "─────────────────────────"
+
+  echo -n "Framework:        "
+  if [ -d "$FRAMEWORK_DIR" ]; then
+    echo "✓ ${FRAMEWORK_DIR} (v${VERSION})"
+  else
+    echo "✗ not found"
+  fi
+
+  echo -n "git:              "
+  if command -v git &>/dev/null; then
+    echo "✓ $(git --version)"
+  else
+    echo "✗ not installed"
+  fi
+
+  echo -n "python3:          "
+  if command -v python3 &>/dev/null; then
+    echo "✓ $(python3 --version 2>&1)"
+  else
+    echo "✗ not installed"
+  fi
+
+  echo -n "yq:               "
+  if command -v yq &>/dev/null; then
+    echo "✓ $(yq --version 2>&1 | head -1)"
+  else
+    echo "○ not installed (optional for upgrade: brew install yq)"
+  fi
+
+  echo -n "Claude Code:      "
+  if command -v claude &>/dev/null; then
+    echo "✓ $(claude --version 2>&1 | head -1)"
+  else
+    echo "○ not detected"
+  fi
+
+  echo -n "Agent Teams:      "
+  if [ "${CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS:-0}" = "1" ]; then
+    echo "✓ enabled"
+  else
+    echo "○ disabled (optional: export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1)"
+  fi
+
+  echo ""
+  echo -n "Project:          "
+  if [ -d ".vibe" ]; then
+    if [ -f ".vibe/version" ]; then
+      local pv=$(cat .vibe/version | tr -d '[:space:]')
+      echo "✓ v${pv} ($(basename "$(pwd)"))"
+    else
+      echo "✓ v1.0.0 (pre-versioning)"
+    fi
+  else
+    echo "○ not a VibeFlow project"
+  fi
+
+  echo "─────────────────────────"
+}
+
+cmd_setup() {
+  bash "${FRAMEWORK_DIR}/setup_vibeflow.sh" "$@"
+}
+
+cmd_upgrade() {
+  bash "${FRAMEWORK_DIR}/upgrade_vibeflow.sh" "$@"
+}
+
+# --- Main routing ---
+
+COMMAND="${1:-help}"
+shift 2>/dev/null || true
+
+case "$COMMAND" in
+  setup)    cmd_setup "$@" ;;
+  upgrade)  cmd_upgrade "$@" ;;
+  version)  cmd_version ;;
+  doctor)   cmd_doctor ;;
+  help|--help|-h)  usage ;;
+  *)
+    echo "Unknown command: $COMMAND"
+    echo "Run 'vibeflow help' for usage"
+    exit 1
+    ;;
+esac

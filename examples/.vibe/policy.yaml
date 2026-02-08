@@ -40,4 +40,25 @@ roles:
     can_create:
       - ".vibe/qa-reports/**"
       - ".vibe/test-results.log"
-
+  discussion_partner:
+    can_read:
+      - "vision.md"
+      - "spec.md"
+      - "plan.md"
+      - ".vibe/state.yaml"
+      - ".vibe/discussions/**"
+    can_write:
+      - ".vibe/discussions/**"
+      - ".vibe/state.yaml"
+    can_create:
+      - ".vibe/discussions/**"
+  infra_manager:
+    can_read:
+      - ".vibe/hooks/**"
+      - ".vibe/state.yaml"
+      - ".claude/settings.json"
+    can_write:
+      - ".vibe/hooks/**"
+      - ".vibe/state.yaml"
+    can_create:
+      - ".vibe/hooks/**"
