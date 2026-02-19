@@ -7,6 +7,9 @@ set -euo pipefail
 PROJECT="${VIBEFLOW_PROJECT_DIR:-.}"
 FRAMEWORK="${VIBEFLOW_FRAMEWORK_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
+# Source helper functions (log_info, copy_if_absent, ensure_dir, etc.)
+source "${FRAMEWORK}/lib/migration_helpers.sh"
+
 cd "$PROJECT"
 
 log_info "VibeFlow v2.0.0 → v3.0.0 マイグレーション開始"
