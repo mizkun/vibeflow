@@ -24,6 +24,36 @@ if ! gh auth status &>/dev/null 2>&1; then
     exit 1
 fi
 
+# Ensure required labels exist
+ensure_labels() {
+    local labels=(
+        "type:dev|0e8a16|開発タスク"
+        "type:human|d93f0b|ヒューマンアクション"
+        "type:discussion|0075ca|議論・検討"
+        "status:implementing|fbca04|実装中"
+        "status:testing|f9d0c4|テスト中"
+        "status:pr-ready|c2e0c6|PRレビュー待ち"
+        "priority:critical|b60205|即座に対応"
+        "priority:high|d93f0b|高優先度"
+        "priority:medium|fbca04|通常優先度"
+        "priority:low|c5def5|低優先度"
+    )
+    echo "🏷️  Ensuring labels exist..."
+    for entry in "${labels[@]}"; do
+        IFS='|' read -r name color desc <<< "$entry"
+        if ! gh label list --search "$name" --json name -q '.[].name' 2>/dev/null | grep -qF "$name"; then
+            if [ "$DRY_RUN" = true ]; then
+                echo "     [DRY RUN] Would create label: $name"
+            else
+                gh label create "$name" --color "$color" --description "$desc" 2>/dev/null || true
+            fi
+        fi
+    done
+    echo ""
+}
+
+ensure_labels
+
 ISSUES_DIR="issues"
 if [ ! -d "$ISSUES_DIR" ]; then
     echo "ℹ️  issues/ directory not found. Nothing to migrate."
