@@ -18,8 +18,11 @@ create_vibe_structure() {
         ".vibe/templates"
         ".vibe/roles"
         ".vibe/hooks"
-        ".vibe/discussions"
-        "issues"
+        ".vibe/context"
+        ".vibe/references"
+        ".vibe/archive"
+        ".vibe/tools"
+        ".github/ISSUE_TEMPLATE"
         "src"
     )
     
@@ -90,8 +93,11 @@ verify_structure() {
         ".vibe/templates"
         ".vibe/roles"
         ".vibe/hooks"
-        ".vibe/discussions"
-        "issues"
+        ".vibe/context"
+        ".vibe/references"
+        ".vibe/archive"
+        ".vibe/tools"
+        ".github/ISSUE_TEMPLATE"
         "src"
     )
     

@@ -1,5 +1,29 @@
-# Role-based Access Policy (machine-readable)
+# VibeFlow v3 Role-Based Access Policy
 roles:
+  project_partner:
+    can_read:
+      - "vision.md"
+      - "spec.md"
+      - "plan.md"
+      - ".vibe/context/**"
+      - ".vibe/references/**"
+      - ".vibe/archive/**"
+      - ".vibe/state.yaml"
+      - "src/**"
+    can_write:
+      - "vision.md"
+      - "spec.md"
+      - "plan.md"
+      - ".vibe/context/**"
+      - ".vibe/references/**"
+      - ".vibe/archive/**"
+      - ".vibe/state.yaml"
+    can_execute:
+      - "gh issue *"
+      - "gh project *"
+      - "git log"
+      - "git diff"
+
   product_manager:
     can_read:
       - "vision.md"
@@ -9,27 +33,27 @@ roles:
       - ".vibe/qa-reports/**"
     can_write:
       - "plan.md"
-      - "issues/**"
       - ".vibe/state.yaml"
-    can_create:
-      - "issues/**"
+    can_execute:
+      - "gh issue *"
+
   engineer:
     can_read:
       - "spec.md"
-      - "issues/**"
       - "src/**"
       - ".vibe/state.yaml"
     can_write:
       - "src/**"
       - "**/*.test.*"
+      - "**/__tests__/**"
       - ".vibe/state.yaml"
     can_create:
       - "src/**"
       - "**/*.test.*"
+
   qa_engineer:
     can_read:
       - "spec.md"
-      - "issues/**"
       - "src/**"
       - ".vibe/state.yaml"
       - ".vibe/qa-reports/**"
@@ -40,18 +64,7 @@ roles:
     can_create:
       - ".vibe/qa-reports/**"
       - ".vibe/test-results.log"
-  discussion_partner:
-    can_read:
-      - "vision.md"
-      - "spec.md"
-      - "plan.md"
-      - ".vibe/state.yaml"
-      - ".vibe/discussions/**"
-    can_write:
-      - ".vibe/discussions/**"
-      - ".vibe/state.yaml"
-    can_create:
-      - ".vibe/discussions/**"
+
   infra_manager:
     can_read:
       - ".vibe/hooks/**"

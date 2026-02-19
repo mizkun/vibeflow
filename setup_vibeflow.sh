@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Vibe Coding Framework Setup Script
-# Version: 2.0.0
+# Version: 3.0.0
 # This is the main setup script that orchestrates the installation
-# Includes: Discovery Phase, Agent Team, Safety Rules, Hooks, Subagents, Skills
+# Includes: GitHub Issues, Project Partner, Multi-Terminal, 3-Tier Context, Safety Rules
 
 set -e  # Exit on error
 set -u  # Exit on undefined variable
@@ -53,7 +53,7 @@ if [ -f "${LIB_DIR}/create_subagents.sh" ]; then
 fi
 
 # Global variables
-VERSION="2.0.0"
+VERSION="3.0.0"
 FORCE_INSTALL=false
 BACKUP_ENABLED=true
 VERBOSE=false
@@ -76,13 +76,14 @@ Options:
     --with-e2e          Include Playwright E2E testing setup
 
 Features (included by default):
-    - Discovery Phase: /discuss, /conclude commands for brainstorming
+    - GitHub Issues integration: Task management via gh CLI
+    - Project Partner: Strategic partner for planning and context management
+    - Multi-Terminal: Project Partner (permanent) + Dev terminal(s) (per-issue)
+    - 3-Tier Context: context/ + references/ + archive/
     - Safety Rules: UI/CSS atomic mode, destructive op guard, write guard
-    - Agent Team support: mode: team/fork (requires CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1)
     - Hooks: Access control (validate_access.py), Write guard (validate_write.sh)
     - Skills: vibeflow-issue-template, vibeflow-tdd
     - Subagents: qa-acceptance, code-reviewer, test-runner
-    - Notification sounds (PostToolUse, Stop hooks)
 
 Examples:
     $0                  Normal installation with confirmations
@@ -354,7 +355,8 @@ verify_installation() {
         local cmds=(
             ".claude/commands/progress.md"
             ".claude/commands/healthcheck.md"
-            ".claude/commands/next.md"
+            ".claude/commands/discuss.md"
+            ".claude/commands/conclude.md"
             ".claude/commands/quickfix.md"
             ".claude/commands/exit-quickfix.md"
             ".claude/commands/parallel-test.md"
@@ -400,19 +402,21 @@ verify_installation() {
         warning ".vibe/hooks/validate_write.sh: Missing (書き込みガード無効)"
     fi
 
-    # Verify new v2 files
-    local v2_files=(
-        ".vibe/discussions"
-        ".vibe/roles/discussion-partner.md"
+    # Verify v3 files
+    local v3_files=(
+        ".vibe/context"
+        ".vibe/context/STATUS.md"
+        ".vibe/references"
+        ".vibe/archive"
+        ".vibe/roles/project-partner.md"
         ".vibe/roles/infra.md"
-        ".claude/commands/discuss.md"
-        ".claude/commands/conclude.md"
+        ".github/ISSUE_TEMPLATE"
     )
-    for v2_item in "${v2_files[@]}"; do
-        if [ -e "$v2_item" ]; then
-            success "$v2_item: OK"
+    for v3_item in "${v3_files[@]}"; do
+        if [ -e "$v3_item" ]; then
+            success "$v3_item: OK"
         else
-            warning "$v2_item: Missing"
+            warning "$v3_item: Missing"
         fi
     done
 
@@ -477,26 +481,25 @@ show_completion() {
     echo "1. 以下のファイルを編集して、プロジェクトの内容を記入してください："
     echo "   • vision.md - プロダクトビジョン"
     echo "   • spec.md   - 仕様と技術設計"
-    echo "   • plan.md   - 開発計画とTODO"
+    echo "   • plan.md   - ロードマップ"
     echo ""
-    echo "2. Claude Code でこのディレクトリを開いてください"
+    echo "2. GitHub リポジトリを作成し、gh CLI を認証してください："
+    echo "   gh auth login"
     echo ""
-    echo "3. 以下のコマンドで開発を開始できます："
-    print_color "$YELLOW" '   /next'
+    echo "3. Claude Code でこのディレクトリを開いてください"
+    echo ""
+    echo "4. マルチターミナルで開発を開始："
+    echo "   Terminal 1 (Project Partner): /discuss"
+    echo "   Terminal 2 (Development):     Issue 単位で実装"
     echo ""
     echo "利用可能なコマンド:"
-    echo "   /next        - 次のステップへ進む"
-    echo "   /discuss     - 壁打ち（Discovery Phase）を開始"
-    echo "   /conclude    - 議論を終了し開発フェーズに戻る"
-    echo "   /progress    - 現在の進捗確認"
+    echo "   /discuss     - Project Partner セッション開始"
+    echo "   /conclude    - セッション終了・STATUS.md 更新"
+    echo "   /progress    - 現在の進捗確認（GitHub Issues 統合）"
     echo "   /healthcheck - 整合性チェック"
     echo "   /quickfix    - Quick Fixモードへ"
     echo "   /run-e2e     - E2Eテスト実行（Playwright導入時）"
     echo "   /parallel-test - 並列テスト実行"
-    echo ""
-    echo "Agent Team モード（オプション）:"
-    echo "   export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1"
-    echo "   Claude Code 2.1.20+ が必要です"
     echo ""
     print_color "$PURPLE" "🎉 Happy Vibe Coding!"
 }

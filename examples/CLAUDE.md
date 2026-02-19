@@ -1,37 +1,77 @@
-# Vibe Coding Framework - Context-Continuous Development
+# VibeFlow v3 - Project-Driven Development
 
 **Language**: Communicate in Japanese (日本語) for all interactions.
 
 ## Role-Based Development System
 
-This framework implements a role-based development system where each step is executed by a specific role with clearly defined permissions and responsibilities.
+このフレームワークはロールベースの開発システムを実装しています。マルチターミナル構成で運用し、各ロールは明確に定義された権限と責務を持ちます。Project Partner がプロジェクト全体を管理し、開発ターミナルが実装を担当します。
 
 ## Role Definitions and Permissions
 
-### Product Manager Role
-**Responsibility**: Vision alignment, planning, and issue detailing
+### Project Partner Role
+**Responsibility**: プロジェクトの戦略的パートナーとして、議論・計画・状況管理・外部情報の取り込みを担当する
 
 **Must Read** (Mandatory context):
 - vision.md - Product vision and goals
-- spec.md - Technical and functional specifications  
+- spec.md - Technical and functional specifications
+- plan.md - Development plan and progress
+- .vibe/context/** - STATUS.md、サマリー
+- .vibe/references/** - ホットな参照情報
+- .vibe/archive/** - アーカイブ済み情報
+- .vibe/state.yaml - Current state tracking
+- src/** - Source code (READ ONLY)
+
+**Can Edit**:
+- vision.md - Product vision updates
+- spec.md - Specification updates
+- plan.md - Update progress and TODOs
+- .vibe/context/** - STATUS.md 更新
+- .vibe/references/** - 参照情報の管理
+- .vibe/archive/** - アーカイブの管理
+- .vibe/state.yaml - Update workflow state
+
+**Can Execute**:
+- `gh issue create/edit/list/view/close` - GitHub Issue management
+- `gh project *` - GitHub Projects management
+- `gh pr list/view` - Pull Request の確認（read-only）
+- `git log`, `git diff` - Development status check (read-only)
+
+**Can Create**:
+- .vibe/context/** - New context files
+- .vibe/references/** - New reference files
+- .vibe/archive/** - New archive files
+- GitHub Issues via `gh issue create`
+
+**Cannot Do**:
+- src/ への書き込み（コード変更は Engineer の担当）
+
+### Product Manager Role
+**Responsibility**: Vision alignment, planning, and issue management
+
+**Must Read** (Mandatory context):
+- vision.md - Product vision and goals
+- spec.md - Technical and functional specifications
 - plan.md - Development plan and progress
 - .vibe/state.yaml - Current state tracking
 - .vibe/qa-reports/* - QA findings for planning decisions
 
 **Can Edit**:
 - plan.md - Update progress and TODOs
-- issues/* - Modify issue files
 - .vibe/state.yaml - Update workflow state
 
+**Can Execute**:
+- `gh issue create/edit/list/view/close` - GitHub Issue management
+- `gh project *` - GitHub Projects management
+
 **Can Create**:
-- issues/* - New issue files
+- GitHub Issues via `gh issue create`
 
 ### Engineer Role
 **Responsibility**: Implementation, testing, and refactoring
 
 **Must Read** (Mandatory context):
 - spec.md - Technical requirements
-- issues/* - Current issue details
+- GitHub Issues - Current issue details (`gh issue view`)
 - src/* - Source code
 - .vibe/state.yaml - Current state
 
@@ -39,6 +79,11 @@ This framework implements a role-based development system where each step is exe
 - src/* - Source code files
 - *.test.* - Test files
 - .vibe/state.yaml - Update workflow state
+
+**Can Execute**:
+- `gh issue comment` - Issue へのコメント追加
+- `gh pr create` - Pull Request 作成
+- `git` - Version control operations
 
 **Can Create**:
 - src/* - New source files
@@ -49,7 +94,7 @@ This framework implements a role-based development system where each step is exe
 
 **Must Read** (Mandatory context):
 - spec.md - Requirements to verify against
-- issues/* - Issue acceptance criteria
+- GitHub Issues - Issue acceptance criteria (`gh issue view`)
 - src/* - Code to review
 - .vibe/state.yaml - Current state
 - .vibe/qa-reports/* - Previous QA findings
@@ -59,26 +104,13 @@ This framework implements a role-based development system where each step is exe
 - .vibe/qa-reports/* - QA findings and reports
 - .vibe/state.yaml - Update workflow state
 
+**Can Execute**:
+- `gh pr review` - Pull Request レビュー
+- `gh issue comment` - Issue へのフィードバック
+
 **Can Create**:
 - .vibe/qa-reports/* - New QA reports
 - .vibe/test-results.log - Test result logs
-
-### Discussion Partner Role
-**Responsibility**: 壁打ち相手としてアイデアの深掘り、反論・疑問の提示、論点整理
-
-**Must Read** (Mandatory context):
-- vision.md - Product vision understanding
-- spec.md - Technical specification understanding
-- plan.md - Current plan understanding
-- .vibe/state.yaml - Current state
-- .vibe/discussions/* - Previous discussions
-
-**Can Edit**:
-- .vibe/discussions/* - Discussion records
-- .vibe/state.yaml - Update workflow state
-
-**Can Create**:
-- .vibe/discussions/* - New discussion files
 
 ### Infrastructure Manager Role
 **Responsibility**: Hook/ガードレールの管理、セキュリティ設定の変更
@@ -95,114 +127,31 @@ This framework implements a role-based development system where each step is exe
 **Can Create**:
 - .vibe/hooks/* - New hook scripts
 
-## Workflow Steps and Role Assignments
+## Development Workflow (v3)
 
-**Note**: For detailed execution instructions for each role, refer to:
-- Product Manager: `.vibe/roles/product-manager.md`
-- Engineer: `.vibe/roles/engineer.md`
-- QA Engineer: `.vibe/roles/qa-engineer.md`
-- Discussion Partner: `.vibe/roles/discussion-partner.md`
-- Infrastructure Manager: `.vibe/roles/infra.md`
+v3 のワークフローはシンプルな Issue 駆動です。ステップ番号による進行管理はなく、自然な流れで開発を進めます。
 
-```yaml
-workflow:
-  step_1_plan_review:
-    role: Product Manager
-    mode: solo
-    mission: Review progress against vision/spec and update development plan
-
-  step_2_issue_breakdown:
-    role: Product Manager
-    mode: team
-    mission: Create detailed, implementable issues from plan
-    team_config:
-      teammates: [Technical Feasibility Analyst, UX Critic, Devil's Advocate]
-      consensus_required: true
-
-  step_2a_issue_validation:
-    role: Human
-    mode: solo
-    mission: Validate issues are clear and implementable
-
-  step_2_5_hook_setup:
-    role: Infrastructure Manager
-    mode: solo
-    mission: Read issue target files and update hook permissions
-    auto_insert: true  # Automatically inserted after step 2a
-
-  step_3_branch_creation:
-    role: Engineer
-    mode: solo
-    mission: Create feature branch for implementation
-
-  step_4_test_writing:
-    role: Engineer
-    mode: fork
-    mission: Write failing tests first (TDD Red phase)
-    context_inherits: [spec.md, issues/*, state.yaml]
-
-  step_5_implementation:
-    role: Engineer
-    mode: fork
-    mission: Write minimal code to pass tests (TDD Green phase)
-    context_inherits: [spec.md, issues/*, src/*, state.yaml]
-
-  step_6_refactoring:
-    role: Engineer
-    mode: fork
-    mission: Improve code quality while keeping tests green (TDD Refactor phase)
-
-  step_6a_code_sanity_check:
-    role: QA Engineer
-    mode: solo
-    mission: Run automated quality checks and linting
-
-  step_6_5_hook_rollback:
-    role: Infrastructure Manager
-    mode: solo
-    mission: Rollback hook permissions added in step 2.5
-    auto_insert: true  # Automatically inserted after step 6a
-
-  step_7_acceptance_test:
-    role: QA Engineer
-    mode: team
-    mission: Verify implementation meets requirements
-    team_config:
-      teammates: [Spec Compliance Checker, Edge Case Hunter, UI Visual Verifier]
-      consensus_required: true
-
-  step_7a_runnable_check:
-    role: Human
-    mode: solo
-    mission: Manual testing of implemented features
-
-  step_8_pull_request:
-    role: Engineer
-    mode: solo
-    mission: Create PR with comprehensive documentation
-
-  step_9_review:
-    role: QA Engineer
-    mode: team
-    mission: Code review and quality assessment
-    team_config:
-      teammates: [Security Reviewer, Performance Reviewer, Test Coverage Reviewer]
-      consensus_required: true
-
-  step_10_merge:
-    role: Engineer
-    mode: solo
-    mission: Merge approved changes to main branch
-
-  step_11_deployment:
-    role: Engineer
-    mode: solo
-    mission: Deploy to production environment
+```
+Issue (GitHub Issue) → Branch → Implement (TDD) → PR → Review
 ```
 
-## Execution Modes
+### Flow
+1. **Issue 作成**: GitHub Issue でタスクを定義（Project Partner or Product Manager）
+2. **Issue 着手**: Developer terminal が Issue をピックアップ（`gh issue view #N`）
+3. **Branch 作成**: Issue に対応するブランチを作成（Engineer）
+4. **TDD 実装**: Red-Green-Refactor サイクルで実装（Engineer）
+5. **PR 作成**: Pull Request を作成し、変更内容を記載（Engineer）
+6. **Review**: PR レビュー（QA Engineer + Human） - 唯一のヒューマンチェックポイント
+7. **Merge & Deploy**: レビュー承認後にマージ
 
-Each workflow step has a `mode` that determines how it's executed:
+### Human Checkpoint
+- **PR Review のみ**: ヒューマンチェックポイントは PR レビュー時のみ
+- Issue validation や manual testing は PR レビューに統合
+- レビューでの指摘は Issue コメントまたは PR コメントで追跡
+
+### Execution Modes
+
+各フェーズの実行モード:
 
 - **solo**: Main agent executes directly (default, works everywhere)
 - **team**: Agent Team spawns multiple perspectives (requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)
@@ -210,36 +159,125 @@ Each workflow step has a `mode` that determines how it's executed:
 
 If `team` or `fork` is unavailable, the step automatically falls back to `solo` mode.
 
-## Workflow Execution Protocol
+## Multi-Terminal Operation
 
-For each step execution:
+v3 ではマルチターミナル構成で開発を行います。ターミナル間の情報共有はファイルシステム、git、GitHub Issues を介して行います。
 
-1. **Load State**: Read `.vibe/state.yaml` to understand current position
-2. **Declare Role Transition**: Explicitly announce role change
-3. **Enforce Permissions**: Only access files allowed for current role
-4. **Update State**: Record progress in `.vibe/state.yaml`
+### Terminal Structure
 
-### Role Transition Declaration Format
+| Terminal | Role | Lifecycle | Scope |
+|----------|------|-----------|-------|
+| Project Partner | Project Partner | 常駐（permanent） | plan/vision/spec/context management |
+| Development | Engineer / QA / PM | Issue 単位で起動 | src/ implementation |
+
+### Project Partner Terminal（常駐）
+- `/discuss` でセッションを開始
+- プロジェクトの全体管理、議論、コンテキスト保持を担当
+- **Write scope**: vision.md, spec.md, plan.md, .vibe/context/**, .vibe/references/**, .vibe/archive/**, .vibe/state.yaml
+- src/ への書き込みは不可
+
+### Development Terminal（Issue 単位）
+- GitHub Issue ごとに起動し、実装が完了したら終了
+- `gh issue view #N` で対象 Issue の詳細を確認してから着手
+- **Write scope**: src/**, *.test.*, .vibe/state.yaml
+- plan.md / vision.md / spec.md への書き込みは不可
+
+### Write Scope Separation
+
+| Target | Project Partner Terminal | Development Terminal |
+|--------|------------------------|---------------------|
+| vision.md | Write | Read only |
+| spec.md | Write | Read only |
+| plan.md | Write | Read only |
+| src/** | Read only | Write |
+| *.test.* | Read only | Write |
+| .vibe/context/** | Write | Read only |
+| .vibe/references/** | Write | Read only |
+| .vibe/archive/** | Write | Read only |
+| .vibe/state.yaml | Write | Write |
+| GitHub Issues | Create/Edit | Comment |
+
+### Information Sharing
+- **Filesystem**: STATUS.md, references/, context/ を通じた情報共有
+- **Git**: branch / commit を通じたコード変更の共有
+- **GitHub Issues**: タスク管理と進捗共有（`gh issue list`, `gh issue view`）
+
+## 3-Tier Context Management
+
+プロジェクトのコンテキストを3層で管理し、情報の鮮度と参照頻度に応じて整理します。
+
+### Tier 1: `.vibe/context/` - Always Loaded
+常にロードされるコアコンテキスト。
+
+- **STATUS.md** - プロジェクトの現在の状況（Project Partner が自動更新）
+  - Current Focus, Active Issues, Recent Decisions, Blockers, Upcoming
+
+### Tier 2: `.vibe/references/` - Hot Reference
+頻繁に参照するホットな情報。必要に応じてロードされます。
+
+- 会議メモ
+- 議論メモ（壁打ち結果）
+- リサーチ結果
+- フィードバック
+- ライフサイクル: 新しい情報はまずここに格納される
+
+### Tier 3: `.vibe/archive/` - Archived Info
+過去の情報。フラット構造で管理します。
+
+- **命名規則**: `YYYY-MM-DD-type-topic.md`
+- **YAML front matter** 必須:
+  ```yaml
+  ---
+  date: 2026-02-19
+  type: discussion | meeting | decision | research
+  topic: トピックの概要
+  related_issues: ["#12", "#15"]
+  ---
+  ```
+- ライフサイクル: references/ の情報が古くなったら archive/ に移動
+
+## GitHub Issues Integration
+
+タスク管理はすべて GitHub Issues で行います。ローカルの `issues/` ディレクトリは使用しません。
+
+### Issue Types (Labels)
+
+#### Type Labels
+- `type:dev` - 開発タスク（Engineer が実装）
+- `type:human` - ヒューマンアクション必要（外部設定、手動確認など）
+- `type:discussion` - 議論・検討が必要
+
+#### Status Labels
+- `status:implementing` - 実装中
+- `status:testing` - テスト中
+- `status:pr-ready` - PR レビュー待ち
+
+#### Priority Labels
+- `priority:critical` - 即座に対応が必要
+- `priority:high` - 高優先度
+- `priority:medium` - 通常優先度
+- `priority:low` - 低優先度
+
+### Issue Templates
+Issue テンプレートは `.github/ISSUE_TEMPLATE/` に配置します。テンプレートにより Issue のフォーマットを統一し、必要な情報の漏れを防ぎます。
+
+### Operations
+```bash
+# Issue の作成
+gh issue create --title "タイトル" --label "type:dev,priority:medium" --body "詳細"
+
+# Issue 一覧の確認
+gh issue list --label "type:dev" --state open
+
+# Issue の詳細確認
+gh issue view 12
+
+# Issue のステータス更新
+gh issue edit 12 --add-label "status:implementing"
+
+# Issue のクローズ
+gh issue close 12
 ```
-========================================
-🔄 ROLE TRANSITION
-Previous Step: [step_name] ([previous_role])
-Current Step:  [step_name] ([current_role])
-Issue:         [current_issue]
-Now operating as: [CURRENT_ROLE]
-Must read: [list of mandatory files]
-Can modify: [list of editable files]
-========================================
-```
-
-## Critical Rules
-
-1. **Context Continuity**: All work executed in main context for information preservation
-2. **TDD Enforcement**: Tests must be written before implementation (Red-Green-Refactor)
-3. **File Verification**: Verify artifacts exist before proceeding to next step
-4. **Human Checkpoints**: Only at step 2a (issue validation) and 7a (manual testing)
-5. **Permission Enforcement**: Strictly follow role-based file access permissions
-6. **State Management**: Always update state.yaml after completing each step
 
 ## Safety Rules
 
@@ -251,11 +289,10 @@ Can modify: [list of editable files]
 
 ## Available Commands
 
-- `/next` - Proceed to next step with role transition
-- `/discuss [topic]` - Start a discovery discussion (壁打ち)
-- `/discuss --continue` - Continue previous discussion
-- `/conclude` - Conclude discussion and return to development
-- `/progress` - Check current progress and role status
+- `/discuss [topic]` - Project Partner セッションを開始（壁打ち・議論・コンテキスト管理）
+- `/discuss --continue` - 前回のセッションを継続
+- `/conclude` - 議論を要約し、結論を vision/spec/plan/STATUS.md に反映して終了
+- `/progress` - Check current progress and role status (GitHub Issues integrated)
 - `/healthcheck` - Verify repository consistency
 - `/quickfix` - Enter quick fix mode for minor adjustments
 - `/exit-quickfix` - Exit quick fix mode
@@ -264,18 +301,19 @@ Can modify: [list of editable files]
 
 ## Discovery Phase
 
-Discovery Phase（壁打ちフェーズ）は、開発に入る前にアイデアを深掘りするためのモードです。
+Discovery Phase（壁打ちフェーズ）は、開発に入る前にアイデアを深掘りするためのモードです。Project Partner セッションとして運用し、インクリメンタルに振り返りを行います。
 
 ### フロー
-1. `/discuss [トピック]` で Discussion Partner ロールに切り替え
-2. ファイル変更なしで議論に集中（discussions/ と state.yaml のみ例外）
+1. `/discuss [トピック]` で Project Partner ロールとしてセッション開始
+2. ファイル変更なしで議論に集中（context/, references/, archive/, state.yaml のみ例外）
 3. 反論・疑問・論点整理を通じてアイデアを深化
-4. `/conclude` で議論を要約し、承認後に vision/spec/plan に反映
-5. Development Phase に自動復帰
+4. 議論の途中でもインクリメンタルに references/ へメモを記録可能
+5. `/conclude` で議論を要約し、承認後に vision/spec/plan に反映
+6. STATUS.md を更新し、Development Phase に復帰
 
 ### 制約
-- Discovery Phase 中は `/next` コマンドは使用不可
-- Discussion Partner はコード生成・ファイル変更を行わない
+- Discovery Phase 中はコード変更不可
+- Project Partner はコード生成・ファイル変更を行わない（src/ への書き込み禁止）
 - 議論の結論反映は必ずユーザー承認を経由する
 
 ## Quick Fix Mode
@@ -289,35 +327,20 @@ A streamlined mode for minor changes outside the normal workflow:
 
 `.vibe/state.yaml` structure:
 ```yaml
-current_cycle: 1
-current_step: 1_plan_review
-current_issue: null
-current_role: "Product Manager"
-last_role_transition: null
-last_completed_step: null
-next_step: 2_issue_breakdown
+current_issue: null  # GitHub Issue number "#12"
+current_role: "Project Partner"
+phase: development  # development | discovery
 
-# Workflow phase (development | discovery)
-phase: development
-
-# Human checkpoint status
-checkpoint_status:
-  2a_issue_validation: pending
-  7a_runnable_check: pending
-
-# Issues tracking
-issues_created: []
-issues_completed: []
+# Recent issues tracking
+issues_recent: []
 
 # Quick fixes tracking
 quick_fixes: []
 
 # Discovery phase tracking
 discovery:
-  id: null
-  started: null
-  topic: null
-  sessions: []
+  active: false
+  last_session: null
 
 # Safety tracking
 safety:
@@ -328,18 +351,28 @@ safety:
 
 # Infrastructure Manager audit log
 infra_log:
-  step: null
   hook_changes: []
   rollback_pending: false
 ```
 
+## Critical Rules
+
+1. **Context Continuity**: All work executed in main context for information preservation
+2. **TDD Enforcement**: Tests must be written before implementation (Red-Green-Refactor)
+3. **File Verification**: Verify artifacts exist before proceeding to next step
+4. **Human Checkpoints**: PR review is the single human checkpoint
+5. **Permission Enforcement**: Strictly follow role-based file access permissions
+6. **State Management**: Always update state.yaml after completing each step
+
 ## Development Guidelines
 
-1. **Role Immersion**: Fully embody the current role's perspective
-2. **Permission Compliance**: Strictly adhere to file access permissions
-3. **Context Inheritance**: Ensure outputs from previous steps are utilized
-4. **Explicit Transitions**: Always declare role changes clearly
-5. **Quality Focus**: Each role ensures quality within their domain
+1. **Role Immersion**: 現在のロールの視点を完全に体現する
+2. **Permission Compliance**: ファイルアクセス権限を厳守する
+3. **Context Inheritance**: 前のステップのアウトプットを確実に活用する
+4. **Explicit Transitions**: ロール変更は必ず明示的に宣言する
+5. **Quality Focus**: 各ロールが自身のドメインで品質を保証する
+6. **Issue-Driven**: すべての作業は GitHub Issue に紐づけて実行する
+7. **Incremental Delivery**: 小さな単位で継続的にデリバリーする
 
 ## User Interaction Requirements
 
@@ -403,4 +436,3 @@ If hooks cause issues, create `.claude/settings.local.json`:
 ```
 
 Template available at: `.vibe/templates/settings.local.json`
-

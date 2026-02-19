@@ -5,6 +5,83 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.0.0] - 2026-02-19
+
+v2.0.0 からのメジャーアップグレード。GitHub Issues 統合、Project Partner ロール、マルチターミナル運用、3層コンテキスト管理を導入。ワークフローを大幅に簡素化。
+
+### Added
+
+#### GitHub Issues 統合
+- タスク管理を GitHub Issues に一本化（ローカル `issues/` ディレクトリ廃止）
+- Issue テンプレート 3 種: `type:dev`（開発）、`type:human`（人間タスク）、`type:discussion`（議論）
+- ステータスラベル: `status:implementing`、`status:testing`、`status:pr-ready`
+- 優先度ラベル: `priority:critical`、`priority:high`、`priority:medium`、`priority:low`
+- `.github/ISSUE_TEMPLATE/` に Issue テンプレートを自動配置
+
+#### Project Partner ロール（Discussion Partner の拡張）
+- 壁打ち + 外部情報取り込み + タスク管理 + 意思決定記録 + コンテキスト管理
+- `vision.md`、`spec.md`、`plan.md` の読み書き権限
+- `gh issue` / `gh project` コマンドの実行権限
+- `src/` への書き込みは不可（コード変更は Engineer 担当）
+
+#### マルチターミナル運用
+- Project Partner ターミナル x1（常駐）+ 開発ターミナル xN（Issue 単位）
+- ターミナル間の情報共有: ファイルシステム + Git + GitHub Issues
+- 書き込みスコープの明確な分離
+
+#### 3 層コンテキスト管理
+- `.vibe/context/`: 常時ロード（STATUS.md）
+- `.vibe/references/`: ホットな参照情報（会議メモ、議論メモ）
+- `.vibe/archive/`: アーカイブ（YAML front matter 必須、`YYYY-MM-DD-type-topic.md`）
+
+#### Issues マイグレーションツール
+- `.vibe/tools/migrate-issues.sh`: ローカル `issues/*.md` → GitHub Issues への変換
+- `--dry-run` モード対応
+- 完了済み Issue も含めてステータス保持
+
+### Changed
+
+#### ワークフロー簡素化
+- 11 ステップ + 2 チェックポイント → Issue 駆動のシンプルなフロー
+- ヒューマンチェックポイントを PR レビューのみに統合
+- `/next` コマンド廃止（自然言語で進行）
+
+#### state.yaml v3 スキーマ
+- `current_step`、`current_cycle`、`checkpoint_status` 削除
+- `issues_created` / `issues_completed` → `issues_recent` に簡素化
+- `discovery` セクション簡素化: `active` / `last_session` のみ
+- `current_issue`: GitHub Issue 番号形式 (`"#12"`)
+
+#### コマンド更新
+- `/discuss`: Project Partner セッション開始（トピック任意）
+- `/conclude`: STATUS.md 更新 + 開発フェーズ復帰
+- `/progress`: GitHub Issues 統合ビュー
+- `/healthcheck`: v3 ディレクトリ構造チェック
+
+#### ロール権限更新
+- Product Manager: `issues/*` → `gh issue` コマンド
+- Engineer: Issue 参照が `gh issue view` に変更
+- QA Engineer: Issue 参照が `gh issue view` に変更
+- Access Guard (`validate_access.py`): Project Partner 権限追加
+
+### Removed
+- `/next` コマンド（ステップ番号ベースのワークフロー廃止）
+- `issues/` ディレクトリ（GitHub Issues に移行）
+- Discussion Partner ロール（Project Partner に拡張統合）
+- `discussions/` ディレクトリ（`references/` に統合、マイグレーション時にコピー）
+- 11 ステップワークフロー定義
+- `current_step`、`current_cycle` 等のステップ追跡
+
+### Migration
+- `vibeflow upgrade` で v2 → v3 自動マイグレーション
+- `discussions/` → `references/` へのファイルコピー
+- `discussion-partner.md` → `archive/` にアーカイブ
+- `next.md` コマンド → `archive/` にアーカイブ
+- `state.yaml` の自動スキーマ変換（safety セクション保持）
+- Issues マイグレーションは手動: `bash .vibe/tools/migrate-issues.sh`
+
+---
+
 ## [2.0.0] - 2025-02-08
 
 v0.5.0 からのメジャーアップグレード。Discovery Phase（壁打ちフェーズ）、新ロール 2 種、Agent Team / context fork 対応、安全装置、CLI ツール化、マイグレーション機構を追加。

@@ -1,43 +1,28 @@
-# VibeFlow v2 State
-current_cycle: 1
-current_step: 1_plan_review
+# VibeFlow v3 State
 current_issue: null
-current_role: "Product Manager"
-last_role_transition: null
-last_completed_step: null
-next_step: 2_issue_breakdown
+current_role: "Project Partner"
 
-# v2: Phase management
 phase: development
 
-# Human checkpoint status
-checkpoint_status:
-  2a_issue_validation: pending
-  7a_runnable_check: pending
-
-# Issues tracking
-issues_created: []
-issues_completed: []
+# Issues tracking (detailed state on GitHub labels)
+issues_recent: []
 
 # Quick fixes tracking
 quick_fixes: []
 
-# v2: Discovery Phase
+# Discovery phase tracking
 discovery:
-  id: null
-  started: null
-  topic: null
-  sessions: []
+  active: false
+  last_session: null
 
-# v2: Safety controls
+# Safety tracking
 safety:
   ui_mode: atomic
   destructive_op: require_confirmation
   max_fix_attempts: 3
   failed_approach_log: []
 
-# v2: Infrastructure Manager log
+# Infrastructure Manager audit log
 infra_log:
-  step: null
   hook_changes: []
   rollback_pending: false

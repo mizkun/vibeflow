@@ -1,33 +1,39 @@
-# 状態ファイルと実際の整合性チェック
+# プロジェクト整合性チェック
 
-Perform a comprehensive health check of the VibeFlow repository state. Verify:
+VibeFlow プロジェクトの整合性を検証します。
 
 ## Checks to Perform:
 
-1. **State File Consistency**
-   - Read .vibe/state.yaml
-   - Verify current_step matches actual progress
-   - Check if current_issue exists in issues/
-   - Validate checkpoint statuses
+1. **ディレクトリ構造**
+   - .vibe/context/ が存在するか
+   - .vibe/references/ が存在するか
+   - .vibe/archive/ が存在するか
+   - .vibe/context/STATUS.md が存在するか
+   - .github/ISSUE_TEMPLATE/ が存在するか
 
-2. **File Structure Verification**
-   - Required files exist: vision.md, spec.md, plan.md
-   - issues/ directory structure is correct
-   - src/ matches expected project structure
+2. **必須ファイル**
+   - vision.md, spec.md, plan.md が存在するか
+   - .vibe/state.yaml が有効なYAMLか
+   - .vibe/policy.yaml が存在するか
 
-3. **Role Permission Compliance**
-   - Check if recent modifications align with current_role permissions
-   - Flag any potential permission violations
+3. **State ファイル整合性**
+   - .vibe/state.yaml を読み込み
+   - current_role が有効なロール名か
+   - phase が development または discovery か
 
-4. **Documentation Sync**
-   - plan.md TODOs match issues_created in state
-   - Completed issues are marked in both plan.md and state.yaml
+4. **GitHub Issues 連携**
+   - `gh` CLI が利用可能か
+   - GitHub リポジトリとの接続確認
+   - Issue テンプレートが配置されているか
+
+5. **Hook 設定**
+   - .claude/settings.json が存在するか
+   - validate_access.py が存在し実行可能か
+
+6. **ロール定義**
+   - .vibe/roles/project-partner.md が存在するか（v3必須）
+   - 旧 discussion-partner.md が残っていないか
 
 ## Output Format:
-Present findings in Japanese with:
-- ✅ for passing checks
-- ⚠️ for warnings
-- ❌ for failures
-
-Include specific remediation steps for any issues found.
-
+✅ passing checks / ⚠️ warnings / ❌ failures
+日本語で表示し、修正手順を含めてください。

@@ -1,72 +1,52 @@
 ---
-description: Conclude a discovery discussion and return to development
+description: Conclude Project Partner session and update STATUS.md
 ---
 
-# 議論を終了し開発フェーズに戻る
+# Project Partner セッションを終了する
 
-`/conclude` で現在の Discovery Discussion を終了します。
+`/conclude` でセッションの成果をまとめ、STATUS.md を更新して開発フェーズに戻ります。
 
 ## 処理フロー
 
 ### 1. 状態確認
 `.vibe/state.yaml` を読み込み、phase が `discovery` であることを確認する。
-- `discovery` でない場合: 「現在議論中ではありません」とエラー表示
+- `discovery` でない場合: 「現在セッション中ではありません」と表示
 
-### 2. 議論の要約
-1. 現在の議論ファイル（`.vibe/discussions/DISC-XXX-*.md`）を読み込む
-2. 議論内容を要約し、以下をまとめる:
-   - **合意事項（Agreements）**: 議論で合意した内容
-   - **未解決事項（Open Issues）**: まだ結論が出ていない論点
-   - **結論（Conclusion）**: 議論全体の結論
-   - **アクションアイテム**: vision.md / spec.md / plan.md への反映事項
+### 2. セッション成果のまとめ
+セッション中の活動を振り返り、以下を整理:
+- 作成・更新した GitHub Issues
+- vision.md / spec.md / plan.md への変更
+- 重要な意思決定事項
+- references/ に保存した情報
 
-### 3. ユーザー承認
-要約とアクションアイテムをユーザーに提示し、承認を求める:
-```
-📋 議論の要約
+### 3. STATUS.md 更新
+`.vibe/context/STATUS.md` を更新:
+- Current Focus を最新化
+- Active Issues を更新（`gh issue list --state open`）
+- Recent Decisions に新しい決定事項を追加
+- Blockers があれば記録
 
-## 合意事項
-- [合意1]
-- [合意2]
-
-## アクションアイテム
-- [ ] vision.md に [内容] を追記
-- [ ] spec.md に [内容] を追記
-- [ ] plan.md に [内容] を追記
-
-この内容で反映してよろしいですか？
-```
-
-### 4. 承認後の反映
-ユーザーが承認した場合:
-1. **ロール遷移**: Product Manager に切り替え
-2. **ファイル反映**: 承認されたアクションアイテムを各ファイルに反映
-   - vision.md への追記・修正
-   - spec.md への追記・修正
-   - plan.md への追記・修正
-3. **議論ファイル更新**: Status を `concluded` に変更、Conclusion セクションを記入
+### 4. 必要に応じてアーカイブ
+- references/ 内の古い情報を archive/ に移動
+- archive/ のファイル名: `YYYY-MM-DD-type-topic.md`
 
 ### 5. Phase 復帰
 ```yaml
 phase: development
-current_role: "Product Manager"
+current_role: "Project Partner"
 discovery:
-  id: null
-  started: null
-  topic: null
-  sessions: []
+  active: false
+  last_session: "YYYY-MM-DD"
 ```
 
 ### 6. 完了バナー表示
 ```
 ========================================
-✅ DISCOVERY COMPLETE
-Topic: [トピック名]
-Discussion ID: DISC-XXX
-Agreements: N items
-Action items applied: N items
+✅ SESSION COMPLETE
+Changes:
+- Issues created/updated: N
+- Documents updated: [list]
+- STATUS.md: Updated
 Returning to: Development Phase
 ========================================
 ```
-
-IMPORTANT: 反映は必ずユーザーの承認を得てから行う。承認がない場合はファイル変更を行わず、議論ファイルの Status のみ更新する。

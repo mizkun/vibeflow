@@ -38,12 +38,18 @@ import sys
 # - If in doubt, fix the role in state.yaml before editing, don't expand permissions.
 
 ROLE_EDIT_ALLOW = {
+    # Project Partner - project docs, context management, state
+    "Project Partner": [
+        "vision.md",
+        "spec.md",
+        "plan.md",
+        ".vibe/context/*",
+        ".vibe/references/*",
+        ".vibe/archive/*",
+        ".vibe/state.yaml",
+    ],
     "Product Manager": [
         "plan.md",
-        "spec.md",
-        "vision.md",
-        "issues/*",
-        ".vibe/discussions/*",
         ".vibe/state.yaml",
     ],
     "Engineer": [
@@ -58,14 +64,6 @@ ROLE_EDIT_ALLOW = {
         ".vibe/qa-reports/*",
         ".vibe/test-results.log",
         ".vibe/state.yaml",
-    ],
-    # Discussion Partner - discussions, state, and vision/spec/plan (for /conclude reflection)
-    "Discussion Partner": [
-        ".vibe/discussions/*",
-        ".vibe/state.yaml",
-        "vision.md",
-        "spec.md",
-        "plan.md",
     ],
     # Infrastructure Manager - hooks and state
     "Infrastructure Manager": [

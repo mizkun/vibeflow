@@ -1,33 +1,19 @@
-# Vibe Coding Framework - Current State
-current_cycle: 1
-current_step: 1_plan_review
+# VibeFlow v3 State
 current_issue: null
-current_role: "Product Manager"
-last_role_transition: null
-last_completed_step: null
-next_step: 2_issue_breakdown
+current_role: "Project Partner"
 
-# Workflow phase (development | discovery)
 phase: development
 
-# Human checkpoint status
-checkpoint_status:
-  2a_issue_validation: pending
-  7a_runnable_check: pending
-
-# Issues tracking
-issues_created: []
-issues_completed: []
+# Issues tracking (detailed state on GitHub labels)
+issues_recent: []
 
 # Quick fixes tracking
 quick_fixes: []
 
 # Discovery phase tracking
 discovery:
-  id: null
-  started: null
-  topic: null
-  sessions: []
+  active: false
+  last_session: null
 
 # Safety tracking
 safety:
@@ -38,6 +24,5 @@ safety:
 
 # Infrastructure Manager audit log
 infra_log:
-  step: null
   hook_changes: []
   rollback_pending: false

@@ -4,9 +4,9 @@
 # This script handles framework versioning
 
 # Current framework version
-FRAMEWORK_VERSION="2.0.0"
-FRAMEWORK_NAME="Discovery Phase, Agent Team, Safety Rules"
-FRAMEWORK_RELEASE_DATE="2026-02-08"
+FRAMEWORK_VERSION="3.0.0"
+FRAMEWORK_NAME="GitHub Issues, Project Partner, Multi-Terminal, 3-Tier Context"
+FRAMEWORK_RELEASE_DATE="2026-02-19"
 
 # Function to write version file
 write_version_file() {
@@ -32,14 +32,17 @@ framework:
     subagents: true
     skills: true
     access_guard: true
-    # New in 2.0.0
     discovery_phase: true
     agent_team_mode: true
     context_fork_mode: true
     safety_rules: true
     write_guard: true
-    discussion_partner_role: true
     infra_manager_role: true
+    # New in 3.0.0
+    github_issues: true
+    project_partner_role: true
+    multi_terminal: true
+    three_tier_context: true
 
   # Claude Code integration
   claude_code:

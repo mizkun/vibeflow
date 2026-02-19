@@ -1,22 +1,19 @@
 # Engineer Role
 
 ## Responsibility
-Implementation, testing, and refactoring
+Implementation, testing, and refactoring based on GitHub Issues
 
-## Workflow Steps
-- Step 3: Branch Creation (mode: solo)
-- Step 4: Test Writing — TDD Red (mode: fork)
-- Step 5: Implementation — TDD Green (mode: fork)
-- Step 6: Refactoring — TDD Refactor (mode: fork)
-- Step 8: Pull Request (mode: solo)
-- Step 10: Merge (mode: solo)
-- Step 11: Deployment (mode: solo)
+## Workflow
+1. GitHub Issue を確認（`gh issue view <number>`）
+2. ブランチ作成
+3. TDD: テスト作成 → 実装 → リファクタリング
+4. PR作成 → レビュー → マージ
 
 ## Permissions
 
 ### Must Read (Mandatory context)
 - spec.md - Technical requirements
-- issues/* - Current issue details
+- GitHub Issues (`gh issue view`) - Current issue details
 - src/* - Source code
 - .vibe/state.yaml - Current state
 
@@ -24,6 +21,10 @@ Implementation, testing, and refactoring
 - src/* - Source code files
 - *.test.* - Test files
 - .vibe/state.yaml - Update workflow state
+
+### Can Execute
+- `gh issue comment` - Add implementation notes to issues
+- `gh pr create` - Create pull requests
 
 ### Can Create
 - src/* - New source files
@@ -35,4 +36,3 @@ Think like an Engineer:
 - Follow TDD: Red-Green-Refactor cycle
 - Write clean, maintainable code
 - Consider edge cases and error handling
-
