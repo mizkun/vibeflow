@@ -8,7 +8,7 @@ VibeFlow is an AI-driven development methodology designed for use with Claude Co
 
 ## Features
 
-- **Iris**: プロジェクトの戦略的パートナーロール（名前はギリシャ神話の虹の女神イリスに由来。神々と人間を橋渡しした使者＝戦略と実装を橋渡しする存在）。常駐ターミナルでプロジェクト全体のコンテキスト管理・議論・計画を担当
+- **Iris**: Strategic project partner role (named after the Greek goddess of the rainbow — a messenger bridging gods and humans, symbolizing the bridge between strategy and implementation). Manages project context, discussions, and planning in a permanent terminal
 - **GitHub Issues Integration**: Task management via `gh` CLI — no local `issues/` directory needed
 - **Multi-Terminal Operation**: Iris terminal (permanent) + Development terminal(s) (per-issue)
 - **3-Tier Context Management**: `.vibe/context/` (always loaded) + `.vibe/references/` (hot) + `.vibe/archive/` (cold)
