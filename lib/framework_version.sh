@@ -4,7 +4,7 @@
 # This script handles framework versioning
 
 # Current framework version
-FRAMEWORK_VERSION="3.0.0"
+FRAMEWORK_VERSION="3.1.0"
 FRAMEWORK_NAME="GitHub Issues, Iris, Multi-Terminal, 3-Tier Context"
 FRAMEWORK_RELEASE_DATE="2026-02-19"
 
