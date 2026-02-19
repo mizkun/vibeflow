@@ -4,12 +4,12 @@
 
 ## Role-Based Development System
 
-このフレームワークはロールベースの開発システムを実装しています。マルチターミナル構成で運用し、各ロールは明確に定義された権限と責務を持ちます。Project Partner がプロジェクト全体を管理し、開発ターミナルが実装を担当します。
+このフレームワークはロールベースの開発システムを実装しています。マルチターミナル構成で運用し、各ロールは明確に定義された権限と責務を持ちます。Iris がプロジェクト全体を管理し、開発ターミナルが実装を担当します。
 
 ## Role Definitions and Permissions
 
-### Project Partner Role
-**Responsibility**: プロジェクトの戦略的パートナーとして、議論・計画・状況管理・外部情報の取り込みを担当する
+### Iris Role
+**Responsibility**: プロジェクトの戦略的パートナー（虹の女神イリス＝戦略と実装を橋渡しする存在）として、議論・計画・状況管理・外部情報の取り込みを担当する
 
 **Must Read** (Mandatory context):
 - vision.md - Product vision and goals
@@ -136,7 +136,7 @@ Issue (GitHub Issue) → Branch → Implement (TDD) → PR → Review
 ```
 
 ### Flow
-1. **Issue 作成**: GitHub Issue でタスクを定義（Project Partner or Product Manager）
+1. **Issue 作成**: GitHub Issue でタスクを定義（Iris or Product Manager）
 2. **Issue 着手**: Developer terminal が Issue をピックアップ（`gh issue view #N`）
 3. **Branch 作成**: Issue に対応するブランチを作成（Engineer）
 4. **TDD 実装**: Red-Green-Refactor サイクルで実装（Engineer）
@@ -167,10 +167,10 @@ v3 ではマルチターミナル構成で開発を行います。ターミナ�
 
 | Terminal | Role | Lifecycle | Scope |
 |----------|------|-----------|-------|
-| Project Partner | Project Partner | 常駐（permanent） | plan/vision/spec/context management |
+| Iris | Iris | 常駐（permanent） | plan/vision/spec/context management |
 | Development | Engineer / QA / PM | Issue 単位で起動 | src/ implementation |
 
-### Project Partner Terminal（常駐）
+### Iris Terminal（常駐）
 - `/discuss` でセッションを開始
 - プロジェクトの全体管理、議論、コンテキスト保持を担当
 - **Write scope**: vision.md, spec.md, plan.md, .vibe/context/**, .vibe/references/**, .vibe/archive/**, .vibe/state.yaml
@@ -184,7 +184,7 @@ v3 ではマルチターミナル構成で開発を行います。ターミナ�
 
 ### Write Scope Separation
 
-| Target | Project Partner Terminal | Development Terminal |
+| Target | Iris Terminal | Development Terminal |
 |--------|------------------------|---------------------|
 | vision.md | Write | Read only |
 | spec.md | Write | Read only |
@@ -209,7 +209,7 @@ v3 ではマルチターミナル構成で開発を行います。ターミナ�
 ### Tier 1: `.vibe/context/` - Always Loaded
 常にロードされるコアコンテキスト。
 
-- **STATUS.md** - プロジェクトの現在の状況（Project Partner が自動更新）
+- **STATUS.md** - プロジェクトの現在の状況（Iris が自動更新）
   - Current Focus, Active Issues, Recent Decisions, Blockers, Upcoming
 
 ### Tier 2: `.vibe/references/` - Hot Reference
@@ -289,7 +289,7 @@ gh issue close 12
 
 ## Available Commands
 
-- `/discuss [topic]` - Project Partner セッションを開始（壁打ち・議論・コンテキスト管理）
+- `/discuss [topic]` - Iris セッションを開始（壁打ち・議論・コンテキスト管理）
 - `/discuss --continue` - 前回のセッションを継続
 - `/conclude` - 議論を要約し、結論を vision/spec/plan/STATUS.md に反映して終了
 - `/progress` - Check current progress and role status (GitHub Issues integrated)
@@ -301,10 +301,10 @@ gh issue close 12
 
 ## Discovery Phase
 
-Discovery Phase（壁打ちフェーズ）は、開発に入る前にアイデアを深掘りするためのモードです。Project Partner セッションとして運用し、インクリメンタルに振り返りを行います。
+Discovery Phase（壁打ちフェーズ）は、開発に入る前にアイデアを深掘りするためのモードです。Iris セッションとして運用し、インクリメンタルに振り返りを行います。
 
 ### フロー
-1. `/discuss [トピック]` で Project Partner ロールとしてセッション開始
+1. `/discuss [トピック]` で Iris ロールとしてセッション開始
 2. ファイル変更なしで議論に集中（context/, references/, archive/, state.yaml のみ例外）
 3. 反論・疑問・論点整理を通じてアイデアを深化
 4. 議論の途中でもインクリメンタルに references/ へメモを記録可能
@@ -313,7 +313,7 @@ Discovery Phase（壁打ちフェーズ）は、開発に入る前にアイデ�
 
 ### 制約
 - Discovery Phase 中はコード変更不可
-- Project Partner はコード生成・ファイル変更を行わない（src/ への書き込み禁止）
+- Iris はコード生成・ファイル変更を行わない（src/ への書き込み禁止）
 - 議論の結論反映は必ずユーザー承認を経由する
 
 ## Quick Fix Mode
@@ -328,7 +328,7 @@ A streamlined mode for minor changes outside the normal workflow:
 `.vibe/state.yaml` structure:
 ```yaml
 current_issue: null  # GitHub Issue number "#12"
-current_role: "Project Partner"
+current_role: "Iris"
 phase: development  # development | discovery
 
 # Recent issues tracking

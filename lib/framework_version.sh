@@ -5,7 +5,7 @@
 
 # Current framework version
 FRAMEWORK_VERSION="3.0.0"
-FRAMEWORK_NAME="GitHub Issues, Project Partner, Multi-Terminal, 3-Tier Context"
+FRAMEWORK_NAME="GitHub Issues, Iris, Multi-Terminal, 3-Tier Context"
 FRAMEWORK_RELEASE_DATE="2026-02-19"
 
 # Function to write version file
@@ -40,7 +40,7 @@ framework:
     infra_manager_role: true
     # New in 3.0.0
     github_issues: true
-    project_partner_role: true
+    iris_role: true
     multi_terminal: true
     three_tier_context: true
 

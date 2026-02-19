@@ -19,8 +19,8 @@ import sys
 # - If in doubt, fix the role in state.yaml before editing, don't expand permissions.
 
 ROLE_EDIT_ALLOW = {
-    # Project Partner - project docs, context management, state
-    "Project Partner": [
+    # Iris - project docs, context management, state
+    "Iris": [
         "vision.md",
         "spec.md",
         "plan.md",

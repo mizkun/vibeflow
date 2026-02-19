@@ -31,7 +31,7 @@ VibeFlow プロジェクトの整合性を検証します。
    - validate_access.py が存在し実行可能か
 
 6. **ロール定義**
-   - .vibe/roles/project-partner.md が存在するか（v3必須）
+   - .vibe/roles/iris.md が存在するか（v3必須）
    - 旧 discussion-partner.md が残っていないか
 
 ## Output Format:

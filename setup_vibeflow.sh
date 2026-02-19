@@ -3,7 +3,7 @@
 # Vibe Coding Framework Setup Script
 # Version: 3.0.0
 # This is the main setup script that orchestrates the installation
-# Includes: GitHub Issues, Project Partner, Multi-Terminal, 3-Tier Context, Safety Rules
+# Includes: GitHub Issues, Iris, Multi-Terminal, 3-Tier Context, Safety Rules
 
 set -e  # Exit on error
 set -u  # Exit on undefined variable
@@ -77,8 +77,8 @@ Options:
 
 Features (included by default):
     - GitHub Issues integration: Task management via gh CLI
-    - Project Partner: Strategic partner for planning and context management
-    - Multi-Terminal: Project Partner (permanent) + Dev terminal(s) (per-issue)
+    - Iris: Strategic partner for planning and context management
+    - Multi-Terminal: Iris (permanent) + Dev terminal(s) (per-issue)
     - 3-Tier Context: context/ + references/ + archive/
     - Safety Rules: UI/CSS atomic mode, destructive op guard, write guard
     - Hooks: Access control (validate_access.py), Write guard (validate_write.sh)
@@ -408,7 +408,7 @@ verify_installation() {
         ".vibe/context/STATUS.md"
         ".vibe/references"
         ".vibe/archive"
-        ".vibe/roles/project-partner.md"
+        ".vibe/roles/iris.md"
         ".vibe/roles/infra.md"
         ".github/ISSUE_TEMPLATE"
     )
@@ -489,11 +489,11 @@ show_completion() {
     echo "3. Claude Code でこのディレクトリを開いてください"
     echo ""
     echo "4. マルチターミナルで開発を開始："
-    echo "   Terminal 1 (Project Partner): /discuss"
+    echo "   Terminal 1 (Iris): /discuss"
     echo "   Terminal 2 (Development):     Issue 単位で実装"
     echo ""
     echo "利用可能なコマンド:"
-    echo "   /discuss     - Project Partner セッション開始"
+    echo "   /discuss     - Iris セッション開始"
     echo "   /conclude    - セッション終了・STATUS.md 更新"
     echo "   /progress    - 現在の進捗確認（GitHub Issues 統合）"
     echo "   /healthcheck - 整合性チェック"

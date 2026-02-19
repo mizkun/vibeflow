@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [3.0.0] - 2026-02-19
 
-v2.0.0 からのメジャーアップグレード。GitHub Issues 統合、Project Partner ロール、マルチターミナル運用、3層コンテキスト管理を導入。ワークフローを大幅に簡素化。
+v2.0.0 からのメジャーアップグレード。GitHub Issues 統合、Iris（戦略パートナー）ロール、マルチターミナル運用、3層コンテキスト管理を導入。ワークフローを大幅に簡素化。
 
 ### Added
 
@@ -18,14 +18,14 @@ v2.0.0 からのメジャーアップグレード。GitHub Issues 統合、Proje
 - 優先度ラベル: `priority:critical`、`priority:high`、`priority:medium`、`priority:low`
 - `.github/ISSUE_TEMPLATE/` に Issue テンプレートを自動配置
 
-#### Project Partner ロール（Discussion Partner の拡張）
+#### Iris ロール（Discussion Partner の拡張）
 - 壁打ち + 外部情報取り込み + タスク管理 + 意思決定記録 + コンテキスト管理
 - `vision.md`、`spec.md`、`plan.md` の読み書き権限
 - `gh issue` / `gh project` コマンドの実行権限
 - `src/` への書き込みは不可（コード変更は Engineer 担当）
 
 #### マルチターミナル運用
-- Project Partner ターミナル x1（常駐）+ 開発ターミナル xN（Issue 単位）
+- Iris ターミナル x1（常駐）+ 開発ターミナル xN（Issue 単位）
 - ターミナル間の情報共有: ファイルシステム + Git + GitHub Issues
 - 書き込みスコープの明確な分離
 
@@ -53,7 +53,7 @@ v2.0.0 からのメジャーアップグレード。GitHub Issues 統合、Proje
 - `current_issue`: GitHub Issue 番号形式 (`"#12"`)
 
 #### コマンド更新
-- `/discuss`: Project Partner セッション開始（トピック任意）
+- `/discuss`: Iris セッション開始（トピック任意）
 - `/conclude`: STATUS.md 更新 + 開発フェーズ復帰
 - `/progress`: GitHub Issues 統合ビュー
 - `/healthcheck`: v3 ディレクトリ構造チェック
@@ -62,12 +62,12 @@ v2.0.0 からのメジャーアップグレード。GitHub Issues 統合、Proje
 - Product Manager: `issues/*` → `gh issue` コマンド
 - Engineer: Issue 参照が `gh issue view` に変更
 - QA Engineer: Issue 参照が `gh issue view` に変更
-- Access Guard (`validate_access.py`): Project Partner 権限追加
+- Access Guard (`validate_access.py`): Iris 権限追加
 
 ### Removed
 - `/next` コマンド（ステップ番号ベースのワークフロー廃止）
 - `issues/` ディレクトリ（GitHub Issues に移行）
-- Discussion Partner ロール（Project Partner に拡張統合）
+- Discussion Partner ロール（Iris に拡張統合）
 - `discussions/` ディレクトリ（`references/` に統合、マイグレーション時にコピー）
 - 11 ステップワークフロー定義
 - `current_step`、`current_cycle` 等のステップ追跡

@@ -1,8 +1,8 @@
 ---
-description: Conclude Project Partner session and update STATUS.md
+description: Conclude Iris session and update STATUS.md
 ---
 
-# Project Partner セッションを終了する
+# Iris セッションを終了する
 
 `/conclude` でセッションの成果をまとめ、STATUS.md を更新して開発フェーズに戻ります。
 
@@ -33,7 +33,7 @@ description: Conclude Project Partner session and update STATUS.md
 ### 5. Phase 復帰
 ```yaml
 phase: development
-current_role: "Project Partner"
+current_role: "Iris"
 discovery:
   active: false
   last_session: "YYYY-MM-DD"

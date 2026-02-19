@@ -1,6 +1,6 @@
 # VibeFlow v3 Role-Based Access Policy
 roles:
-  project_partner:
+  iris:
     can_read:
       - "vision.md"
       - "spec.md"

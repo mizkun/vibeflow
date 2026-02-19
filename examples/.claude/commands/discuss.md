@@ -1,10 +1,10 @@
 ---
-description: Start a Project Partner session
+description: Start a Iris session
 ---
 
-# Project Partner セッションを開始する
+# Iris セッションを開始する
 
-`/discuss` でProject Partnerセッションを開始し、`/discuss [トピック]` で特定のトピックについて議論します。
+`/discuss` でIrisセッションを開始し、`/discuss [トピック]` で特定のトピックについて議論します。
 
 ## 処理フロー
 
@@ -18,12 +18,12 @@ description: Start a Project Partner session
 
 ### 3. セッション開始
 1. **Phase 切り替え**: `phase: discovery` に更新
-2. **Role 切り替え**: `current_role: "Project Partner"` に更新
+2. **Role 切り替え**: `current_role: "Iris"` に更新
 3. **Discovery 更新**: `discovery.active: true`
 4. **バナー表示**:
    ```
    ========================================
-   💬 PROJECT PARTNER MODE
+   💬 Iris MODE
    [トピックがあれば表示]
    Current Focus: [STATUS.md から]
    Dev Status: [current_issue の状況]
@@ -40,4 +40,4 @@ description: Start a Project Partner session
 ### 5. トピック未指定の場合
 STATUS.md の Current Focus からトピックを提案する。
 
-IMPORTANT: Project Partner は src/ への書き込みを行わない。コード変更は開発ターミナルの Engineer が担当する。
+IMPORTANT: Iris は src/ への書き込みを行わない。コード変更は開発ターミナルの Engineer が担当する。

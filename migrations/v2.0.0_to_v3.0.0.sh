@@ -1,6 +1,6 @@
 #!/bin/bash
 # VibeFlow Migration: v2.0.0 -> v3.0.0
-# GitHub Issues, Project Partner, Multi-Terminal, 3-Tier Context
+# GitHub Issues, Iris, Multi-Terminal, 3-Tier Context
 
 set -euo pipefail
 
@@ -36,7 +36,7 @@ copy_if_absent "${FRAMEWORK}/examples/.github/ISSUE_TEMPLATE/human.md" ".github/
 copy_if_absent "${FRAMEWORK}/examples/.github/ISSUE_TEMPLATE/discussion.md" ".github/ISSUE_TEMPLATE/discussion.md"
 
 # ============================================================
-# 4/10: policy.yaml 更新 (discussion_partner → project_partner)
+# 4/10: policy.yaml 更新 (discussion_partner → iris)
 # ============================================================
 log_info "4/10: policy.yaml 更新"
 cp "${FRAMEWORK}/examples/.vibe/policy.yaml" ".vibe/policy.yaml"
@@ -66,12 +66,16 @@ phase_match = re.search(r'^phase:\s*(\S+)', content, re.MULTILINE)
 if phase_match:
     phase = phase_match.group(1)
 
-current_role = "Project Partner"
+current_role = "Iris"
 role_match = re.search(r'^current_role:\s*"?([^"\n]+)"?', content, re.MULTILINE)
 if role_match:
     role = role_match.group(1).strip()
     if role == "Discussion Partner":
-        current_role = "Project Partner"
+        current_role = "Iris"
+    elif role == "Project Partner":
+        current_role = "Iris"
+    elif role == "P2":
+        current_role = "Iris"
     else:
         current_role = role
 
@@ -148,7 +152,7 @@ if [ -f ".vibe/roles/discussion-partner.md" ]; then
 fi
 
 # Place new/updated roles
-cp "${FRAMEWORK}/lib/roles/project-partner.md" ".vibe/roles/project-partner.md"
+cp "${FRAMEWORK}/lib/roles/iris.md" ".vibe/roles/iris.md"
 cp "${FRAMEWORK}/lib/roles/product-manager.md" ".vibe/roles/product-manager.md"
 cp "${FRAMEWORK}/lib/roles/engineer.md" ".vibe/roles/engineer.md"
 cp "${FRAMEWORK}/lib/roles/qa-engineer.md" ".vibe/roles/qa-engineer.md"

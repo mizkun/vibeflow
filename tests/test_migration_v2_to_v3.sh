@@ -108,13 +108,13 @@ run_test "creates discussion.md issue template" test_creates_discussion_template
 
 describe "Role Migration"
 
-test_creates_project_partner_role() {
+test_creates_iris_role() {
     create_v2_project
     source "${FRAMEWORK_DIR}/lib/migration_helpers.sh"
     source "${FRAMEWORK_DIR}/migrations/v2.0.0_to_v3.0.0.sh" 2>/dev/null || true
-    assert_file_exists ".vibe/roles/project-partner.md" || return 1
+    assert_file_exists ".vibe/roles/iris.md" || return 1
 }
-run_test "creates project-partner.md role doc" test_creates_project_partner_role
+run_test "creates iris.md role doc" test_creates_iris_role
 
 test_removes_discussion_partner_role() {
     create_v2_project
@@ -145,13 +145,13 @@ run_test "archives old discussion-partner.md" test_archives_discussion_partner
 
 describe "Policy Migration"
 
-test_policy_has_project_partner() {
+test_policy_has_p2() {
     create_v2_project
     source "${FRAMEWORK_DIR}/lib/migration_helpers.sh"
     source "${FRAMEWORK_DIR}/migrations/v2.0.0_to_v3.0.0.sh" 2>/dev/null || true
-    assert_file_contains ".vibe/policy.yaml" "project_partner" || return 1
+    assert_file_contains ".vibe/policy.yaml" "iris" || return 1
 }
-run_test "policy.yaml has project_partner role" test_policy_has_project_partner
+run_test "policy.yaml has p2 role" test_policy_has_p2
 
 test_policy_no_discussion_partner() {
     create_v2_project
@@ -236,9 +236,9 @@ test_updates_discuss_command() {
     source "${FRAMEWORK_DIR}/lib/migration_helpers.sh"
     source "${FRAMEWORK_DIR}/migrations/v2.0.0_to_v3.0.0.sh" 2>/dev/null || true
     assert_file_exists ".claude/commands/discuss.md" || return 1
-    assert_file_contains ".claude/commands/discuss.md" "Project Partner" || return 1
+    assert_file_contains ".claude/commands/discuss.md" "Iris" || return 1
 }
-run_test "updates /discuss command with Project Partner" test_updates_discuss_command
+run_test "updates /discuss command with P2" test_updates_discuss_command
 
 test_updates_progress_command() {
     create_v2_project
@@ -293,13 +293,13 @@ test_claude_md_no_step_workflow() {
 }
 run_test "CLAUDE.md does not contain step_1_plan_review" test_claude_md_no_step_workflow
 
-test_claude_md_has_project_partner() {
+test_claude_md_has_p2() {
     create_v2_project
     source "${FRAMEWORK_DIR}/lib/migration_helpers.sh"
     source "${FRAMEWORK_DIR}/migrations/v2.0.0_to_v3.0.0.sh" 2>/dev/null || true
-    assert_file_contains "CLAUDE.md" "Project Partner" || return 1
+    assert_file_contains "CLAUDE.md" "Iris" || return 1
 }
-run_test "CLAUDE.md mentions Project Partner" test_claude_md_has_project_partner
+run_test "CLAUDE.md mentions P2" test_claude_md_has_p2
 
 test_claude_md_has_github_issues() {
     create_v2_project
@@ -338,7 +338,7 @@ test_migration_idempotent() {
     # Should still have valid structure
     assert_dir_exists ".vibe/context" || return 1
     assert_file_exists ".vibe/context/STATUS.md" || return 1
-    assert_file_exists ".vibe/roles/project-partner.md" || return 1
+    assert_file_exists ".vibe/roles/iris.md" || return 1
     local version
     version=$(cat .vibe/version 2>/dev/null)
     assert_equals "3.0.0" "$version" || return 1

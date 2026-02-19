@@ -1,7 +1,7 @@
 # Project Status
 
 ## Last Updated
-(auto-updated by Project Partner)
+(auto-updated by P2)
 
 ## Current Focus
 [プロジェクトの現在のフォーカスを記述]
