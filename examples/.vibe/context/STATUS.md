@@ -1,7 +1,7 @@
 # Project Status
 
 ## Last Updated
-(auto-updated by P2)
+(auto-updated by Iris)
 
 ## Current Focus
 [プロジェクトの現在のフォーカスを記述]
