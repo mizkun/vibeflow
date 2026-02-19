@@ -8,14 +8,14 @@ VibeFlow is an AI-driven development methodology designed for use with Claude Co
 
 ## Features
 
-- **Context-Based Access Control**: Each step has a specific role with defined read/edit/create permissions
-- **Strict Context Isolation**: Roles have defined permissions (e.g., Engineers can only edit code, PMs can only edit plan/issues)
-- **Role-Based Context-Continuous System**: No separate agent files - role switching handled seamlessly within main context
-- **Discovery Phase**: Brainstorming mode (`/discuss`, `/conclude`) for product direction and technical decisions before development
-- **Agent Team / context: fork**: Multi-perspective discussions (Agent Team) and delegated execution (context: fork) for key steps
+- **Iris**: プロジェクトの戦略的パートナーロール（名前はギリシャ神話の虹の女神イリスに由来。神々と人間を橋渡しした使者＝戦略と実装を橋渡しする存在）。常駐ターミナルでプロジェクト全体のコンテキスト管理・議論・計画を担当
+- **GitHub Issues Integration**: Task management via `gh` CLI — no local `issues/` directory needed
+- **Multi-Terminal Operation**: Iris terminal (permanent) + Development terminal(s) (per-issue)
+- **3-Tier Context Management**: `.vibe/context/` (always loaded) + `.vibe/references/` (hot) + `.vibe/archive/` (cold)
+- **Issue-Driven Workflow**: Issue → Branch → TDD → PR → Review (single human checkpoint at PR review)
+- **Role-Based Access Control**: Strict file permissions per role, enforced by `validate_access.py` hook
+- **Discovery Phase**: Brainstorming mode (`/discuss`, `/conclude`) for product direction and technical decisions
 - **Safety Rules**: Atomic UI changes, destructive operation protection, retry limits, plans/ directory blocking
-- **11-Step Development Workflow**: Automatic progression through development cycle with role-based permissions
-- **Minimal Human Intervention**: Only 2 checkpoints where human validation is required
 - **Automated Setup & Upgrade**: Complete development environment with a single command, and migration framework for version upgrades
 
 ## Quick Start
@@ -30,7 +30,8 @@ mkdir my-project && cd my-project
 vibeflow setup
 
 # Start development
-# Use /discuss for brainstorming, /next for development cycle
+# Terminal 1 (Iris): /discuss for brainstorming & context management
+# Terminal 2 (Dev):  Implement issues with TDD
 ```
 
 ## Table of Contents
@@ -183,38 +184,47 @@ Define development plan and TODOs:
 ### Using with Claude Code
 
 1. Open the project directory in Claude Code
-2. Use `/discuss` to brainstorm and validate product direction
+2. **Iris Terminal**: Use `/discuss` to brainstorm and validate product direction
 3. Use `/conclude` to finalize discussion results into vision/spec/plan
-4. Use `/next` to progress through the development cycle
+4. **Dev Terminal**: Implement issues with TDD (Red-Green-Refactor)
 
 ## How It Works
 
+### Multi-Terminal Operation
+
+VibeFlow v3 uses a multi-terminal model:
+
+| Terminal | Role | Lifecycle | Scope |
+|----------|------|-----------|-------|
+| **Iris** | Iris | Permanent | plan/vision/spec/context management |
+| **Development** | Engineer / QA / PM | Per-issue | src/ implementation |
+
+**Iris Terminal** is the strategic partner terminal that stays open throughout the project. It manages context, discussions, planning, and GitHub Issues.
+
+**Development Terminal(s)** are opened per-issue for implementation work.
+
 ### Development Phases
 
-VibeFlow has two phases:
-
-**Discovery Phase** (outside development cycle)
-- Activated with `/discuss [topic]`
-- Role: Discussion Partner (all files read-only except `.vibe/discussions/`)
+**Discovery Phase** (brainstorming)
+- Activated with `/discuss [topic]` in the Iris terminal
 - Brainstorm product direction, technical decisions, and business strategy
 - End with `/conclude` to reflect conclusions into vision.md / spec.md / plan.md
 
-**Development Cycle** (the main workflow)
-- Activated with `/next`
-- 11 steps with role-based access control
-- 2 human checkpoints (issue validation + runnable check)
+**Development Phase** (implementation)
+- Issue-driven: Issue → Branch → TDD → PR → Review
+- Single human checkpoint at PR review
 
 ### Core Concept: Role-Based Development Workflow
 
 The most important innovation of VibeFlow is the **context-continuous role-based system**. All roles operate within a single context with dynamic permission switching:
 
-| Role | Steps | Responsibilities |
-|---|---|---|
-| Product Manager | 1, 2 | Plan review, issue breakdown |
-| Discussion Partner | Discovery | Brainstorming, direction validation |
-| Infrastructure Manager | 2.5, 6.5 | Hook permission setup/rollback |
-| Engineer | 3, 4, 5, 6, 8, 10, 11 | Branch, TDD, implementation, PR, merge, deploy |
-| QA Engineer | 7, 9 | Acceptance testing, code review |
+| Role | Responsibilities |
+|---|---|
+| Iris | Context management, discussions, planning, GitHub Issues |
+| Product Manager | Vision alignment, planning, issue management |
+| Engineer | Branch, TDD, implementation, PR, merge |
+| QA Engineer | Acceptance testing, code review |
+| Infrastructure Manager | Hook permission setup/rollback |
 
 ### Execution Modes
 
@@ -245,7 +255,7 @@ Agent Team / fork automatically falls back to solo if unavailable.
 ## Built-in Features
 
 ### Discovery Phase
-Brainstorm and validate product direction with `/discuss`. The Discussion Partner role provides counterarguments, questions assumptions, and organizes discussion points. Conclusions are reflected back to vision.md, spec.md, and plan.md via `/conclude`.
+Brainstorm and validate product direction with `/discuss`. The Iris role provides counterarguments, questions assumptions, and organizes discussion points. Conclusions are reflected back to vision.md, spec.md, and plan.md via `/conclude`.
 
 ### Safety Rules
 - **Atomic UI Changes**: CSS/HTML changes are made one at a time with user confirmation
@@ -289,21 +299,23 @@ your-project/
 │   │   ├── waiting_input.sh
 │   │   └── error_occurred.sh
 │   ├── roles/                 # Role documentation
+│   │   ├── iris.md            # Iris (strategic partner)
 │   │   ├── product-manager.md
 │   │   ├── engineer.md
 │   │   ├── qa-engineer.md
-│   │   ├── discussion-partner.md
 │   │   └── infra.md
-│   ├── discussions/           # Discovery Phase discussions
+│   ├── context/               # Always-loaded context (STATUS.md)
+│   ├── references/            # Hot reference info
+│   ├── archive/               # Archived info (YYYY-MM-DD-type-topic.md)
 │   ├── backups/               # Upgrade backups
 │   └── templates/             # Templates and config
 │       ├── issue-templates.md
-│       ├── discussion-template.md
 │       ├── claude-settings.json
 │       └── e2e-scripts.json
+├── .github/
+│   └── ISSUE_TEMPLATE/        # GitHub Issue templates
 ├── tests/                     # E2E tests
 │   └── e2e/
-├── issues/                    # Implementation tasks
 ├── src/                       # Source code
 ├── CLAUDE.md                  # Framework documentation
 ├── vision.md                  # Product vision
@@ -317,12 +329,13 @@ your-project/
 
 The framework provides 6 slash commands:
 
-- `/discuss [topic]` - Start Discovery Phase for brainstorming and direction validation
-- `/conclude` - End Discovery Phase and reflect conclusions to vision/spec/plan
-- `/next` - Proceed to next step in development cycle (handles all role switching)
-- `/progress` - Check current progress and position
+- `/discuss [topic]` - Start Iris session for brainstorming and direction validation
+- `/conclude` - End session and reflect conclusions to vision/spec/plan + STATUS.md
+- `/progress` - Check current progress (GitHub Issues integrated)
 - `/healthcheck` - Verify repository consistency
+- `/quickfix` - Enter quick fix mode for minor adjustments
 - `/run-e2e` - Execute E2E tests with Playwright
+- `/parallel-test` - Run tests in parallel
 
 ### Agent Team Environment Variable
 
