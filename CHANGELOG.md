@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.2.0] - 2026-02-20
+
+Setup / Examples / Upgrade の出力を統一。新規 `vibeflow setup` が v2 の内容を生成していた問題を修正。
+
+### Fixed
+- `create_commands.sh`: ヘレドック方式を廃止し `lib/commands/` からのコピー方式に統一
+- `create_claude_md.sh`: v2 ヘレドックを廃止し `examples/CLAUDE.md` からのコピーに変更
+- `create_templates.sh`: state.yaml を v3 スキーマに更新、Discussion Partner → Iris に修正
+- `create_templates.sh`: ロールドキュメントを `lib/roles/` からのコピー方式に変更
+- `create_templates.sh`: policy.yaml を v3（Iris 対応）に更新
+- `setup_vibeflow.sh`: STATUS.md、GitHub Issue テンプレートの生成を追加
+- `migrations/v2.0.0_to_v3.0.0.sh`: quickfix/exit-quickfix/parallel-test の削除処理を追加
+- README.md: 不要コマンド参照を削除
+
+### Removed
+- `examples/.claude/commands/quickfix.md` - ゾンビ復活していたファイルを削除
+- `examples/.claude/commands/exit-quickfix.md` - 同上
+- `examples/.claude/commands/parallel-test.md` - 同上
+- `examples/CLAUDE.md` の Available Commands から不要コマンドを削除
+- `create_templates.sh` の旧ヘレドック関数群（約1200行削減）
+
+### Added
+- `migrations/v3.1.0_to_v3.2.0.sh`: v3.1→v3.2 マイグレーションスクリプト
+
 ## [3.0.0] - 2026-02-19
 
 v2.0.0 からのメジャーアップグレード。GitHub Issues 統合、Iris（戦略パートナー）ロール、マルチターミナル運用、3層コンテキスト管理を導入。ワークフローを大幅に簡素化。

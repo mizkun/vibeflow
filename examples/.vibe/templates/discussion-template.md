@@ -12,7 +12,7 @@
 - **ID**: DISC-XXX
 - **Date**: YYYY-MM-DD
 - **Status**: open | concluded
-- **Participants**: User, Discussion Partner
+- **Participants**: User, Iris
 
 ## Topic
 [議論のトピック・背景]
@@ -28,7 +28,7 @@
 
 **User**: [発言]
 
-**Discussion Partner**: [反論・質問・整理]
+**Iris**: [反論・質問・整理]
 
 ## Agreements
 - [合意事項1]

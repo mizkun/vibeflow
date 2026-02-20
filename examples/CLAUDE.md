@@ -294,9 +294,6 @@ gh issue close 12
 - `/conclude` - 議論を要約し、結論を vision/spec/plan/STATUS.md に反映して終了
 - `/progress` - Check current progress and role status (GitHub Issues integrated)
 - `/healthcheck` - Verify repository consistency
-- `/quickfix` - Enter quick fix mode for minor adjustments
-- `/exit-quickfix` - Exit quick fix mode
-- `/parallel-test` - Run tests in parallel
 - `/run-e2e` - Run E2E tests with Playwright
 
 ## Discovery Phase

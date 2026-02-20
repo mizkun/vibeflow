@@ -53,7 +53,7 @@ if [ -f "${LIB_DIR}/create_subagents.sh" ]; then
 fi
 
 # Global variables
-VERSION="3.0.0"
+VERSION="3.2.0"
 FORCE_INSTALL=false
 BACKUP_ENABLED=true
 VERBOSE=false
@@ -357,9 +357,6 @@ verify_installation() {
             ".claude/commands/healthcheck.md"
             ".claude/commands/discuss.md"
             ".claude/commands/conclude.md"
-            ".claude/commands/quickfix.md"
-            ".claude/commands/exit-quickfix.md"
-            ".claude/commands/parallel-test.md"
         )
         for c in "${cmds[@]}"; do
             if [ -f "$c" ]; then
@@ -497,9 +494,7 @@ show_completion() {
     echo "   /conclude    - セッション終了・STATUS.md 更新"
     echo "   /progress    - 現在の進捗確認（GitHub Issues 統合）"
     echo "   /healthcheck - 整合性チェック"
-    echo "   /quickfix    - Quick Fixモードへ"
     echo "   /run-e2e     - E2Eテスト実行（Playwright導入時）"
-    echo "   /parallel-test - 並列テスト実行"
     echo ""
     print_color "$PURPLE" "🎉 Happy Vibe Coding!"
 }

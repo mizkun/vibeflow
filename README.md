@@ -246,7 +246,7 @@ Agent Team / fork automatically falls back to solo if unavailable.
 ### Key Principles
 
 1. **Context-Continuous Operation**: All roles operate within the same context with dynamic permission switching
-2. **No Separate Agent Files**: Role-based permissions are embedded in the `/next` command logic
+2. **No Separate Agent Files**: Role-based permissions are embedded in the workflow
 3. **Automated Progression**: Steps flow automatically with only 2 human checkpoints
 4. **Verification at Each Step**: Each role verifies their own artifacts before proceeding
 5. **Clear State Management**: state.yaml tracks current position and progress
@@ -327,15 +327,13 @@ your-project/
 
 ### Slash Commands
 
-The framework provides 6 slash commands:
+The framework provides 5 slash commands:
 
 - `/discuss [topic]` - Start Iris session for brainstorming and direction validation
 - `/conclude` - End session and reflect conclusions to vision/spec/plan + STATUS.md
 - `/progress` - Check current progress (GitHub Issues integrated)
 - `/healthcheck` - Verify repository consistency
-- `/quickfix` - Enter quick fix mode for minor adjustments
 - `/run-e2e` - Execute E2E tests with Playwright
-- `/parallel-test` - Run tests in parallel
 
 ### Agent Team Environment Variable
 
@@ -366,9 +364,9 @@ The `examples/` directory contains a complete template showing the framework str
 
 3. **Start development**:
    ```bash
-   /discuss "Product direction"   # Brainstorm first
+   /discuss "Product direction"   # Brainstorm with Iris
    /conclude                      # Finalize direction
-   /next                          # Start development cycle
+   # Create GitHub Issues, then start dev terminal per issue
    ```
 
 ### Creating from Scratch
@@ -393,7 +391,7 @@ The framework uses YAML files for state persistence:
 The framework uses a **context-continuous role-based system**:
 
 - **No Agent Files**: Subagents are deprecated in favor of embedded role switching
-- **Dynamic Permissions**: The `/next` command dynamically applies role-based permissions
+- **Dynamic Permissions**: Role-based permissions are applied via hooks and workflow
 - **Single Context**: All roles operate within the same conversation context
 - **Hook Enforcement**: `validate_access.py` and `validate_write.sh` enforce permissions at the tool level
 

@@ -244,5 +244,5 @@ fi
 
 echo "次のステップ:"
 echo "  1. /healthcheck でプロジェクトの整合性を確認"
-echo "  2. /discuss または /next で開発を再開"
+echo "  2. /discuss で開発を再開"
 echo ""

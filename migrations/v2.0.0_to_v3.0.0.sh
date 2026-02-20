@@ -173,8 +173,16 @@ if [ -f ".claude/commands/next.md" ]; then
     log_ok "  /next コマンドを archive/ に移動（v3で廃止）"
 fi
 
+# Remove stale commands (quickfix, exit-quickfix, parallel-test)
+for stale_cmd in quickfix.md exit-quickfix.md parallel-test.md; do
+    if [ -f ".claude/commands/${stale_cmd}" ]; then
+        rm ".claude/commands/${stale_cmd}"
+        log_ok "  ${stale_cmd} を削除（v3で廃止）"
+    fi
+done
+
 # Update remaining commands
-for cmd in discuss.md conclude.md progress.md healthcheck.md; do
+for cmd in discuss.md conclude.md progress.md healthcheck.md run-e2e.md; do
     if [ -f "${FRAMEWORK}/lib/commands/${cmd}" ]; then
         cp "${FRAMEWORK}/lib/commands/${cmd}" ".claude/commands/${cmd}"
     fi
