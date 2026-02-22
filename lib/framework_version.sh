@@ -4,9 +4,9 @@
 # This script handles framework versioning
 
 # Current framework version
-FRAMEWORK_VERSION="3.1.0"
-FRAMEWORK_NAME="GitHub Issues, Iris, Multi-Terminal, 3-Tier Context"
-FRAMEWORK_RELEASE_DATE="2026-02-19"
+FRAMEWORK_VERSION="3.4.0"
+FRAMEWORK_NAME="GitHub Issues, Iris, Multi-Terminal, 3-Tier Context, Quick Fix Mode"
+FRAMEWORK_RELEASE_DATE="2026-02-22"
 
 # Function to write version file
 write_version_file() {

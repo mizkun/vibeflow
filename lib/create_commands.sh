@@ -14,6 +14,7 @@ create_slash_commands() {
     local commands=(
         "discuss:Iris セッション開始"
         "conclude:セッション終了"
+        "quickfix:Quick Fix モード開始"
         "progress:進捗確認"
         "healthcheck:整合性チェック"
         "run-e2e:E2Eテスト実行"

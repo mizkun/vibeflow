@@ -5,6 +5,68 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.4.0] - 2026-02-22
+
+Quick Fix Mode を追加。UI 調整やアルゴリズムチューニングなど、正解が事前にわからない探索的な作業向けの軽量モード。
+
+### Added
+
+#### Quick Fix Mode
+- `/quickfix [description]` コマンドで探索的開発モードを開始
+- 11 ステップワークフローを使わず、ユーザーとの直接対話で高速イテレーション
+- 「変えて → いいね → 戻して → コミット」のループで進行
+- Issue 不要、ステップ不要、直接対話ベース
+- Safety Rules は引き続き適用（UI/CSS atomic commit、破壊的操作確認）
+- 満足したら atomic commit でまとめてコミット
+
+#### ターミナル構成拡張
+- Quick Fix Terminal を Terminal Structure に追加（Iris + Quick Fix Dev の2ターミナル構成）
+
+### Changed
+
+#### state.yaml スキーマ更新
+- `quick_fixes: []` → `quickfix:` オブジェクトに変更（active, description, started）
+- `phase` に `quickfix` を追加（development | discovery | quickfix）
+
+### Added
+- `lib/commands/quickfix.md`: Quick Fix モード開始コマンド
+- `migrations/v3.3.0_to_v3.4.0.sh`: v3.3→v3.4 マイグレーションスクリプト
+
+### Migration
+- `vibeflow upgrade` で v3.3 → v3.4 自動マイグレーション
+- `state.yaml` の `quick_fixes: []` → `quickfix:` オブジェクトに変換
+- CLAUDE.md を Quick Fix Mode 対応版に更新
+- `quickfix.md` コマンドを自動追加
+
+---
+
+## [3.3.0] - 2026-02-21
+
+Dev session の 11 ステップワークフローを復活。V3 の Issue 駆動を維持しつつ、V2 の構造化された開発サイクルを再導入。
+
+### Changed
+
+#### 11 ステップワークフロー復活
+- Dev session が 11 ステップ（+ auto-inserted 2 ステップ）を自動進行で確実に実行
+- 各ステップ開始時に `--- Step N: [名前] (Role: [ロール]) ---` の宣言を義務化
+- ステップのスキップを禁止する Critical Rule を追加
+- TDD の Red-Green-Refactor を Step 4→5→6 として明確に分離
+- Acceptance Test (Step 7)、Code Review (Step 9) を独立ステップとして復活
+- **Human Checkpoint は Step 7a (Acceptance Test 後) のみ**: ユーザーの手動確認・承認を待つ。Step 9 (Code Review) は AI 自動実行
+
+#### state.yaml スキーマ更新
+- `current_step` フィールドを追加（1-11、null = dev cycle 外）
+
+### Added
+- `migrations/v3.2.0_to_v3.3.0.sh`: v3.2→v3.3 マイグレーションスクリプト
+
+### Migration
+- `vibeflow upgrade` で v3.2 → v3.3 自動マイグレーション
+- `state.yaml` に `current_step: null` を自動追加
+- CLAUDE.md を 11 ステップ版に更新
+
+---
+
 ## [3.2.0] - 2026-02-20
 
 Setup / Examples / Upgrade の出力を統一。新規 `vibeflow setup` が v2 の内容を生成していた問題を修正。

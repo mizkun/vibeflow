@@ -1,8 +1,8 @@
 # Vibe Coding Framework Version Information
 framework:
-  version: "3.2.0"
-  name: "GitHub Issues, Iris, Multi-Terminal, 3-Tier Context"
-  installed_at: "2026-02-20T00:00:00+09:00"
+  version: "3.4.0"
+  name: "GitHub Issues, Iris, Multi-Terminal, 3-Tier Context, Quick Fix Mode"
+  installed_at: "2026-02-22T00:00:00+09:00"
 
   # Version compatibility
   minimum_compatible: "2.0.0"

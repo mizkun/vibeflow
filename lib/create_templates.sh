@@ -46,14 +46,18 @@ create_initial_state() {
     local state_content='# VibeFlow v3 State
 current_issue: null
 current_role: "Iris"
+current_step: null  # 1-11 (null = not in dev cycle)
 
-phase: development
+phase: development  # development | discovery | quickfix
 
 # Issues tracking (detailed state on GitHub labels)
 issues_recent: []
 
-# Quick fixes tracking
-quick_fixes: []
+# Quick Fix mode tracking
+quickfix:
+  active: false
+  description: null
+  started: null
 
 # Discovery phase tracking
 discovery:

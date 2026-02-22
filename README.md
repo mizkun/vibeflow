@@ -12,7 +12,8 @@ VibeFlow is an AI-driven development methodology designed for use with Claude Co
 - **GitHub Issues Integration**: Task management via `gh` CLI — no local `issues/` directory needed
 - **Multi-Terminal Operation**: Iris terminal (permanent) + Development terminal(s) (per-issue)
 - **3-Tier Context Management**: `.vibe/context/` (always loaded) + `.vibe/references/` (hot) + `.vibe/archive/` (cold)
-- **Issue-Driven Workflow**: Issue → Branch → TDD → PR → Review (single human checkpoint at PR review)
+- **11-Step Development Workflow**: Issue → Plan → TDD → Acceptance Test → PR → Review → Merge (human checkpoint at Step 7a)
+- **Quick Fix Mode**: Exploratory development mode (`/quickfix`) for UI tweaks and algorithm tuning — rapid iteration without the 11-step workflow
 - **Role-Based Access Control**: Strict file permissions per role, enforced by `validate_access.py` hook
 - **Discovery Phase**: Brainstorming mode (`/discuss`, `/conclude`) for product direction and technical decisions
 - **Safety Rules**: Atomic UI changes, destructive operation protection, retry limits, plans/ directory blocking
@@ -30,8 +31,9 @@ mkdir my-project && cd my-project
 vibeflow setup
 
 # Start development
-# Terminal 1 (Iris): /discuss for brainstorming & context management
-# Terminal 2 (Dev):  Implement issues with TDD
+# Terminal 1 (Iris):      /discuss for brainstorming & context management
+# Terminal 2 (Dev):       Implement issues with 11-step TDD workflow
+# Terminal 2 (Quick Fix): /quickfix for exploratory UI/algorithm changes
 ```
 
 ## Table of Contents
@@ -43,6 +45,7 @@ vibeflow setup
   - [Development Phases](#development-phases)
   - [Core Concept: Role-Based Development Workflow](#core-concept-role-based-development-workflow)
   - [Execution Modes](#execution-modes)
+  - [Quick Fix Mode](#quick-fix-mode)
   - [Key Principles](#key-principles)
 - [Built-in Features](#built-in-features)
 - [Project Structure](#project-structure)
@@ -186,7 +189,8 @@ Define development plan and TODOs:
 1. Open the project directory in Claude Code
 2. **Iris Terminal**: Use `/discuss` to brainstorm and validate product direction
 3. Use `/conclude` to finalize discussion results into vision/spec/plan
-4. **Dev Terminal**: Implement issues with TDD (Red-Green-Refactor)
+4. **Dev Terminal**: Implement issues with 11-step TDD workflow (Red-Green-Refactor)
+5. **Quick Fix Terminal**: Use `/quickfix` for exploratory UI tweaks and algorithm tuning
 
 ## How It Works
 
@@ -197,11 +201,14 @@ VibeFlow v3 uses a multi-terminal model:
 | Terminal | Role | Lifecycle | Scope |
 |----------|------|-----------|-------|
 | **Iris** | Iris | Permanent | plan/vision/spec/context management |
-| **Development** | Engineer / QA / PM | Per-issue | src/ implementation |
+| **Development** | Engineer / QA / PM | Per-issue | src/ implementation (11-step workflow) |
+| **Quick Fix** | Engineer | `/quickfix` で起動 | src/ exploratory changes (interactive loop) |
 
 **Iris Terminal** is the strategic partner terminal that stays open throughout the project. It manages context, discussions, planning, and GitHub Issues.
 
-**Development Terminal(s)** are opened per-issue for implementation work.
+**Development Terminal(s)** are opened per-issue for structured 11-step implementation work.
+
+**Quick Fix Terminal** is used for exploratory changes (UI tweaks, algorithm tuning) where the solution isn't known upfront. Uses a rapid "change → evaluate → change" loop without the 11-step workflow.
 
 ### Development Phases
 
@@ -210,9 +217,15 @@ VibeFlow v3 uses a multi-terminal model:
 - Brainstorm product direction, technical decisions, and business strategy
 - End with `/conclude` to reflect conclusions into vision.md / spec.md / plan.md
 
-**Development Phase** (implementation)
-- Issue-driven: Issue → Branch → TDD → PR → Review
-- Single human checkpoint at PR review
+**Development Phase** (structured implementation)
+- 11-step workflow: Issue Review → Task Breakdown → Branch → TDD (Red/Green/Refactor) → Acceptance Test → PR → Code Review → Merge
+- Single human checkpoint at Step 7a (after Acceptance Test)
+
+**Quick Fix Phase** (exploratory changes)
+- Activated with `/quickfix [description]` in a dev terminal
+- For UI adjustments, algorithm tuning, and other exploratory work
+- Rapid iteration: "change this" → "nice" → "revert that" → "OK, commit"
+- No issues or step workflow required
 
 ### Core Concept: Role-Based Development Workflow
 
@@ -243,11 +256,29 @@ Agent Team / fork automatically falls back to solo if unavailable.
 | Step 7: Acceptance Test | team | QA Lead, Spec Compliance Checker, Edge Case Hunter, UI Visual Verifier |
 | Step 9: Code Review | team | QA Lead, Security Reviewer, Performance Reviewer, Test Coverage Reviewer |
 
+### Quick Fix Mode
+
+For exploratory work where the solution isn't known upfront (UI styling, algorithm tuning):
+
+```
+/quickfix UI header adjustment
+    ↓
+User: "Change this color"    → AI makes change
+User: "Nice, adjust margin"  → AI makes change
+User: "Revert that"          → AI reverts
+User: "OK, commit"           → Atomic commit, exit mode
+```
+
+- No GitHub Issue required
+- No 11-step workflow — direct interactive loop
+- Engineer role with same write scope (src/**)
+- Safety Rules still apply
+
 ### Key Principles
 
 1. **Context-Continuous Operation**: All roles operate within the same context with dynamic permission switching
 2. **No Separate Agent Files**: Role-based permissions are embedded in the workflow
-3. **Automated Progression**: Steps flow automatically with only 2 human checkpoints
+3. **Automated Progression**: Steps flow automatically with a single human checkpoint (Step 7a)
 4. **Verification at Each Step**: Each role verifies their own artifacts before proceeding
 5. **Clear State Management**: state.yaml tracks current position and progress
 6. **Safety First**: Atomic UI changes, destructive op protection, retry limits
@@ -257,10 +288,13 @@ Agent Team / fork automatically falls back to solo if unavailable.
 ### Discovery Phase
 Brainstorm and validate product direction with `/discuss`. The Iris role provides counterarguments, questions assumptions, and organizes discussion points. Conclusions are reflected back to vision.md, spec.md, and plan.md via `/conclude`.
 
+### Quick Fix Mode
+Rapid iterative development for UI adjustments and algorithm tuning with `/quickfix`. No issues or step workflow needed — just direct interaction with the AI until satisfied, then commit.
+
 ### Safety Rules
 - **Atomic UI Changes**: CSS/HTML changes are made one at a time with user confirmation
 - **Destructive Operation Protection**: `rm -rf`, `git reset --hard`, etc. require user confirmation
-- **Retry Limits**: Same approach limited to 2 retries before requiring a different approach
+- **Retry Limits**: Same approach limited to 3 retries before requiring a different approach
 - **plans/ Directory Blocking**: Write guard hook prevents creating plans/ directory (use plan.md or issues/ instead)
 - **Hook Permission Control**: Infrastructure Manager role manages write permissions per issue
 
@@ -282,11 +316,11 @@ your-project/
 ├── .claude/
 │   ├── settings.json          # Hook configuration
 │   └── commands/              # Slash commands
-│       ├── progress.md
-│       ├── healthcheck.md
-│       ├── next.md
 │       ├── discuss.md         # Discovery Phase start
 │       ├── conclude.md        # Discovery Phase end
+│       ├── quickfix.md        # Quick Fix Mode start
+│       ├── progress.md
+│       ├── healthcheck.md
 │       └── run-e2e.md         # E2E test execution
 ├── .vibe/
 │   ├── version                # VibeFlow version tracking
@@ -296,8 +330,7 @@ your-project/
 │   │   ├── validate_access.py # Role-based access control
 │   │   ├── validate_write.sh  # Write guard (plans/ block)
 │   │   ├── task_complete.sh   # Notification sounds
-│   │   ├── waiting_input.sh
-│   │   └── error_occurred.sh
+│   │   └── waiting_input.sh
 │   ├── roles/                 # Role documentation
 │   │   ├── iris.md            # Iris (strategic partner)
 │   │   ├── product-manager.md
@@ -310,8 +343,8 @@ your-project/
 │   ├── backups/               # Upgrade backups
 │   └── templates/             # Templates and config
 │       ├── issue-templates.md
-│       ├── claude-settings.json
-│       └── e2e-scripts.json
+│       ├── discussion-template.md
+│       └── settings.local.json  # Emergency hook disabler
 ├── .github/
 │   └── ISSUE_TEMPLATE/        # GitHub Issue templates
 ├── tests/                     # E2E tests
@@ -327,10 +360,11 @@ your-project/
 
 ### Slash Commands
 
-The framework provides 5 slash commands:
+The framework provides 6 slash commands:
 
 - `/discuss [topic]` - Start Iris session for brainstorming and direction validation
 - `/conclude` - End session and reflect conclusions to vision/spec/plan + STATUS.md
+- `/quickfix [description]` - Start Quick Fix mode for exploratory UI/algorithm changes
 - `/progress` - Check current progress (GitHub Issues integrated)
 - `/healthcheck` - Verify repository consistency
 - `/run-e2e` - Execute E2E tests with Playwright

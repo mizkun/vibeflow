@@ -41,3 +41,4 @@ fi
 - Run specific test: `npm run test:e2e auth/login.spec.js`
 
 Report results in Japanese with clear pass/fail status.
+

@@ -129,35 +129,97 @@
 
 ## Development Workflow (v3)
 
-v3 のワークフローはシンプルな Issue 駆動です。ステップ番号による進行管理はなく、自然な流れで開発を進めます。
+v3 のワークフローは Issue 駆動 + 11 ステップの構造化された開発サイクルです。各ステップは自動的に進行しますが、開始時に必ずステップを宣言し、スキップは禁止です。
+
+### Step Declaration Rule
+
+各ステップの開始時に以下のフォーマットで宣言すること:
 
 ```
-Issue (GitHub Issue) → Branch → Implement (TDD) → PR → Review
+--- Step N: [ステップ名] (Role: [ロール名]) ---
 ```
 
-### Flow
-1. **Issue 作成**: GitHub Issue でタスクを定義（Iris or Product Manager）
-2. **Issue 着手**: Developer terminal が Issue をピックアップ（`gh issue view #N`）
-3. **Branch 作成**: Issue に対応するブランチを作成（Engineer）
-4. **TDD 実装**: Red-Green-Refactor サイクルで実装（Engineer）
-5. **PR 作成**: Pull Request を作成し、変更内容を記載（Engineer）
-6. **Review**: PR レビュー（QA Engineer + Human） - 唯一のヒューマンチェックポイント
-7. **Merge & Deploy**: レビュー承認後にマージ
-
-### Human Checkpoint
-- **PR Review のみ**: ヒューマンチェックポイントは PR レビュー時のみ
-- Issue validation や manual testing は PR レビューに統合
-- レビューでの指摘は Issue コメントまたは PR コメントで追跡
+宣言後、そのロールの権限とルールに従って作業を実行する。ステップ完了時に `state.yaml` の `current_step` を更新する。**ステップを飛ばすことは禁止**。必ず Step 1 から順番に実行する。
 
 ### Execution Modes
 
-各フェーズの実行モード:
+各ステップの実行モード:
 
 - **solo**: Main agent executes directly (default, works everywhere)
 - **team**: Agent Team spawns multiple perspectives (requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)
 - **fork**: context: fork delegates to a separate agent inheriting PM context (requires Claude Code 2.1.20+)
 
 If `team` or `fork` is unavailable, the step automatically falls back to `solo` mode.
+
+### Development Cycle Steps
+
+#### Step 1: Issue Review
+- Role: Product Manager | Mode: solo
+- GitHub Issue の内容を確認し、要件・受け入れ基準を把握する（`gh issue view #N`）
+- spec.md と照合して技術的な矛盾がないか確認
+
+#### Step 2: Task Breakdown
+- Role: Product Manager | Mode: team
+- Issue を実装可能なタスクに分解する
+- Team: Lead=PM, Teammates=[Technical Feasibility Analyst, UX Critic, Devil's Advocate]
+- 対象ファイル、テスト方針、依存関係を明確化
+
+#### Step 2.5: Hook Permission Setup (auto-inserted)
+- Role: Infrastructure Manager | Mode: solo
+- Step 2 の対象ファイルに基づいて `validate_write.sh` の許可リストを更新
+- 変更内容を `state.yaml` の `infra_log` に記録
+
+#### Step 3: Branch Creation
+- Role: Engineer | Mode: solo
+- Issue に対応するブランチを作成（`feature/#N-description` or `fix/#N-description`）
+
+#### Step 4: Test Writing (TDD Red)
+- Role: Engineer | Mode: fork
+- 受け入れ基準に基づいて失敗するテストを作成
+- テストが正しく失敗することを確認してからコミット
+
+#### Step 5: Implementation (TDD Green)
+- Role: Engineer | Mode: fork
+- テストをパスさせる最小限の実装を行う
+- テストを変更せず、実装コードのみを修正
+
+#### Step 6: Refactoring (TDD Refactor)
+- Role: Engineer | Mode: fork
+- コードの品質を改善（重複排除、命名改善、構造整理）
+- 全テストがパスし続けることを確認
+
+#### Step 6.5: Hook Rollback (auto-inserted)
+- Role: Infrastructure Manager | Mode: solo
+- Step 2.5 で追加した権限をロールバック
+- `infra_log` の `rollback_pending` を確認
+
+#### Step 7: Acceptance Test
+- Role: QA Engineer | Mode: team
+- Team: Lead=QA Lead, Teammates=[Spec Compliance Checker, Edge Case Hunter, UI Visual Verifier]
+- 受け入れ基準に対する検証、エッジケースの確認
+- **Checkpoint 7a**: テスト結果をユーザーに報告し、承認を待つ。ユーザーが手動確認（動作確認・UI確認など）を行う時間を確保する。承認後に Step 8 へ進む
+
+#### Step 8: Pull Request
+- Role: Engineer | Mode: solo
+- PR を作成し、変更内容・テスト結果・影響範囲を記載
+
+#### Step 9: Code Review
+- Role: QA Engineer | Mode: team
+- Team: Lead=QA Lead, Teammates=[Security Reviewer, Performance Reviewer, Test Coverage Reviewer]
+- AI による自動レビュー（停止なし）。問題を発見した場合は Issue コメントで報告し、修正してから Step 10 へ進む
+
+#### Step 10: Merge
+- Role: Engineer | Mode: solo
+- レビュー承認後に PR をマージ
+
+#### Step 11: Deployment
+- Role: Engineer | Mode: solo
+- マージされたコードのデプロイ（該当する場合）
+
+### Human Checkpoint
+- **Step 7a (Acceptance Test 後) のみ**: QA のテスト結果を報告し、ユーザーの手動確認（動作確認・UI確認など）・承認を待つ。Issue ごとに必ず停止する
+- Step 9 (Code Review) は AI が自動実行。コード品質の問題は AI が検出・修正する
+- 指摘事項は Issue コメントまたは PR コメントで追跡
 
 ## Multi-Terminal Operation
 
@@ -168,7 +230,8 @@ v3 ではマルチターミナル構成で開発を行います。ターミナ�
 | Terminal | Role | Lifecycle | Scope |
 |----------|------|-----------|-------|
 | Iris | Iris | 常駐（permanent） | plan/vision/spec/context management |
-| Development | Engineer / QA / PM | Issue 単位で起動 | src/ implementation |
+| Development | Engineer / QA / PM | Issue 単位で起動 | src/ implementation（11ステップ） |
+| Quick Fix | Engineer | `/quickfix` で起動 | src/ 探索的変更（対話ループ） |
 
 ### Iris Terminal（常駐）
 - `/discuss` でセッションを開始
@@ -292,6 +355,7 @@ gh issue close 12
 - `/discuss [topic]` - Iris セッションを開始（壁打ち・議論・コンテキスト管理）
 - `/discuss --continue` - 前回のセッションを継続
 - `/conclude` - 議論を要約し、結論を vision/spec/plan/STATUS.md に反映して終了
+- `/quickfix [description]` - Quick Fix モードを開始（探索的な UI/アルゴリズム変更）
 - `/progress` - Check current progress and role status (GitHub Issues integrated)
 - `/healthcheck` - Verify repository consistency
 - `/run-e2e` - Run E2E tests with Playwright
@@ -315,10 +379,41 @@ Discovery Phase（壁打ちフェーズ）は、開発に入る前にアイデ�
 
 ## Quick Fix Mode
 
-A streamlined mode for minor changes outside the normal workflow:
-- **Execution**: Runs in main context with relaxed permissions
-- **Allowed Changes**: UI styling, typo fixes, small bug fixes
-- **Restrictions**: <5 files, <50 lines total changes
+UI 調整やアルゴリズムのチューニングなど、**正解が事前にわからない探索的な作業**のための軽量モード。11 ステップワークフローを使わず、ユーザーとの高速イテレーションで進める。
+
+### 使い方
+- `/quickfix [説明]` で Quick Fix モードを開始
+- ユーザーの指示に直接対応（変更→評価→変更のループ）
+- ユーザーが満足したら「コミットして」でコミット＋モード終了
+
+### ワークフロー
+```
+/quickfix UI のヘッダー調整
+    ↓
+ユーザー: 「ここの色変えて」
+AI: (変更実行)
+ユーザー: 「いいね、あとマージンも」
+AI: (変更実行)
+ユーザー: 「やっぱ戻して」
+AI: (リバート)
+ユーザー: 「OK コミットして」
+    ↓
+atomic commit → Development Phase に復帰
+```
+
+### ルール
+- **Issue 不要**: GitHub Issue を作らずに直接作業可能
+- **ステップ不要**: 11 ステップワークフローは使わない
+- **直接対話**: ユーザーの指示に即座に対応
+- **リバート対応**: 「戻して」で即座にリバート
+- **Safety Rules は適用**: UI/CSS atomic commit、破壊的操作確認
+- **Write scope**: Engineer と同じ（src/**, *.test.*）
+- **plan.md / vision.md / spec.md への書き込み不可**
+
+### ターミナル構成
+Quick Fix Mode でも2ターミナル構成を維持:
+- **Iris Terminal**: プロジェクト管理・コンテキスト保持（通常通り）
+- **Quick Fix Terminal**: Engineer ロールで探索的変更を実行
 
 ## State Management Structure
 
@@ -326,13 +421,17 @@ A streamlined mode for minor changes outside the normal workflow:
 ```yaml
 current_issue: null  # GitHub Issue number "#12"
 current_role: "Iris"
-phase: development  # development | discovery
+current_step: null   # 1-11 (null = not in dev cycle)
+phase: development  # development | discovery | quickfix
 
 # Recent issues tracking
 issues_recent: []
 
-# Quick fixes tracking
-quick_fixes: []
+# Quick Fix mode tracking
+quickfix:
+  active: false
+  description: null
+  started: null
 
 # Discovery phase tracking
 discovery:
@@ -354,12 +453,12 @@ infra_log:
 
 ## Critical Rules
 
-1. **Context Continuity**: All work executed in main context for information preservation
-2. **TDD Enforcement**: Tests must be written before implementation (Red-Green-Refactor)
+1. **Step Discipline**: 11 ステップを必ず順番に実行する。ステップのスキップは禁止。各ステップ開始時に `--- Step N: [名前] (Role: [ロール]) ---` を宣言する
+2. **TDD Enforcement**: Tests must be written before implementation (Red-Green-Refactor). Step 4→5→6 の順序を厳守
 3. **File Verification**: Verify artifacts exist before proceeding to next step
-4. **Human Checkpoints**: PR review is the single human checkpoint
+4. **Human Checkpoint**: Step 7a (Acceptance Test 後) で必ず停止してユーザーの手動確認・承認を待つ
 5. **Permission Enforcement**: Strictly follow role-based file access permissions
-6. **State Management**: Always update state.yaml after completing each step
+6. **State Management**: Always update state.yaml (current_step, current_role) after completing each step
 
 ## Development Guidelines
 

@@ -19,7 +19,7 @@ VibeFlow プロジェクトの整合性を検証します。
 3. **State ファイル整合性**
    - .vibe/state.yaml を読み込み
    - current_role が有効なロール名か
-   - phase が development または discovery か
+   - phase が development, discovery, quickfix のいずれかか
 
 4. **GitHub Issues 連携**
    - `gh` CLI が利用可能か
