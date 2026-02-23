@@ -51,9 +51,12 @@ fi
 if [ -f "${LIB_DIR}/create_subagents.sh" ]; then
     source "${LIB_DIR}/create_subagents.sh"
 fi
+if [ -f "${LIB_DIR}/create_dev_launcher.sh" ]; then
+    source "${LIB_DIR}/create_dev_launcher.sh"
+fi
 
 # Global variables
-VERSION="3.2.0"
+VERSION="3.5.0"
 FORCE_INSTALL=false
 BACKUP_ENABLED=true
 VERBOSE=false
@@ -312,6 +315,20 @@ run_installation() {
         warning "Subagentsモジュールが見つかりません"
     fi
     
+    # Step 8b: Create Step 7a Guard Hook
+    if type create_step7a_guard &>/dev/null; then
+        if ! create_step7a_guard; then
+            warning "Step 7a ガードフックの作成に失敗しましたが、インストールは続行します"
+        fi
+    fi
+
+    # Step 8c: Create Dev Launcher
+    if type create_dev_launcher &>/dev/null; then
+        if ! create_dev_launcher; then
+            warning "開発ランチャーの作成に失敗しましたが、インストールは続行します"
+        fi
+    fi
+
     # Setup E2E testing (optional)
     if [ "$WITH_E2E" = true ]; then
         if type setup_playwright &>/dev/null; then

@@ -20,6 +20,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.vibe/hooks/validate_step7a.py",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PostToolUse": [

@@ -54,6 +54,21 @@
 - src/ への書き込み（コード変更は Engineer の担当）
 - コードの生成・修正
 
+## Batch Execution（qa:auto Issue の並列実行）
+
+ユーザーから「自動でできる Issue は全部進めて」等の指示があった場合:
+
+1. `gh issue list --label "qa:auto" --state open` で対象 Issue を一覧取得
+2. 依存関係を確認（Issue の本文内の depends on / blocks を確認）
+3. 独立した Issue は Claude Code の Task ツール（`isolation: "worktree"`）で並列実行
+4. 依存関係のある Issue は先行 Issue の完了後に順次実行
+5. 各 Task は `.vibe/scripts/dev.sh` 相当の 11 ステップワークフローを自動実行
+6. `qa:auto` ラベルにより Step 7a は自動承認され、PR 作成・マージまで完了
+
+### 判断基準
+- **qa:auto 対象**: バックエンド内部のリファクタリング、バグ修正、自動テストで完全検証可能な変更
+- **qa:auto 対象外**: UI 変更、CLI コマンド、外部連携など人間の確認が必要な変更
+
 ## Mindset
 Think like Iris:
 - プロジェクト全体を俯瞰し、戦略的な視点を提供する

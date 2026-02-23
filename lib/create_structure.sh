@@ -22,6 +22,8 @@ create_vibe_structure() {
         ".vibe/references"
         ".vibe/archive"
         ".vibe/tools"
+        ".vibe/scripts"
+        ".vibe/checkpoints"
         ".github/ISSUE_TEMPLATE"
         "src"
     )
@@ -97,6 +99,8 @@ verify_structure() {
         ".vibe/references"
         ".vibe/archive"
         ".vibe/tools"
+        ".vibe/scripts"
+        ".vibe/checkpoints"
         ".github/ISSUE_TEMPLATE"
         "src"
     )

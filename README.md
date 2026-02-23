@@ -13,6 +13,10 @@ VibeFlow is an AI-driven development methodology designed for use with Claude Co
 - **Multi-Terminal Operation**: Iris terminal (permanent) + Development terminal(s) (per-issue)
 - **3-Tier Context Management**: `.vibe/context/` (always loaded) + `.vibe/references/` (hot) + `.vibe/archive/` (cold)
 - **11-Step Development Workflow**: Issue → Plan → TDD → Acceptance Test → PR → Review → Merge (human checkpoint at Step 7a)
+- **Dev Launcher**: `.vibe/scripts/dev.sh <issue>` starts a development terminal with hooks and environment pre-configured
+- **Step 7a Guard**: `validate_step7a.py` hook physically blocks `gh pr create` until QA checkpoint is approved
+- **QA Labels**: `qa:auto` (auto-approve Step 7a for fully testable issues) / `qa:manual` (require human confirmation)
+- **Batch Execution**: Iris can run `qa:auto` issues in parallel via Task tool with worktree isolation
 - **Quick Fix Mode**: Exploratory development mode (`/quickfix`) for UI tweaks and algorithm tuning — rapid iteration without the 11-step workflow
 - **Role-Based Access Control**: Strict file permissions per role, enforced by `validate_access.py` hook
 - **Discovery Phase**: Brainstorming mode (`/discuss`, `/conclude`) for product direction and technical decisions
@@ -302,7 +306,7 @@ Rapid iterative development for UI adjustments and algorithm tuning with `/quick
 Includes Playwright configuration, test structure (`tests/e2e/`), and `/run-e2e` command by default. Install with `npm install @playwright/test` and `npx playwright install`.
 
 ### Notification Sounds
-OS-specific notification scripts and Claude Code hook configurations for task completion, waiting input, and error alerts. Enable by copying `.vibe/templates/claude-settings.json` to `~/.config/claude/settings.json`.
+OS-specific notification scripts and Claude Code hook configurations for task completion, waiting input, and checkpoint alerts. Enable by copying `.vibe/templates/claude-settings.json` to `~/.config/claude/settings.json`.
 
 ### Role-Based Permissions
 Strict context isolation with Must Read/Can Edit/Can Create permissions for each role, enforced by `validate_access.py` hook.
@@ -329,6 +333,8 @@ your-project/
 │   ├── hooks/                 # Access control hooks
 │   │   ├── validate_access.py # Role-based access control
 │   │   ├── validate_write.sh  # Write guard (plans/ block)
+│   │   ├── validate_step7a.py # Step 7a guard (blocks PR until QA approved)
+│   │   ├── checkpoint_alert.sh # Notification sound for checkpoint blocks
 │   │   ├── task_complete.sh   # Notification sounds
 │   │   └── waiting_input.sh
 │   ├── roles/                 # Role documentation
@@ -340,6 +346,9 @@ your-project/
 │   ├── context/               # Always-loaded context (STATUS.md)
 │   ├── references/            # Hot reference info
 │   ├── archive/               # Archived info (YYYY-MM-DD-type-topic.md)
+│   ├── scripts/               # Launcher scripts
+│   │   └── dev.sh             # Dev terminal launcher
+│   ├── checkpoints/           # QA checkpoint markers
 │   ├── backups/               # Upgrade backups
 │   └── templates/             # Templates and config
 │       ├── issue-templates.md

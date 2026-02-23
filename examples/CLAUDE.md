@@ -197,7 +197,9 @@ If `team` or `fork` is unavailable, the step automatically falls back to `solo` 
 - Role: QA Engineer | Mode: team
 - Team: Lead=QA Lead, Teammates=[Spec Compliance Checker, Edge Case Hunter, UI Visual Verifier]
 - 受け入れ基準に対する検証、エッジケースの確認
-- **Checkpoint 7a**: テスト結果をユーザーに報告し、承認を待つ。ユーザーが手動確認（動作確認・UI確認など）を行う時間を確保する。承認後に Step 8 へ進む
+- **Checkpoint 7a**: テスト結果をユーザーに報告し、承認を待つ。ユーザーが手動確認（動作確認・UI確認など）を行う時間を確保する。承認後に `.vibe/checkpoints/{issue}-qa-approved` を作成し、Step 8 へ進む
+- **qa:auto ラベル**: Issue に `qa:auto` ラベルがある場合、checkpoint は自動作成され Step 8 へ自動進行する
+- **validate_step7a.py フック**: `gh pr create` は checkpoint ファイルが存在しない限りブロックされる（CLAUDE.md 指示だけでなく物理的にガード）
 
 #### Step 8: Pull Request
 - Role: Engineer | Mode: solo
@@ -218,6 +220,9 @@ If `team` or `fork` is unavailable, the step automatically falls back to `solo` 
 
 ### Human Checkpoint
 - **Step 7a (Acceptance Test 後) のみ**: QA のテスト結果を報告し、ユーザーの手動確認（動作確認・UI確認など）・承認を待つ。Issue ごとに必ず停止する
+- **承認フロー**: ユーザー確認後、`.vibe/checkpoints/{issue}-qa-approved` を作成 → `gh pr create` が可能になる
+- **qa:auto ラベル**: 自動テストで完全に検証可能な Issue（内部リファクタ、バグ修正など）は `qa:auto` ラベルを付与。checkpoint が自動作成され、人間の手動確認をスキップする
+- **qa:manual ラベル（またはラベルなし）**: UI 変更、CLI コマンド、外部連携など「人間が触って確認」が必要な Issue。従来通り停止してユーザー承認を待つ
 - Step 9 (Code Review) は AI が自動実行。コード品質の問題は AI が検出・修正する
 - 指摘事項は Issue コメントまたは PR コメントで追跡
 
@@ -240,8 +245,9 @@ v3 ではマルチターミナル構成で開発を行います。ターミナ�
 - src/ への書き込みは不可
 
 ### Development Terminal（Issue 単位）
-- GitHub Issue ごとに起動し、実装が完了したら終了
-- `gh issue view #N` で対象 Issue の詳細を確認してから着手
+- `.vibe/scripts/dev.sh <issue番号>` でランチャー起動（推奨）
+- ランチャーは Issue 存在確認 → 環境変数設定 → `claude --dangerously-skip-permissions` で起動
+- `--dangerously-skip-permissions` が安全な理由: VibeFlow フック群（validate_access.py, validate_write.sh, validate_step7a.py）がガードレールとして機能する
 - **Write scope**: src/**, *.test.*, .vibe/state.yaml
 - plan.md / vision.md / spec.md への書き込みは不可
 
@@ -264,6 +270,13 @@ v3 ではマルチターミナル構成で開発を行います。ターミナ�
 - **Filesystem**: STATUS.md, references/, context/ を通じた情報共有
 - **Git**: branch / commit を通じたコード変更の共有
 - **GitHub Issues**: タスク管理と進捗共有（`gh issue list`, `gh issue view`）
+
+### Batch Execution Mode（qa:auto Issue の並列実行）
+- Iris ターミナルから `qa:auto` ラベルの Issue を Claude Code の Task ツール（worktree isolation）で並列実行できる
+- 各 worktree で独立に 11 ステップワークフローを自動実行し、PR 作成・マージまで完了
+- 依存関係のある Issue は順次実行
+- **対象**: バックエンド内部のリファクタリング、バグ修正、自動テストで完全検証可能な変更
+- **対象外**: UI 変更、CLI コマンド、外部連携など人間の確認が必要な変更は従来通り `dev.sh` で実行
 
 ## 3-Tier Context Management
 
@@ -315,6 +328,10 @@ v3 ではマルチターミナル構成で開発を行います。ターミナ�
 - `status:testing` - テスト中
 - `status:pr-ready` - PR レビュー待ち
 
+#### QA Labels
+- `qa:auto` - 自動テストで完全検証可能。Step 7a を自動承認し、バッチ実行対象
+- `qa:manual` - 人間の手動確認が必要（UI、CLI、外部連携など）。デフォルト（ラベルなしも同様）
+
 #### Priority Labels
 - `priority:critical` - 即座に対応が必要
 - `priority:high` - 高優先度
@@ -359,6 +376,13 @@ gh issue close 12
 - `/progress` - Check current progress and role status (GitHub Issues integrated)
 - `/healthcheck` - Verify repository consistency
 - `/run-e2e` - Run E2E tests with Playwright
+
+### Dev Launcher
+```bash
+.vibe/scripts/dev.sh <issue番号>  # 開発ターミナルを起動
+```
+- Issue 存在確認 → 環境変数設定 → Claude Code をフック付きで起動
+- 11 ステップワークフローが自動進行し、Step 7a でのみ停止
 
 ## Discovery Phase
 
@@ -498,6 +522,7 @@ The framework uses Claude Code hooks for automatic safety and notification:
 
 - **PreToolUse** (`validate_access.py`): Access control that blocks unauthorized file edits based on current role. Exit code 2 blocks the tool call.
 - **PreToolUse** (`validate_write.sh`): Write guard that blocks writes to `plans/` directory. Infrastructure Manager role has exception for hook files.
+- **PreToolUse** (`validate_step7a.py`): Step 7a guard that blocks `gh pr create` until QA checkpoint is approved. `qa:auto` ラベルの Issue は自動承認。ブロック時に通知音を再生。
 - **PostToolUse** (`task_complete.sh`): Plays notification sound on Edit/Write/MultiEdit/TodoWrite completion.
 - **Stop** (`waiting_input.sh`): Plays notification sound when waiting for user input.
 
