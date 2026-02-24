@@ -26,7 +26,7 @@ log_ok "  .vibe/scripts/ と .vibe/checkpoints/ を作成"
 # ============================================================
 log_info "2/8: dev.sh ランチャー配置"
 if [ -f "${FRAMEWORK}/examples/.vibe/scripts/dev.sh" ]; then
-    copy_if_absent ".vibe/scripts/dev.sh" "${FRAMEWORK}/examples/.vibe/scripts/dev.sh"
+    copy_if_absent "${FRAMEWORK}/examples/.vibe/scripts/dev.sh" ".vibe/scripts/dev.sh"
     chmod +x ".vibe/scripts/dev.sh" 2>/dev/null || true
     log_ok "  dev.sh ランチャーを配置"
 else
@@ -50,7 +50,7 @@ fi
 # ============================================================
 log_info "4/8: checkpoint_alert.sh 配置"
 if [ -f "${FRAMEWORK}/examples/.vibe/hooks/checkpoint_alert.sh" ]; then
-    copy_if_absent ".vibe/hooks/checkpoint_alert.sh" "${FRAMEWORK}/examples/.vibe/hooks/checkpoint_alert.sh"
+    copy_if_absent "${FRAMEWORK}/examples/.vibe/hooks/checkpoint_alert.sh" ".vibe/hooks/checkpoint_alert.sh"
     chmod +x ".vibe/hooks/checkpoint_alert.sh" 2>/dev/null || true
     log_ok "  checkpoint_alert.sh を配置"
 else
