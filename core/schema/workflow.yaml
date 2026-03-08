@@ -1,0 +1,91 @@
+# VibeFlow Workflow Schema — Single Source of Truth
+# Defines step sequences, roles, and modes for each workflow type.
+
+workflows:
+  standard:
+    description: "Standard 11-step development workflow for feature/bugfix issues"
+    steps:
+      - id: 1_issue_review
+        role: product_manager
+        mode: solo
+      - id: 2_task_breakdown
+        role: product_manager
+        mode: team
+      - id: 2.5_hook_permission_setup
+        role: infra_manager
+        mode: solo
+      - id: 3_branch_creation
+        role: engineer
+        mode: solo
+      - id: 4_test_writing
+        role: engineer
+        mode: fork
+      - id: 5_implementation
+        role: engineer
+        mode: fork
+      - id: 6_refactoring
+        role: engineer
+        mode: fork
+      - id: 6.5_hook_rollback
+        role: infra_manager
+        mode: solo
+      - id: 7_acceptance_test
+        role: qa_engineer
+        mode: team
+      - id: 7a_human_checkpoint
+        role: human
+        mode: checkpoint
+      - id: 8_pr_creation
+        role: engineer
+        mode: solo
+      - id: 9_code_review
+        role: qa_engineer
+        mode: team
+      - id: 10_merge
+        role: engineer
+        mode: solo
+      - id: 11_deployment
+        role: engineer
+        mode: solo
+
+  patch:
+    description: "Lightweight patch loop for scoped fixes from QA/review feedback"
+    steps:
+      - id: 1_scope_review
+        role: engineer
+        mode: solo
+      - id: 2_fix_implementation
+        role: engineer
+        mode: solo
+      - id: 3_targeted_test
+        role: qa_engineer
+        mode: solo
+      - id: 4_commit
+        role: engineer
+        mode: solo
+
+  spike:
+    description: "Exploration and discovery — produces decisions, not production code"
+    steps:
+      - id: 1_question_framing
+        role: iris
+        mode: solo
+      - id: 2_exploration
+        role: engineer
+        mode: solo
+      - id: 3_decision_summary
+        role: iris
+        mode: solo
+
+  ops:
+    description: "Non-development project tasks (release, docs, backlog grooming)"
+    steps:
+      - id: 1_task_review
+        role: iris
+        mode: solo
+      - id: 2_execution
+        role: iris
+        mode: solo
+      - id: 3_completion
+        role: iris
+        mode: solo

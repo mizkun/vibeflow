@@ -1,0 +1,90 @@
+# VibeFlow Policy Schema — Single Source of Truth
+# This file defines role-based access permissions.
+# Generators read this file to produce validate_access.py, settings.json, etc.
+
+roles:
+  iris:
+    display_name: "Iris"
+    can_read:
+      - "vision.md"
+      - "spec.md"
+      - "plan.md"
+      - ".vibe/context/**"
+      - ".vibe/references/**"
+      - ".vibe/archive/**"
+      - ".vibe/state.yaml"
+      - "src/**"
+    can_write:
+      - "vision.md"
+      - "spec.md"
+      - "plan.md"
+      - ".vibe/context/*"
+      - ".vibe/references/*"
+      - ".vibe/archive/*"
+      - ".vibe/state.yaml"
+    enforcement: hard
+
+  product_manager:
+    display_name: "Product Manager"
+    can_read:
+      - "vision.md"
+      - "spec.md"
+      - "plan.md"
+      - ".vibe/state.yaml"
+      - ".vibe/qa-reports/**"
+    can_write:
+      - "plan.md"
+      - ".vibe/state.yaml"
+    enforcement: hard
+
+  engineer:
+    display_name: "Engineer"
+    can_read:
+      - "spec.md"
+      - "src/**"
+      - ".vibe/state.yaml"
+    can_write:
+      - "src/*"
+      - "tests/*"
+      - "**/*.test.*"
+      - "**/__tests__/*"
+      - ".vibe/state.yaml"
+      - ".vibe/test-results.log"
+    enforcement: hard
+
+  qa_engineer:
+    display_name: "QA Engineer"
+    can_read:
+      - "spec.md"
+      - "src/**"
+      - ".vibe/state.yaml"
+      - ".vibe/qa-reports/**"
+    can_write:
+      - ".vibe/qa-reports/*"
+      - ".vibe/test-results.log"
+      - ".vibe/state.yaml"
+    enforcement: hard
+
+  infra_manager:
+    display_name: "Infrastructure Manager"
+    can_read:
+      - ".vibe/hooks/**"
+      - ".vibe/state.yaml"
+      - ".claude/settings.json"
+    can_write:
+      - ".vibe/hooks/*"
+      - "validate-write*"
+      - "validate_write*"
+      - ".vibe/state.yaml"
+    enforcement: hard
+
+  human:
+    display_name: "Human"
+    can_read: []
+    can_write:
+      - ".vibe/state.yaml"
+    enforcement: hard
+
+# Files always allowed regardless of role
+always_allow:
+  - ".vibe/state.yaml"
