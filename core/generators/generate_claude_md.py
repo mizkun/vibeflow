@@ -85,9 +85,52 @@ def generate_workflow_section(schemas: dict) -> str:
     return "\n".join(lines)
 
 
+def generate_hook_list_section(schemas: dict) -> str:
+    """Generate hook list section from policy schema."""
+    policy = schemas.get("policy", {})
+
+    has_hard_enforcement = any(
+        r.get("enforcement") == "hard"
+        for r in policy.get("roles", {}).values()
+    )
+
+    lines = []
+    lines.append("The framework uses Claude Code hooks for automatic safety and notification:")
+    lines.append("")
+
+    if has_hard_enforcement:
+        lines.append(
+            "- **PreToolUse** (`validate_access.py`): "
+            "Access control that blocks unauthorized file edits based on current role. "
+            "Exit code 2 blocks the tool call."
+        )
+        lines.append(
+            "- **PreToolUse** (`validate_write.sh`): "
+            "Write guard that blocks writes to `plans/` directory."
+        )
+        lines.append(
+            "- **PreToolUse** (`validate_step7a.py`): "
+            "Step 7a guard that blocks `gh pr create` until QA checkpoint is approved."
+        )
+
+    lines.append(
+        "- **PostToolUse** (`task_complete.sh`): "
+        "Plays notification sound on Edit/Write/MultiEdit/TodoWrite completion."
+    )
+    lines.append(
+        "- **Stop** (`waiting_input.sh`): "
+        "Plays notification sound when waiting for user input."
+    )
+    lines.append("")
+    lines.append("Configuration: `.claude/settings.json`")
+
+    return "\n".join(lines)
+
+
 SECTION_GENERATORS = {
     "roles": generate_roles_section,
     "workflow": generate_workflow_section,
+    "hook_list": generate_hook_list_section,
 }
 
 

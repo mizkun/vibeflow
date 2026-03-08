@@ -125,4 +125,125 @@ EOF
 run_test "Generated roles section has schema-derived content" test_generated_roles_section_has_content
 
 # ──────────────────────────────────────────────
+describe "hook_list managed section"
+
+test_hook_list_section_generated() {
+    cat > "${TEST_DIR}/CLAUDE.md" << 'EOF'
+# Project
+
+## Hooks
+
+<!-- VF:BEGIN hook_list -->
+old hook list
+<!-- VF:END hook_list -->
+EOF
+
+    python3 "${FRAMEWORK_DIR}/core/generators/generate_claude_md.py" \
+        --input "${TEST_DIR}/CLAUDE.md" \
+        --schema-dir "${FRAMEWORK_DIR}/core/schema" \
+        --output "${TEST_DIR}/CLAUDE.md" 2>/dev/null
+
+    assert_file_not_contains "${TEST_DIR}/CLAUDE.md" "old hook list" \
+        "Old hook_list content should be replaced"
+    assert_file_contains "${TEST_DIR}/CLAUDE.md" "validate_access.py" \
+        "Generated hook_list should contain validate_access.py"
+    assert_file_contains "${TEST_DIR}/CLAUDE.md" "validate_write.sh" \
+        "Generated hook_list should contain validate_write.sh"
+    assert_file_contains "${TEST_DIR}/CLAUDE.md" "validate_step7a.py" \
+        "Generated hook_list should contain validate_step7a.py"
+    assert_file_contains "${TEST_DIR}/CLAUDE.md" "PreToolUse" \
+        "Generated hook_list should contain hook event type"
+}
+run_test "hook_list section is generated from schema" test_hook_list_section_generated
+
+test_hook_list_excludes_when_soft() {
+    # Create a schema dir with all-soft enforcement
+    local schema_dir="${TEST_DIR}/soft-schema"
+    mkdir -p "$schema_dir"
+    cat > "${schema_dir}/policy.yaml" << 'YAML'
+roles:
+  engineer:
+    display_name: "Engineer"
+    can_read: ["src/**"]
+    can_write: ["src/**"]
+    enforcement: soft
+always_allow: []
+YAML
+    cat > "${schema_dir}/roles.yaml" << 'YAML'
+roles:
+  engineer:
+    name: "Engineer"
+    description: "Implementation"
+    responsibilities: []
+YAML
+    cat > "${schema_dir}/workflow.yaml" << 'YAML'
+workflows: {}
+YAML
+
+    cat > "${TEST_DIR}/CLAUDE.md" << 'EOF'
+<!-- VF:BEGIN hook_list -->
+placeholder
+<!-- VF:END hook_list -->
+EOF
+
+    python3 "${FRAMEWORK_DIR}/core/generators/generate_claude_md.py" \
+        --input "${TEST_DIR}/CLAUDE.md" \
+        --schema-dir "$schema_dir" \
+        --output "${TEST_DIR}/CLAUDE.md" 2>/dev/null
+
+    assert_file_not_contains "${TEST_DIR}/CLAUDE.md" "validate_access.py" \
+        "All-soft policy should not list validate_access.py"
+}
+run_test "hook_list omits guard hooks when all-soft enforcement" test_hook_list_excludes_when_soft
+
+# ──────────────────────────────────────────────
+describe "examples/CLAUDE.md regeneration"
+
+test_examples_claude_md_has_markers() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" "VF:BEGIN roles" \
+        "examples/CLAUDE.md should have VF:BEGIN roles marker"
+    assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" "VF:BEGIN workflow" \
+        "examples/CLAUDE.md should have VF:BEGIN workflow marker"
+    assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" "VF:BEGIN hook_list" \
+        "examples/CLAUDE.md should have VF:BEGIN hook_list marker"
+}
+run_test "examples/CLAUDE.md has VF markers" test_examples_claude_md_has_markers
+
+test_examples_claude_md_regeneratable() {
+    local outdir="${TEST_DIR}/regen"
+    mkdir -p "$outdir"
+    cp "${FRAMEWORK_DIR}/examples/CLAUDE.md" "${outdir}/CLAUDE.md"
+
+    python3 "${FRAMEWORK_DIR}/core/generators/generate_claude_md.py" \
+        --input "${outdir}/CLAUDE.md" \
+        --schema-dir "${FRAMEWORK_DIR}/core/schema" \
+        --output "${outdir}/CLAUDE.md" 2>/dev/null
+
+    # After regeneration, content should be identical (idempotent)
+    diff "${FRAMEWORK_DIR}/examples/CLAUDE.md" "${outdir}/CLAUDE.md" > /dev/null 2>&1 || {
+        fail "Regenerating examples/CLAUDE.md should produce identical output (idempotent)"
+        return 1
+    }
+}
+run_test "examples/CLAUDE.md is idempotent after regeneration" test_examples_claude_md_regeneratable
+
+test_examples_claude_md_preserves_handwritten() {
+    local outdir="${TEST_DIR}/regen"
+    mkdir -p "$outdir"
+    cp "${FRAMEWORK_DIR}/examples/CLAUDE.md" "${outdir}/CLAUDE.md"
+
+    python3 "${FRAMEWORK_DIR}/core/generators/generate_claude_md.py" \
+        --input "${outdir}/CLAUDE.md" \
+        --schema-dir "${FRAMEWORK_DIR}/core/schema" \
+        --output "${outdir}/CLAUDE.md" 2>/dev/null
+
+    # Hand-written sections must be preserved
+    assert_file_contains "${outdir}/CLAUDE.md" "Multi-Terminal Operation" \
+        "Hand-written Multi-Terminal section should be preserved"
+    assert_file_contains "${outdir}/CLAUDE.md" "Safety Rules" \
+        "Hand-written Safety Rules section should be preserved"
+}
+run_test "Regeneration preserves hand-written sections" test_examples_claude_md_preserves_handwritten
+
+# ──────────────────────────────────────────────
 print_summary
