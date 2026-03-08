@@ -38,5 +38,9 @@ yarn-error.log*
 *_backup_*
 .vibe_backup_*
 
+# Python
+__pycache__/
+*.pyc
+
 # Test directory (for local testing only)
 test/

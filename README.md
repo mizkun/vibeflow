@@ -299,7 +299,7 @@ Rapid iterative development for UI adjustments and algorithm tuning with `/quick
 - **Atomic UI Changes**: CSS/HTML changes are made one at a time with user confirmation
 - **Destructive Operation Protection**: `rm -rf`, `git reset --hard`, etc. require user confirmation
 - **Retry Limits**: Same approach limited to 3 retries before requiring a different approach
-- **plans/ Directory Blocking**: Write guard hook prevents creating plans/ directory (use plan.md or issues/ instead)
+- **plans/ Directory Blocking**: Write guard hook prevents creating plans/ directory (use plan.md instead)
 - **Hook Permission Control**: Infrastructure Manager role manages write permissions per issue
 
 ### E2E Testing with Playwright
@@ -433,7 +433,8 @@ The framework uses YAML files for state persistence:
 
 The framework uses a **context-continuous role-based system**:
 
-- **No Agent Files**: Subagents are deprecated in favor of embedded role switching
+- **Workflow-Driven Roles**: Primary roles (PM, Engineer, QA, Infra) are embedded in the workflow and switch automatically per step
+- **Subagents as Helpers**: Subagents (e.g., Iris) serve as persistent helper tools running in separate sessions
 - **Dynamic Permissions**: Role-based permissions are applied via hooks and workflow
 - **Single Context**: All roles operate within the same conversation context
 - **Hook Enforcement**: `validate_access.py` and `validate_write.sh` enforce permissions at the tool level
@@ -445,7 +446,7 @@ The framework uses a **context-continuous role-based system**:
 3. **Ensures Traceability**: Every code change traces back to an issue, which traces to spec requirements
 4. **Maintains Quality**: Multiple verification points catch issues early
 5. **Enables Automation**: Clear role boundaries allow AI to execute most steps autonomously
-6. **Simplified Management**: No need to manage separate agent files or contexts
+6. **Role Separation**: Workflow roles handle step-by-step execution while subagents provide specialized, on-demand assistance
 
 ### Verification System
 

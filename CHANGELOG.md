@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.5.0] - 2026-02-24
+
+Dev Launcher、Step 7a Guard、QA ラベル、Batch Execution を追加。
+
+### Added
+
+#### Dev Launcher
+- `.vibe/scripts/dev.sh <issue番号>`: Issue 指定で開発ターミナルを起動するランチャー
+- Issue 存在確認 → 環境変数設定 → Claude Code をフック付きで起動
+
+#### Step 7a Guard
+- `validate_step7a.py`: `gh pr create` を QA checkpoint 承認まで物理的にブロックするフック
+- `.vibe/checkpoints/{issue}-qa-approved` の存在で承認を判定
+- ブロック時に通知音を再生
+
+#### QA Labels
+- `qa:auto`: 自動テストで完全に検証可能な Issue。Step 7a を自動承認し、バッチ実行対象
+- `qa:manual`: 人間の手動確認が必要な Issue。従来通り停止してユーザー承認を待つ
+
+#### Batch Execution
+- Iris ターミナルから `qa:auto` ラベルの Issue を Claude Code の Task ツール（worktree isolation）で並列実行
+
+### Changed
+- `settings.json`: `validate_step7a.py` を PreToolUse フックに追加
+- `checkpoint_alert.sh`: Step 7a ブロック時の通知音スクリプト
+
+### Added
+- `.vibe/scripts/dev.sh`: 開発ターミナルランチャー
+- `.vibe/hooks/validate_step7a.py`: Step 7a ガードフック
+- `.vibe/hooks/checkpoint_alert.sh`: チェックポイント通知
+- `.vibe/checkpoints/`: QA 承認マーカーディレクトリ
+- `migrations/v3.4.0_to_v3.5.0.sh`: v3.4→v3.5 マイグレーション
+
+### Migration
+- `vibeflow upgrade` で v3.4 → v3.5 自動マイグレーション
+- `.vibe/scripts/dev.sh` ランチャーを配置
+- `validate_step7a.py` フックを配置・settings.json に登録
+- `.vibe/checkpoints/` ディレクトリを作成
+
+---
+
 ## [3.4.0] - 2026-02-22
 
 Quick Fix Mode を追加。UI 調整やアルゴリズムチューニングなど、正解が事前にわからない探索的な作業向けの軽量モード。

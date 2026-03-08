@@ -48,7 +48,7 @@ Validate that implementations meet acceptance criteria and generate comprehensiv
    - `spec.md` - Understand the product specification
    - `plan.md` - Understand the implementation plan
    - `.vibe/state.yaml` - Know the current workflow state
-   - `issues/*` - Read the relevant issue file(s)
+   - GitHub Issues (`gh issue view <number>`) - Read the relevant issue(s)
 
 3. **Testing approach**:
    - Run only the minimum necessary test commands
@@ -148,7 +148,7 @@ Perform thorough code reviews focusing on quality, security, and maintainability
 3. **Before reviewing, read these files**:
    - `.vibe/state.yaml` - Current workflow state
    - `spec.md` - Product specification
-   - `issues/*` - Relevant issue file(s)
+   - GitHub Issues (`gh issue view <number>`) - Relevant issue(s)
 
 ## Review Focus Areas
 

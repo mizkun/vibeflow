@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Vibe Coding Framework Setup Script
-# Version: 3.0.0
 # This is the main setup script that orchestrates the installation
 # Includes: GitHub Issues, Iris, Multi-Terminal, 3-Tier Context, Safety Rules
 
