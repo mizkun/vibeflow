@@ -41,5 +41,24 @@ test_examples_discussion_partner_not_exists() {
 }
 run_test "examples/.vibe/roles/discussion-partner.md does not exist" test_examples_discussion_partner_not_exists
 
+describe "Subagent cleanup — README consistency"
+
+test_readme_no_no_separate_agent_files() {
+    assert_file_not_contains "${FRAMEWORK_DIR}/README.md" "No Separate Agent Files" \
+        "README.md should not contain 'No Separate Agent Files'"
+}
+run_test "README.md does not contain 'No Separate Agent Files'" test_readme_no_no_separate_agent_files
+
+test_readme_key_principles_mentions_subagents() {
+    # Key Principles should acknowledge subagents, not deny them
+    if grep -q "Roles + Subagents\|Subagents as Helpers" "${FRAMEWORK_DIR}/README.md"; then
+        return 0
+    else
+        fail "README.md Key Principles or Architecture should mention subagents positively"
+        return 1
+    fi
+}
+run_test "README.md acknowledges subagents in Key Principles or Architecture" test_readme_key_principles_mentions_subagents
+
 # ──────────────────────────────────────────────
 print_summary

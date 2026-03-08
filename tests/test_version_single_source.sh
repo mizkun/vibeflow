@@ -89,6 +89,22 @@ test_write_version_file_uses_correct_version() {
 }
 run_test "write_version_file generates correct version" test_write_version_file_uses_correct_version
 
+test_no_hardcoded_version_in_setup_global_var() {
+    # setup_vibeflow.sh should not have VERSION="3.x.x" — it should use FRAMEWORK_VERSION
+    if grep -qE '^VERSION="[0-9]+\.[0-9]+\.[0-9]+"' "${FRAMEWORK_DIR}/setup_vibeflow.sh"; then
+        fail "setup_vibeflow.sh has hardcoded VERSION variable"
+        return 1
+    fi
+}
+run_test "No hardcoded VERSION in setup_vibeflow.sh global var" test_no_hardcoded_version_in_setup_global_var
+
+test_setup_version_uses_framework_version() {
+    # setup_vibeflow.sh should reference FRAMEWORK_VERSION
+    assert_file_contains "${FRAMEWORK_DIR}/setup_vibeflow.sh" 'FRAMEWORK_VERSION' \
+        "setup_vibeflow.sh should use FRAMEWORK_VERSION from framework_version.sh"
+}
+run_test "setup_vibeflow.sh uses FRAMEWORK_VERSION" test_setup_version_uses_framework_version
+
 # ──────────────────────────────────────────────
 # Summary
 # ──────────────────────────────────────────────

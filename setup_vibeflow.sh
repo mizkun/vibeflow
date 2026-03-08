@@ -54,8 +54,8 @@ if [ -f "${LIB_DIR}/create_dev_launcher.sh" ]; then
     source "${LIB_DIR}/create_dev_launcher.sh"
 fi
 
-# Global variables
-VERSION="3.5.0"
+# Global variables — version comes from framework_version.sh (sourced above)
+VERSION="$FRAMEWORK_VERSION"
 FORCE_INSTALL=false
 BACKUP_ENABLED=true
 VERBOSE=false

@@ -281,7 +281,7 @@ User: "OK, commit"           → Atomic commit, exit mode
 ### Key Principles
 
 1. **Context-Continuous Operation**: All roles operate within the same context with dynamic permission switching
-2. **No Separate Agent Files**: Role-based permissions are embedded in the workflow
+2. **Roles + Subagents**: Workflow roles drive step execution; subagents provide on-demand specialist help
 3. **Automated Progression**: Steps flow automatically with a single human checkpoint (Step 7a)
 4. **Verification at Each Step**: Each role verifies their own artifacts before proceeding
 5. **Clear State Management**: state.yaml tracks current position and progress
@@ -293,7 +293,7 @@ User: "OK, commit"           → Atomic commit, exit mode
 Brainstorm and validate product direction with `/discuss`. The Iris role provides counterarguments, questions assumptions, and organizes discussion points. Conclusions are reflected back to vision.md, spec.md, and plan.md via `/conclude`.
 
 ### Quick Fix Mode
-Rapid iterative development for UI adjustments and algorithm tuning with `/quickfix`. No issues or step workflow needed — just direct interaction with the AI until satisfied, then commit.
+Rapid iterative development for UI adjustments and algorithm tuning with `/quickfix`. Bypasses the 11-step workflow for scoped, exploratory changes — direct interaction with the AI until satisfied, then commit.
 
 ### Safety Rules
 - **Atomic UI Changes**: CSS/HTML changes are made one at a time with user confirmation
