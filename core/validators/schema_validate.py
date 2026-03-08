@@ -123,10 +123,64 @@ def detect_schema_type(filepath: str) -> str:
     return "unknown"
 
 
+def validate_cross(schema_dir: str) -> list[str]:
+    """Cross-file validation: workflow roles must exist in policy and roles schemas."""
+    errors = []
+    schema_path = Path(schema_dir)
+
+    files = {}
+    for name in ("policy", "workflow", "roles"):
+        fpath = schema_path / f"{name}.yaml"
+        if not fpath.exists():
+            errors.append(f"Missing schema file: {fpath}")
+            continue
+        with open(fpath) as f:
+            files[name] = yaml.safe_load(f)
+
+    if errors:
+        return errors
+
+    policy_roles = set(files["policy"].get("roles", {}).keys())
+    roles_roles = set(files["roles"].get("roles", {}).keys())
+
+    # Check workflow role references
+    for wtype, wdef in files["workflow"].get("workflows", {}).items():
+        for step in wdef.get("steps", []):
+            role = step.get("role", "")
+            if role not in policy_roles:
+                errors.append(f"workflow.{wtype}.{step['id']}: role '{role}' not in policy.yaml")
+            if role not in roles_roles:
+                errors.append(f"workflow.{wtype}.{step['id']}: role '{role}' not in roles.yaml")
+
+    # Check policy ↔ roles consistency
+    missing_in_roles = policy_roles - roles_roles
+    missing_in_policy = roles_roles - policy_roles
+    if missing_in_roles:
+        errors.append(f"In policy.yaml but not roles.yaml: {missing_in_roles}")
+    if missing_in_policy:
+        errors.append(f"In roles.yaml but not policy.yaml: {missing_in_policy}")
+
+    return errors
+
+
 def main() -> None:
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <schema.yaml>", file=sys.stderr)
+        print(f"Usage: {sys.argv[0]} <schema.yaml> | --cross <schema_dir>", file=sys.stderr)
         sys.exit(1)
+
+    # Cross-file validation mode
+    if sys.argv[1] == "--cross":
+        if len(sys.argv) < 3:
+            print(f"Usage: {sys.argv[0]} --cross <schema_dir>", file=sys.stderr)
+            sys.exit(1)
+        errors = validate_cross(sys.argv[2])
+        if errors:
+            print("Cross-file validation failed:", file=sys.stderr)
+            for err in errors:
+                print(f"  - {err}", file=sys.stderr)
+            sys.exit(1)
+        print(f"OK: cross-file validation for {sys.argv[2]}")
+        sys.exit(0)
 
     filepath = sys.argv[1]
     try:
