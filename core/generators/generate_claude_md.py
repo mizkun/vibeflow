@@ -110,22 +110,6 @@ def update_managed_sections(content: str, schemas: dict) -> str:
     return MARKER_RE.sub(replacer, content)
 
 
-def insert_sections_if_missing(content: str, schemas: dict) -> str:
-    """If no markers found, append managed sections at the end."""
-    if "VF:BEGIN" in content:
-        return content
-
-    sections = []
-    for section_name, generator in SECTION_GENERATORS.items():
-        generated = generator(schemas)
-        sections.append(f"<!-- VF:BEGIN {section_name} -->")
-        sections.append(generated)
-        sections.append(f"<!-- VF:END {section_name} -->")
-        sections.append("")
-
-    return content.rstrip() + "\n\n" + "\n".join(sections)
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate CLAUDE.md managed sections")
     parser.add_argument("--input", required=True, help="Input CLAUDE.md path")
@@ -141,9 +125,21 @@ def main() -> None:
 
     schemas = load_schemas(args.schema_dir)
 
-    # Update existing markers or insert new ones
+    # Only update existing markers — never auto-insert into markerless files
+    if "VF:BEGIN" not in content:
+        print(
+            f"WARNING: {args.input} has no VF:BEGIN/VF:END markers. "
+            f"Skipping generation. Add markers manually to enable managed sections.",
+            file=sys.stderr,
+        )
+        # Write unchanged content if output differs from input
+        if str(Path(args.output).resolve()) != str(input_path.resolve()):
+            output_path = Path(args.output)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_text(content)
+        sys.exit(0)
+
     content = update_managed_sections(content, schemas)
-    content = insert_sections_if_missing(content, schemas)
 
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)

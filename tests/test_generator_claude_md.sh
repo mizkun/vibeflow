@@ -82,24 +82,29 @@ EOF
 }
 run_test "Multiple VF:BEGIN/VF:END sections handled" test_multiple_markers_handled
 
-test_no_markers_inserts_at_end() {
+test_no_markers_warns_and_skips() {
     cat > "${TEST_DIR}/CLAUDE.md" << 'EOF'
 # Plain CLAUDE.md
 
 No markers here.
 EOF
 
-    python3 "${FRAMEWORK_DIR}/core/generators/generate_claude_md.py" \
+    local stderr_output
+    stderr_output=$(python3 "${FRAMEWORK_DIR}/core/generators/generate_claude_md.py" \
         --input "${TEST_DIR}/CLAUDE.md" \
         --schema-dir "${FRAMEWORK_DIR}/core/schema" \
-        --output "${TEST_DIR}/CLAUDE.md" 2>/dev/null
+        --output "${TEST_DIR}/CLAUDE.md" 2>&1 >/dev/null)
 
     assert_file_contains "${TEST_DIR}/CLAUDE.md" "No markers here" \
         "Original content should be preserved"
-    assert_file_contains "${TEST_DIR}/CLAUDE.md" "VF:BEGIN" \
-        "Markers should be inserted"
+    assert_file_not_contains "${TEST_DIR}/CLAUDE.md" "VF:BEGIN" \
+        "Markers should NOT be auto-inserted into markerless files"
+
+    echo "$stderr_output" > "${TEST_DIR}/stderr.txt"
+    assert_file_contains "${TEST_DIR}/stderr.txt" "WARNING" \
+        "Should emit WARNING for markerless file"
 }
-run_test "No markers: sections appended with markers" test_no_markers_inserts_at_end
+run_test "No markers: WARNING only, no auto-insertion" test_no_markers_warns_and_skips
 
 test_generated_roles_section_has_content() {
     cat > "${TEST_DIR}/CLAUDE.md" << 'EOF'

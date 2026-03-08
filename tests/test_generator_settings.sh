@@ -16,12 +16,6 @@ test_generate_settings_script_exists() {
 }
 run_test "generate_settings.py exists" test_generate_settings_script_exists
 
-test_settings_template_exists() {
-    assert_file_exists "${FRAMEWORK_DIR}/core/templates/settings.json.j2" \
-        "core/templates/settings.json.j2 must exist"
-}
-run_test "settings.json.j2 template exists" test_settings_template_exists
-
 test_generate_settings_produces_valid_json() {
     local outdir="${TEST_DIR}/generated"
     mkdir -p "$outdir"
@@ -71,6 +65,60 @@ test_settings_has_posttooluse_and_stop() {
 }
 run_test "settings.json has PostToolUse and Stop" test_settings_has_posttooluse_and_stop
 
+test_settings_no_pretooluse_when_all_soft() {
+    # Create a schema dir with all-soft enforcement
+    local schema_dir="${TEST_DIR}/soft-schema"
+    mkdir -p "$schema_dir"
+    cat > "${schema_dir}/policy.yaml" << 'YAML'
+roles:
+  engineer:
+    display_name: "Engineer"
+    can_read: ["src/**"]
+    can_write: ["src/**"]
+    enforcement: soft
+always_allow: []
+YAML
+
+    local outdir="${TEST_DIR}/soft-generated"
+    mkdir -p "$outdir"
+    python3 "${FRAMEWORK_DIR}/core/generators/generate_settings.py" \
+        --schema-dir "$schema_dir" \
+        --output "$outdir" 2>/dev/null
+
+    assert_file_not_contains "${outdir}/settings.json" "validate_access.py" \
+        "All-soft policy should not include validate_access.py hook"
+}
+run_test "All-soft enforcement: no PreToolUse hooks" test_settings_no_pretooluse_when_all_soft
+
+# ──────────────────────────────────────────────
+describe "Generator — policy.yaml generation"
+
+test_generate_policy_script_exists() {
+    assert_file_exists "${FRAMEWORK_DIR}/core/generators/generate_policy.py" \
+        "core/generators/generate_policy.py must exist"
+}
+run_test "generate_policy.py exists" test_generate_policy_script_exists
+
+test_generate_policy_produces_full_fidelity() {
+    local outdir="${TEST_DIR}/generated-policy"
+    mkdir -p "$outdir"
+    python3 "${FRAMEWORK_DIR}/core/generators/generate_policy.py" \
+        --schema "${FRAMEWORK_DIR}/core/schema/policy.yaml" \
+        --output "$outdir" 2>/dev/null
+
+    assert_file_exists "${outdir}/policy.yaml" \
+        "Generator should produce policy.yaml"
+    assert_file_contains "${outdir}/policy.yaml" "enforcement" \
+        "Generated policy should include enforcement field"
+    assert_file_contains "${outdir}/policy.yaml" "display_name" \
+        "Generated policy should include display_name field"
+    assert_file_contains "${outdir}/policy.yaml" "human" \
+        "Generated policy should include human role"
+    assert_file_contains "${outdir}/policy.yaml" "always_allow" \
+        "Generated policy should include always_allow section"
+}
+run_test "generate_policy.py produces full-fidelity output" test_generate_policy_produces_full_fidelity
+
 # ──────────────────────────────────────────────
 describe "Generator — role docs generation"
 
@@ -87,7 +135,7 @@ test_generate_docs_produces_role_files() {
         --schema-dir "${FRAMEWORK_DIR}/core/schema" \
         --output "$outdir" 2>/dev/null
 
-    for role in iris product-manager engineer qa-engineer infra-manager; do
+    for role in iris product-manager engineer qa-engineer infra-manager human; do
         assert_file_exists "${outdir}/${role}.md" \
             "Generator should produce ${role}.md"
     done
