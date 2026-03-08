@@ -1,0 +1,4 @@
+# VibeFlow generator dependencies
+# Requires Python 3.8+
+pyyaml>=6.0
+jinja2>=3.1

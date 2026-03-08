@@ -1,0 +1,56 @@
+# VibeFlow Roles Schema — Single Source of Truth
+# Defines role metadata: description and responsibilities.
+# Permissions are defined in policy.yaml (separate concern).
+
+roles:
+  iris:
+    name: "Iris"
+    description: "Strategic partner bridging vision and implementation"
+    responsibilities:
+      - "Project-level discussion and planning"
+      - "Context management (STATUS.md, references, archive)"
+      - "Issue triage and prioritization"
+      - "GitHub Issues lifecycle management"
+      - "Discovery phase facilitation"
+
+  product_manager:
+    name: "Product Manager"
+    description: "Vision alignment, planning, and issue management"
+    responsibilities:
+      - "Issue review and requirements validation"
+      - "Task breakdown into implementable units"
+      - "Plan updates and progress tracking"
+      - "Acceptance criteria definition"
+
+  engineer:
+    name: "Engineer"
+    description: "Implementation, testing, and refactoring"
+    responsibilities:
+      - "Branch creation and management"
+      - "TDD: test writing, implementation, refactoring"
+      - "Pull request creation"
+      - "Code merge and deployment"
+
+  qa_engineer:
+    name: "QA Engineer"
+    description: "Acceptance testing, quality verification, and review"
+    responsibilities:
+      - "Acceptance test execution"
+      - "Code review (security, performance, coverage)"
+      - "QA report generation"
+      - "Human checkpoint management"
+
+  infra_manager:
+    name: "Infrastructure Manager"
+    description: "Hook and guardrail management"
+    responsibilities:
+      - "Hook permission setup per issue"
+      - "Hook rollback after implementation"
+      - "Security configuration management"
+
+  human:
+    name: "Human"
+    description: "Human checkpoint for manual verification"
+    responsibilities:
+      - "UI/UX manual verification"
+      - "Acceptance approval"
