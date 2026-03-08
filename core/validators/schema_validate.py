@@ -30,7 +30,7 @@ def validate_policy(data: dict) -> list[str]:
     if not isinstance(roles, dict):
         return ["Top-level 'roles' must be a mapping"]
 
-    required_roles = {"iris", "product_manager", "engineer", "qa_engineer", "infra_manager"}
+    required_roles = {"iris", "product_manager", "engineer", "qa_engineer", "infra_manager", "human"}
     missing = required_roles - set(roles.keys())
     if missing:
         errors.append(f"Missing required roles: {missing}")

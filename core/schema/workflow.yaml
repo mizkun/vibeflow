@@ -3,7 +3,7 @@
 
 workflows:
   standard:
-    description: "Standard 11-step development workflow for feature/bugfix issues"
+    description: "Standard development workflow — 11 core steps + infra gates (2.5/6.5) and QA checkpoint (7a)"
     steps:
       - id: 1_issue_review
         role: product_manager

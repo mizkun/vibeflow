@@ -36,6 +36,9 @@ def build_template_context(policy: dict) -> dict:
     """Build Jinja2 template context from policy schema."""
     roles = []
     for role_id, role_def in policy.get("roles", {}).items():
+        # Only include hard-enforced roles in hook generation
+        if role_def.get("enforcement") != "hard":
+            continue
         roles.append(
             {
                 "id": role_id,

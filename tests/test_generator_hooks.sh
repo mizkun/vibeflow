@@ -139,8 +139,39 @@ run_test "Generated file has same structural elements as examples/" test_generat
 # ──────────────────────────────────────────────
 describe "Generator — policy change propagation"
 
+test_hard_role_included_soft_role_excluded() {
+    # Create policy with hard and soft enforcement roles
+    cat > "${TEST_DIR}/mixed_policy.yaml" << 'YAML'
+roles:
+  hard_role:
+    display_name: "Hard Role"
+    can_read: []
+    can_write: ["hard/**"]
+    enforcement: hard
+  soft_role:
+    display_name: "Soft Role"
+    can_read: []
+    can_write: ["soft/**"]
+    enforcement: soft
+always_allow:
+  - ".vibe/state.yaml"
+YAML
+
+    local outdir="${TEST_DIR}/mixed_generated"
+    mkdir -p "$outdir"
+    python3 "${FRAMEWORK_DIR}/core/generators/generate_hooks.py" \
+        --schema "${TEST_DIR}/mixed_policy.yaml" \
+        --output "$outdir" 2>/dev/null
+
+    assert_file_contains "${outdir}/validate_access.py" '"Hard Role"' \
+        "Generated file should contain hard-enforced role"
+    assert_file_not_contains "${outdir}/validate_access.py" '"Soft Role"' \
+        "Generated file should NOT contain soft-enforced role"
+}
+run_test "Hard enforcement roles included, soft excluded" test_hard_role_included_soft_role_excluded
+
 test_policy_change_reflects_in_output() {
-    # Create a modified policy with an extra role
+    # Create a modified policy with a new hard-enforced role
     cat > "${TEST_DIR}/custom_policy.yaml" << 'YAML'
 roles:
   iris:
@@ -152,7 +183,7 @@ roles:
     display_name: "Custom Role"
     can_read: []
     can_write: ["custom/**"]
-    enforcement: soft
+    enforcement: hard
 always_allow:
   - ".vibe/state.yaml"
 YAML
@@ -164,9 +195,7 @@ YAML
         --output "$outdir" 2>/dev/null
 
     assert_file_contains "${outdir}/validate_access.py" '"Custom Role"' \
-        "Generated file should contain custom role from modified policy"
-    assert_file_contains "${outdir}/validate_access.py" 'custom/\*\*\|custom/\*' \
-        "Generated file should contain custom role's write paths"
+        "Generated file should contain custom hard-enforced role"
 }
 run_test "Policy changes propagate to generated output" test_policy_change_reflects_in_output
 

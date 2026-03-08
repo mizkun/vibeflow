@@ -142,5 +142,45 @@ YAML
 }
 run_test "schema_validate.py fails when required roles missing" test_schema_validate_fails_missing_roles
 
+test_schema_validate_fails_missing_human_role() {
+    # Create policy with all roles except human
+    cat > "${TEST_DIR}/no_human_policy.yaml" << 'YAML'
+roles:
+  iris:
+    display_name: "Iris"
+    can_read: []
+    can_write: []
+    enforcement: hard
+  product_manager:
+    display_name: "Product Manager"
+    can_read: []
+    can_write: []
+    enforcement: hard
+  engineer:
+    display_name: "Engineer"
+    can_read: []
+    can_write: []
+    enforcement: hard
+  qa_engineer:
+    display_name: "QA Engineer"
+    can_read: []
+    can_write: []
+    enforcement: hard
+  infra_manager:
+    display_name: "Infrastructure Manager"
+    can_read: []
+    can_write: []
+    enforcement: hard
+always_allow: []
+YAML
+
+    if python3 "${FRAMEWORK_DIR}/core/validators/schema_validate.py" \
+        "${TEST_DIR}/no_human_policy.yaml" 2>/dev/null; then
+        fail "schema_validate.py should fail when human role is missing"
+        return 1
+    fi
+}
+run_test "schema_validate.py fails when human role missing" test_schema_validate_fails_missing_human_role
+
 # ──────────────────────────────────────────────
 print_summary
