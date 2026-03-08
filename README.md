@@ -229,7 +229,7 @@ VibeFlow v3 uses a multi-terminal model:
 - Activated with `/quickfix [description]` in a dev terminal
 - For UI adjustments, algorithm tuning, and other exploratory work
 - Rapid iteration: "change this" → "nice" → "revert that" → "OK, commit"
-- No issues or step workflow required
+- Bypasses the 11-step workflow for scoped, exploratory changes
 
 ### Core Concept: Role-Based Development Workflow
 
@@ -273,7 +273,7 @@ User: "Revert that"          → AI reverts
 User: "OK, commit"           → Atomic commit, exit mode
 ```
 
-- No GitHub Issue required
+- Best for scoped exploratory changes; use GitHub Issues for tracked work
 - No 11-step workflow — direct interactive loop
 - Engineer role with same write scope (src/**)
 - Safety Rules still apply
