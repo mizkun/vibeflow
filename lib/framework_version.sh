@@ -2,11 +2,17 @@
 
 # Vibe Coding Framework - Version Management
 # This script handles framework versioning
+# VERSION file is the single source of truth for version number.
 
-# Current framework version
-FRAMEWORK_VERSION="3.4.0"
-FRAMEWORK_NAME="GitHub Issues, Iris, Multi-Terminal, 3-Tier Context, Quick Fix Mode"
-FRAMEWORK_RELEASE_DATE="2026-02-22"
+# Read version from VERSION file (single source of truth)
+_VIBEFLOW_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [ -f "${_VIBEFLOW_SCRIPT_DIR}/VERSION" ]; then
+    FRAMEWORK_VERSION=$(cat "${_VIBEFLOW_SCRIPT_DIR}/VERSION" | tr -d '[:space:]')
+else
+    echo "WARNING: VERSION file not found at ${_VIBEFLOW_SCRIPT_DIR}/VERSION" >&2
+    FRAMEWORK_VERSION="unknown"
+fi
+unset _VIBEFLOW_SCRIPT_DIR
 
 # Function to write version file
 write_version_file() {
@@ -15,7 +21,6 @@ write_version_file() {
 # Vibe Coding Framework Version Information
 framework:
   version: "${FRAMEWORK_VERSION}"
-  name: "${FRAMEWORK_NAME}"
   installed_at: "$(date -Iseconds 2>/dev/null || date '+%Y-%m-%dT%H:%M:%S%z')"
 
   # Version compatibility
@@ -38,11 +43,15 @@ framework:
     safety_rules: true
     write_guard: true
     infra_manager_role: true
-    # New in 3.0.0
     github_issues: true
     iris_role: true
     multi_terminal: true
     three_tier_context: true
+    # New in 3.5.0
+    dev_launcher: true
+    step7a_guard: true
+    qa_labels: true
+    batch_execution: true
 
   # Claude Code integration
   claude_code:
@@ -50,6 +59,7 @@ framework:
     hooks:
       - PreToolUse (validate_access.py)
       - PreToolUse (validate_write.sh)
+      - PreToolUse (validate_step7a.py)
       - PostToolUse (task_complete.sh)
       - Stop (waiting_input.sh)
     skills:

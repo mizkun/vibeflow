@@ -20,6 +20,7 @@ FRAMEWORK_DIR="$(resolve_framework_dir)"
 VERSION=$(cat "${FRAMEWORK_DIR}/VERSION" 2>/dev/null || echo "unknown")
 
 # Color output
+RED='\033[0;31m'
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -74,65 +75,224 @@ cmd_version() {
 }
 
 cmd_doctor() {
-  echo "VibeFlow Environment Check"
-  echo "─────────────────────────"
+  local JSON_MODE=false
+  local DOCTOR_ARGS=("$@")
+  for arg in "${DOCTOR_ARGS[@]:-}"; do
+    [ "$arg" = "--json" ] && JSON_MODE=true
+  done
 
-  echo -n "Framework:        "
+  # Collect check results
+  local -a CHECK_NAMES=()
+  local -a CHECK_STATUSES=()
+  local -a CHECK_MESSAGES=()
+
+  add_check() {
+    CHECK_NAMES+=("$1")
+    CHECK_STATUSES+=("$2")
+    CHECK_MESSAGES+=("$3")
+  }
+
+  # ── Environment checks ──
+
   if [ -d "$FRAMEWORK_DIR" ]; then
-    echo "✓ ${FRAMEWORK_DIR} (v${VERSION})"
+    add_check "framework" "ok" "${FRAMEWORK_DIR} (v${VERSION})"
   else
-    echo "✗ not found"
+    add_check "framework" "error" "not found"
   fi
 
-  echo -n "git:              "
   if command -v git &>/dev/null; then
-    echo "✓ $(git --version)"
+    add_check "git" "ok" "$(git --version)"
   else
-    echo "✗ not installed"
+    add_check "git" "error" "not installed"
   fi
 
-  echo -n "python3:          "
   if command -v python3 &>/dev/null; then
-    echo "✓ $(python3 --version 2>&1)"
+    add_check "python3" "ok" "$(python3 --version 2>&1)"
   else
-    echo "✗ not installed"
+    add_check "python3" "error" "not installed"
   fi
 
-  echo -n "yq:               "
   if command -v yq &>/dev/null; then
-    echo "✓ $(yq --version 2>&1 | head -1)"
+    add_check "yq" "ok" "$(yq --version 2>&1 | head -1)"
   else
-    echo "○ not installed (optional for upgrade: brew install yq)"
+    add_check "yq" "optional" "not installed (brew install yq)"
   fi
 
-  echo -n "Claude Code:      "
   if command -v claude &>/dev/null; then
-    echo "✓ $(claude --version 2>&1 | head -1)"
+    add_check "claude_code" "ok" "$(claude --version 2>&1 | head -1)"
   else
-    echo "○ not detected"
+    add_check "claude_code" "optional" "not detected"
   fi
 
-  echo -n "Agent Teams:      "
-  if [ "${CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS:-0}" = "1" ]; then
-    echo "✓ enabled"
-  else
-    echo "○ disabled (optional: export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1)"
-  fi
+  # ── Project integrity checks (only if .vibe exists) ──
 
-  echo ""
-  echo -n "Project:          "
   if [ -d ".vibe" ]; then
+    # Version check
     if [ -f ".vibe/version" ]; then
-      local pv=$(cat .vibe/version | tr -d '[:space:]')
-      echo "✓ v${pv} ($(basename "$(pwd)"))"
+      local pv
+      pv=$(cat .vibe/version | tr -d '[:space:]')
+      if [ "$pv" = "$VERSION" ]; then
+        add_check "project_version" "ok" "v${pv}"
+      else
+        add_check "project_version" "warning" "version mismatch: project v${pv} vs framework v${VERSION}. Run vibeflow upgrade"
+      fi
     else
-      echo "✓ v1.0.0 (pre-versioning)"
+      add_check "project_version" "warning" "version file missing (pre-versioning project)"
+    fi
+
+    # Required hook files
+    local -a REQUIRED_HOOKS=(
+      "validate_access.py"
+      "validate_write.sh"
+      "validate_step7a.py"
+      "checkpoint_alert.sh"
+      "task_complete.sh"
+      "waiting_input.sh"
+    )
+    local hooks_ok=true
+    local missing_hooks=""
+    for hook in "${REQUIRED_HOOKS[@]}"; do
+      if [ ! -f ".vibe/hooks/${hook}" ]; then
+        hooks_ok=false
+        missing_hooks="${missing_hooks} ${hook}"
+      fi
+    done
+    if $hooks_ok; then
+      add_check "hooks" "ok" "all required hooks present"
+    else
+      add_check "hooks" "error" "missing hooks:${missing_hooks}"
+    fi
+
+    # Settings.json hook path consistency
+    if [ -f ".claude/settings.json" ]; then
+      local settings_ok=true
+      local settings_msg="hook paths consistent"
+      if [ -f ".claude/settings.json" ] && command -v python3 &>/dev/null; then
+        local hook_refs
+        hook_refs=$(python3 -c "
+import json, re, sys
+try:
+    with open('.claude/settings.json') as f:
+        s = json.load(f)
+    hooks = s.get('hooks', {})
+    for event, rules in hooks.items():
+        for rule in rules:
+            for h in rule.get('hooks', []):
+                cmd = h.get('command', '')
+                # Extract referenced hook files
+                for m in re.findall(r'\.vibe/hooks/(\S+)', cmd):
+                    m = m.strip('\"').strip(\"'\")
+                    print(m)
+except Exception as e:
+    pass
+" 2>/dev/null)
+        while IFS= read -r ref; do
+          [ -z "$ref" ] && continue
+          if [ ! -f ".vibe/hooks/${ref}" ]; then
+            settings_ok=false
+            settings_msg="settings.json references missing hook: ${ref}"
+          fi
+        done <<< "$hook_refs"
+      fi
+      add_check "settings_hooks" "$( $settings_ok && echo ok || echo error )" "$settings_msg"
+    else
+      add_check "settings_hooks" "warning" ".claude/settings.json not found"
+    fi
+
+    # Policy.yaml existence and required roles
+    if [ -f ".vibe/policy.yaml" ]; then
+      local -a REQUIRED_ROLES=("iris" "product_manager" "engineer" "qa_engineer" "infra_manager")
+      local policy_ok=true
+      local missing_roles=""
+      for role in "${REQUIRED_ROLES[@]}"; do
+        if ! grep -q "^  ${role}:" .vibe/policy.yaml 2>/dev/null; then
+          policy_ok=false
+          missing_roles="${missing_roles} ${role}"
+        fi
+      done
+      if $policy_ok; then
+        add_check "policy" "ok" "all required roles defined"
+      else
+        add_check "policy" "error" "missing required roles in policy.yaml:${missing_roles}"
+      fi
+    else
+      add_check "policy" "error" "policy.yaml not found"
+    fi
+
+    # State.yaml required fields
+    if [ -f ".vibe/state.yaml" ]; then
+      local -a REQUIRED_FIELDS=("current_issue" "current_role" "current_step" "phase")
+      local state_ok=true
+      local missing_fields=""
+      for field in "${REQUIRED_FIELDS[@]}"; do
+        if ! grep -q "^${field}:" .vibe/state.yaml 2>/dev/null; then
+          state_ok=false
+          missing_fields="${missing_fields} ${field}"
+        fi
+      done
+      if $state_ok; then
+        add_check "state" "ok" "all required fields present"
+      else
+        add_check "state" "error" "missing required fields in state.yaml:${missing_fields}"
+      fi
+    else
+      add_check "state" "warning" "state.yaml not found"
+    fi
+
+    # CLAUDE.md existence
+    if [ -f "CLAUDE.md" ]; then
+      add_check "claude_md" "ok" "CLAUDE.md present"
+    else
+      add_check "claude_md" "warning" "CLAUDE.md not found"
     fi
   else
-    echo "○ not a VibeFlow project"
+    add_check "project" "optional" "not a VibeFlow project"
   fi
 
-  echo "─────────────────────────"
+  # ── Output ──
+
+  if $JSON_MODE; then
+    # JSON output
+    python3 -c "
+import json, sys
+names = sys.argv[1].split('|')
+statuses = sys.argv[2].split('|')
+messages = sys.argv[3].split('|')
+checks = []
+for n, s, m in zip(names, statuses, messages):
+    checks.append({'name': n, 'status': s, 'message': m})
+result = {
+    'framework_version': '${VERSION}',
+    'checks': checks
+}
+print(json.dumps(result, indent=2))
+" "$(IFS='|'; echo "${CHECK_NAMES[*]}")" \
+  "$(IFS='|'; echo "${CHECK_STATUSES[*]}")" \
+  "$(IFS='|'; echo "${CHECK_MESSAGES[*]}")"
+  else
+    # Human-readable output
+    echo "VibeFlow Environment Check"
+    echo "─────────────────────────"
+
+    for i in "${!CHECK_NAMES[@]}"; do
+      local name="${CHECK_NAMES[$i]}"
+      local status="${CHECK_STATUSES[$i]}"
+      local msg="${CHECK_MESSAGES[$i]}"
+
+      local icon
+      case "$status" in
+        ok)       icon="✓" ;;
+        error)    icon="✗" ;;
+        warning)  icon="⚠" ;;
+        optional) icon="○" ;;
+        *)        icon="?" ;;
+      esac
+
+      printf "  %-20s %s %s\n" "$name" "$icon" "$msg"
+    done
+
+    echo "─────────────────────────"
+  fi
 }
 
 cmd_setup() {
@@ -152,7 +312,7 @@ case "$COMMAND" in
   setup)    cmd_setup "$@" ;;
   upgrade)  cmd_upgrade "$@" ;;
   version)  cmd_version ;;
-  doctor)   cmd_doctor ;;
+  doctor)   cmd_doctor "$@" ;;
   help|--help|-h)  usage ;;
   *)
     echo "Unknown command: $COMMAND"

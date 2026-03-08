@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Vibe Coding Framework Setup Script
-# Version: 3.0.0
 # This is the main setup script that orchestrates the installation
 # Includes: GitHub Issues, Iris, Multi-Terminal, 3-Tier Context, Safety Rules
 
@@ -55,8 +54,8 @@ if [ -f "${LIB_DIR}/create_dev_launcher.sh" ]; then
     source "${LIB_DIR}/create_dev_launcher.sh"
 fi
 
-# Global variables
-VERSION="3.5.0"
+# Global variables — version comes from framework_version.sh (sourced above)
+VERSION="$FRAMEWORK_VERSION"
 FORCE_INSTALL=false
 BACKUP_ENABLED=true
 VERBOSE=false

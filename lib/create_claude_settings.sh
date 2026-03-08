@@ -112,135 +112,20 @@ create_notification_hooks() {
     local task_complete=".vibe/hooks/task_complete.sh"
     local waiting_input=".vibe/hooks/waiting_input.sh"
     
-    # Detect OS for appropriate sound command
-    local os_type
-    os_type=$(detect_os)
-    
-    # Create task_complete.sh
-    cat > "$task_complete" << 'BASH_SCRIPT'
-#!/bin/bash
-# Task completion notification hook
-# Called by PostToolUse hook after Edit/Write/MultiEdit/TodoWrite
+    # Copy from examples/ (single source of truth)
+    local examples_dir="${VIBEFLOW_FRAMEWORK_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}/examples"
 
-OS_TYPE="$(uname -s)"
-
-case "$OS_TYPE" in
-    Darwin*)
-        # macOS: Use afplay with system sound
-        afplay /System/Library/Sounds/Glass.aiff 2>/dev/null &
-        ;;
-    Linux*)
-        # Linux: Try paplay (PulseAudio) or aplay (ALSA)
-        if command -v paplay &>/dev/null; then
-            paplay /usr/share/sounds/freedesktop/stereo/complete.oga 2>/dev/null &
-        elif command -v aplay &>/dev/null; then
-            aplay /usr/share/sounds/sound-icons/glass-water-1.wav 2>/dev/null &
-        fi
-        ;;
-esac
-
-exit 0
-BASH_SCRIPT
+    # Copy task_complete.sh
+    cp "${examples_dir}/.vibe/hooks/task_complete.sh" "$task_complete"
     chmod +x "$task_complete"
-    
-    # Create waiting_input.sh
-    cat > "$waiting_input" << 'BASH_SCRIPT'
-#!/bin/bash
-# Waiting for input notification hook
-# Called by Stop hook when Claude Code stops and waits for user input
-# Plays a dramatic sound at Step 7a (human checkpoint), normal ping otherwise
 
-OS_TYPE="$(uname -s)"
-
-# Check if we're at Step 7a (human checkpoint)
-IS_STEP7A=false
-STATE_FILE="${CLAUDE_PROJECT_DIR:-.}/.vibe/state.yaml"
-if [ -f "$STATE_FILE" ]; then
-    CURRENT_STEP=$(grep -E "^current_step:" "$STATE_FILE" 2>/dev/null | head -1 | sed 's/current_step:[[:space:]]*//' | tr -d '"' | tr -d "'")
-    if [ "$CURRENT_STEP" = "7" ]; then
-        IS_STEP7A=true
-    fi
-fi
-
-case "$OS_TYPE" in
-    Darwin*)
-        if [ "$IS_STEP7A" = true ]; then
-            # Step 7a: Dramatic alert sequence
-            (
-                afplay /System/Library/Sounds/Hero.aiff 2>/dev/null
-                sleep 0.3
-                afplay /System/Library/Sounds/Hero.aiff 2>/dev/null
-                sleep 0.3
-                afplay /System/Library/Sounds/Glass.aiff 2>/dev/null
-            ) &
-        else
-            # Normal: Simple ping
-            afplay /System/Library/Sounds/Ping.aiff 2>/dev/null &
-        fi
-        ;;
-    Linux*)
-        if [ "$IS_STEP7A" = true ]; then
-            # Step 7a: Dramatic alert
-            if command -v paplay &>/dev/null; then
-                (
-                    paplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null
-                    sleep 0.3
-                    paplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null
-                    sleep 0.3
-                    paplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null
-                ) &
-            fi
-        else
-            # Normal: Simple notification
-            if command -v paplay &>/dev/null; then
-                paplay /usr/share/sounds/freedesktop/stereo/message.oga 2>/dev/null &
-            elif command -v aplay &>/dev/null; then
-                aplay /usr/share/sounds/sound-icons/prompt.wav 2>/dev/null &
-            fi
-        fi
-        ;;
-esac
-
-exit 0
-BASH_SCRIPT
+    # Copy waiting_input.sh
+    cp "${examples_dir}/.vibe/hooks/waiting_input.sh" "$waiting_input"
     chmod +x "$waiting_input"
-    
-    # Create checkpoint_alert.sh
+
+    # Copy checkpoint_alert.sh
     local checkpoint_alert=".vibe/hooks/checkpoint_alert.sh"
-    cat > "$checkpoint_alert" << 'BASH_SCRIPT'
-#!/bin/bash
-# VibeFlow Checkpoint Alert
-# Plays a distinctive notification when Step 7a requires user attention.
-# Called by validate_step7a.py when blocking gh pr create.
-
-OS_TYPE="$(uname -s)"
-
-case "$OS_TYPE" in
-    Darwin*)
-        # macOS: Play attention-grabbing sequence
-        (
-            afplay /System/Library/Sounds/Hero.aiff 2>/dev/null
-            sleep 0.3
-            afplay /System/Library/Sounds/Hero.aiff 2>/dev/null
-            sleep 0.3
-            afplay /System/Library/Sounds/Glass.aiff 2>/dev/null
-        ) &
-        ;;
-    Linux*)
-        if command -v paplay &>/dev/null; then
-            (
-                paplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null
-                sleep 0.3
-                paplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null
-            ) &
-        elif command -v aplay &>/dev/null; then
-            aplay /usr/share/sounds/sound-icons/glass-water-1.wav 2>/dev/null &
-        fi
-        ;;
-esac
-
-exit 0
-BASH_SCRIPT
+    cp "${examples_dir}/.vibe/hooks/checkpoint_alert.sh" "$checkpoint_alert"
     chmod +x "$checkpoint_alert"
 
     success "通知フックスクリプトを作成しました"

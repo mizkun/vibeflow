@@ -229,7 +229,7 @@ VibeFlow v3 uses a multi-terminal model:
 - Activated with `/quickfix [description]` in a dev terminal
 - For UI adjustments, algorithm tuning, and other exploratory work
 - Rapid iteration: "change this" → "nice" → "revert that" → "OK, commit"
-- No issues or step workflow required
+- Bypasses the 11-step workflow for scoped, exploratory changes
 
 ### Core Concept: Role-Based Development Workflow
 
@@ -273,7 +273,7 @@ User: "Revert that"          → AI reverts
 User: "OK, commit"           → Atomic commit, exit mode
 ```
 
-- No GitHub Issue required
+- Best for scoped exploratory changes; use GitHub Issues for tracked work
 - No 11-step workflow — direct interactive loop
 - Engineer role with same write scope (src/**)
 - Safety Rules still apply
@@ -281,7 +281,7 @@ User: "OK, commit"           → Atomic commit, exit mode
 ### Key Principles
 
 1. **Context-Continuous Operation**: All roles operate within the same context with dynamic permission switching
-2. **No Separate Agent Files**: Role-based permissions are embedded in the workflow
+2. **Roles + Subagents**: Workflow roles drive step execution; subagents provide on-demand specialist help
 3. **Automated Progression**: Steps flow automatically with a single human checkpoint (Step 7a)
 4. **Verification at Each Step**: Each role verifies their own artifacts before proceeding
 5. **Clear State Management**: state.yaml tracks current position and progress
@@ -293,13 +293,13 @@ User: "OK, commit"           → Atomic commit, exit mode
 Brainstorm and validate product direction with `/discuss`. The Iris role provides counterarguments, questions assumptions, and organizes discussion points. Conclusions are reflected back to vision.md, spec.md, and plan.md via `/conclude`.
 
 ### Quick Fix Mode
-Rapid iterative development for UI adjustments and algorithm tuning with `/quickfix`. No issues or step workflow needed — just direct interaction with the AI until satisfied, then commit.
+Rapid iterative development for UI adjustments and algorithm tuning with `/quickfix`. Bypasses the 11-step workflow for scoped, exploratory changes — direct interaction with the AI until satisfied, then commit.
 
 ### Safety Rules
 - **Atomic UI Changes**: CSS/HTML changes are made one at a time with user confirmation
 - **Destructive Operation Protection**: `rm -rf`, `git reset --hard`, etc. require user confirmation
 - **Retry Limits**: Same approach limited to 3 retries before requiring a different approach
-- **plans/ Directory Blocking**: Write guard hook prevents creating plans/ directory (use plan.md or issues/ instead)
+- **plans/ Directory Blocking**: Write guard hook prevents creating plans/ directory (use plan.md instead)
 - **Hook Permission Control**: Infrastructure Manager role manages write permissions per issue
 
 ### E2E Testing with Playwright
@@ -433,7 +433,8 @@ The framework uses YAML files for state persistence:
 
 The framework uses a **context-continuous role-based system**:
 
-- **No Agent Files**: Subagents are deprecated in favor of embedded role switching
+- **Workflow-Driven Roles**: Primary roles (PM, Engineer, QA, Infra) are embedded in the workflow and switch automatically per step
+- **Subagents as Helpers**: Subagents (e.g., Iris) serve as persistent helper tools running in separate sessions
 - **Dynamic Permissions**: Role-based permissions are applied via hooks and workflow
 - **Single Context**: All roles operate within the same conversation context
 - **Hook Enforcement**: `validate_access.py` and `validate_write.sh` enforce permissions at the tool level
@@ -445,7 +446,7 @@ The framework uses a **context-continuous role-based system**:
 3. **Ensures Traceability**: Every code change traces back to an issue, which traces to spec requirements
 4. **Maintains Quality**: Multiple verification points catch issues early
 5. **Enables Automation**: Clear role boundaries allow AI to execute most steps autonomously
-6. **Simplified Management**: No need to manage separate agent files or contexts
+6. **Role Separation**: Workflow roles handle step-by-step execution while subagents provide specialized, on-demand assistance
 
 ### Verification System
 
