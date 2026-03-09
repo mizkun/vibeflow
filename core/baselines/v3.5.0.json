@@ -1,0 +1,142 @@
+{
+  "version": "3.5.0",
+  "description": "Baseline hashes for v3.5.0 stock files",
+  "files": {
+    ".github/ISSUE_TEMPLATE/dev.md": {
+      "sha256": "346c74318b8f5c60da014622dbe06e5b13e7f5c44d419153b3bac33f817d55c9",
+      "source": "examples/.github/ISSUE_TEMPLATE/dev.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/discussion.md": {
+      "sha256": "e677d8f01853bdee3f3fa59c4ccf611232584e5d897aca27288f2b6c3ee89423",
+      "source": "examples/.github/ISSUE_TEMPLATE/discussion.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/human.md": {
+      "sha256": "bd3c01536233308ebf82999263ef6d63e6e2d3233491585f2dab4561d367f6d7",
+      "source": "examples/.github/ISSUE_TEMPLATE/human.md",
+      "type": "full"
+    },
+    ".vibe/context/STATUS.md": {
+      "sha256": "f6ef6460d7b46d27a5e6f7422f5cf368d8325f97ce0aa04139bca1b00eb8821f",
+      "source": "examples/.vibe/context/STATUS.md",
+      "type": "full"
+    },
+    ".vibe/hooks/checkpoint_alert.sh": {
+      "sha256": "9e5728a688a1fdeb44900206f24035ccca45779033f999e0c8ad160d49c14f24",
+      "source": "examples/.vibe/hooks/checkpoint_alert.sh",
+      "type": "full"
+    },
+    ".vibe/hooks/task_complete.sh": {
+      "sha256": "313a408cd08e6b04a70f92140cfd2301e4e2c47c4173353332aa86c517778850",
+      "source": "examples/.vibe/hooks/task_complete.sh",
+      "type": "full"
+    },
+    ".vibe/hooks/validate_access.py": {
+      "sha256": "8a5b4ed74664d4a515f0ac3c0b9176e0e190a50076aee76f049be6c8e260841b",
+      "source": "examples/.vibe/hooks/validate_access.py",
+      "type": "full"
+    },
+    ".vibe/hooks/validate_step7a.py": {
+      "sha256": "b605535325a2eb5c3fce5190d02d0e4b37a04caf50ae7b1d99f9cc32a384fce9",
+      "source": "examples/.vibe/hooks/validate_step7a.py",
+      "type": "full"
+    },
+    ".vibe/hooks/validate_write.sh": {
+      "sha256": "579b91113e841832a72497410278549fc0ff8c1a7c8a13c4bd317b66ca4f9694",
+      "source": "examples/.vibe/hooks/validate_write.sh",
+      "type": "full"
+    },
+    ".vibe/hooks/waiting_input.sh": {
+      "sha256": "97d7dccd4f3bbb0daf2d13e4a99a84640ce25ce798f642d300666c96ae63bbde",
+      "source": "examples/.vibe/hooks/waiting_input.sh",
+      "type": "full"
+    },
+    ".vibe/policy.yaml": {
+      "sha256": "f7e1af335f255c39f1bd9ae06681011ee0603334331c172e26fb36a04d9054d3",
+      "source": "examples/.vibe/policy.yaml",
+      "type": "full"
+    },
+    ".vibe/roles/engineer.md": {
+      "sha256": "bc2a3185c88805da5bb1f86e33d72ee717d1326fe2bad35fc86d04087d1da6fa",
+      "source": "examples/.vibe/roles/engineer.md",
+      "type": "full"
+    },
+    ".vibe/roles/human.md": {
+      "sha256": "04402b7f14d80d98d2f41cc2228aae45f714849c02b5b7c8ef16a99d723e922e",
+      "source": "examples/.vibe/roles/human.md",
+      "type": "full"
+    },
+    ".vibe/roles/infra-manager.md": {
+      "sha256": "7856c0376bf178d0a8f1165036110039a8f8163768370bbace1fd6721bdc124b",
+      "source": "examples/.vibe/roles/infra-manager.md",
+      "type": "full"
+    },
+    ".vibe/roles/iris.md": {
+      "sha256": "628bc346b92b2758bbdc1ea4d83cc31dbb30c627962227cfbbf496bcfde8a770",
+      "source": "examples/.vibe/roles/iris.md",
+      "type": "full"
+    },
+    ".vibe/roles/product-manager.md": {
+      "sha256": "8ba77c29e1a9e409bcb4a3b073668e90a5fe3f78d1f6a20994a8877b4714c0ea",
+      "source": "examples/.vibe/roles/product-manager.md",
+      "type": "full"
+    },
+    ".vibe/roles/qa-engineer.md": {
+      "sha256": "1130ae9e940bbbd61b24b3d3bee16491b99dcc322d4cd8a1c32b24e5b436dc1c",
+      "source": "examples/.vibe/roles/qa-engineer.md",
+      "type": "full"
+    },
+    "CLAUDE.md": {
+      "sha256": "0beb3924a9e5a3c4379797b3c1757dd58c1330a567af04ee8312bbe72bb3dbd0",
+      "source": "examples/CLAUDE.md",
+      "type": "full"
+    },
+    ".claude/commands/conclude.md": {
+      "sha256": "1159ee2df2c846432c899d27502e424f287f3a61f5395a5cde349fd5b76a4641",
+      "source": "lib/commands/conclude.md",
+      "type": "full"
+    },
+    ".claude/commands/discuss.md": {
+      "sha256": "4f129ea3daa862d087c6eb537a4bfeed6419dc85377ee160d0e75c997f88130e",
+      "source": "lib/commands/discuss.md",
+      "type": "full"
+    },
+    ".claude/commands/healthcheck.md": {
+      "sha256": "347ccbf4d2a51e8c955307ad98058b3cb6c40ac75625cd45213974faca0934b7",
+      "source": "lib/commands/healthcheck.md",
+      "type": "full"
+    },
+    ".claude/commands/next-v2-extension.md": {
+      "sha256": "307bb9af25a2f87bf6c77f1b74e9f4b8cf420d99ffa4f27b43ba9921e0286c1e",
+      "source": "lib/commands/next-v2-extension.md",
+      "type": "full"
+    },
+    ".claude/commands/next.md": {
+      "sha256": "288273d58cc56bca383c182b7d2cb268c9094b9b742f5a456bab43694baa714b",
+      "source": "lib/commands/next.md",
+      "type": "full"
+    },
+    ".claude/commands/progress.md": {
+      "sha256": "2afa3836d6c1dea6cc3f8b87096900083bce471a6c06119af2ff9af7216fdc96",
+      "source": "lib/commands/progress.md",
+      "type": "full"
+    },
+    ".claude/commands/quickfix.md": {
+      "sha256": "dfafe02c62ef6f93ba786ab285b700feae3bdb9e521940a6a48c2c5dfa6df919",
+      "source": "lib/commands/quickfix.md",
+      "type": "full"
+    },
+    ".claude/commands/run-e2e.md": {
+      "sha256": "50d15e10e545657d1da2bb7cbfaf2e300ea16cbab16987920b0e15bd3a38c15b",
+      "source": "lib/commands/run-e2e.md",
+      "type": "full"
+    },
+    ".claude/settings.json": {
+      "sha256": "58675ab42fe67d9d6319b0dd615e4f2cbdb3bbb9e7bdb1051b6c4241983cc116",
+      "source": "lib/create_claude_settings.sh",
+      "type": "generated",
+      "note": "Hash varies by generation. Classify by presence only."
+    }
+  }
+}

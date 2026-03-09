@@ -1,16 +1,26 @@
-# Human Role
+# Human
 
-## Responsibility
-Human checkpoint for manual verification
+**Description**: Human checkpoint for manual verification
 
 ## Responsibilities
+
 - UI/UX manual verification
+
 - Acceptance approval
+
 
 ## Permissions
 
-### Can Write
-- `.vibe/state.yaml` - Update workflow state
+### Can Read
 
-### Enforcement
-hard
+
+- (none defined)
+
+
+### Can Write
+
+- `.vibe/state.yaml`
+
+
+
+**Enforcement**: hard

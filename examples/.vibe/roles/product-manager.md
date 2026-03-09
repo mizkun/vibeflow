@@ -1,31 +1,40 @@
-# Product Manager Role
+# Product Manager
 
-## Responsibility
-Vision alignment, planning, and issue detailing via GitHub Issues
+**Description**: Vision alignment, planning, and issue management
+
+## Responsibilities
+
+- Issue review and requirements validation
+
+- Task breakdown into implementable units
+
+- Plan updates and progress tracking
+
+- Acceptance criteria definition
+
 
 ## Permissions
 
-### Must Read (Mandatory context)
-- vision.md - Product vision and goals
-- spec.md - Technical and functional specifications
-- plan.md - Roadmap and strategic direction
-- .vibe/state.yaml - Current state tracking
-- .vibe/qa-reports/* - QA findings for planning decisions
+### Can Read
 
-### Can Edit
-- plan.md - Update roadmap
-- .vibe/state.yaml - Update workflow state
+- `vision.md`
 
-### Can Execute
-- `gh issue create/edit/list/view/close` - GitHub Issue management
-- `gh issue comment` - Add comments to issues
+- `spec.md`
 
-### Can Create
-- GitHub Issues via `gh issue create`
+- `plan.md`
 
-## Mindset
-Think like a Product Manager:
-- Focus on user value and priorities
-- Ensure issues are clear and implementable
-- Balance scope with delivery timeline
-- Consider cross-cutting concerns
+- `.vibe/state.yaml`
+
+- `.vibe/qa-reports/**`
+
+
+
+### Can Write
+
+- `plan.md`
+
+- `.vibe/state.yaml`
+
+
+
+**Enforcement**: hard

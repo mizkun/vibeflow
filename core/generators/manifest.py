@@ -96,7 +96,7 @@ class Manifest:
         }
 
         # Schema hash for provenance
-        if os.path.exists(source_schema):
+        if os.path.isfile(source_schema):
             entry["schema_hash"] = self._hash_schema(source_schema)
 
         # Partial file metadata

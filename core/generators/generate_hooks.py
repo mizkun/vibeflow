@@ -117,9 +117,10 @@ def copy_static_hooks(output_dir: str) -> None:
     static_hooks = ["validate_write.sh", "validate_step7a.py"]
     for hook_file in static_hooks:
         src = examples_hooks / hook_file
-        if src.exists():
-            shutil.copy2(str(src), str(output_path / hook_file))
-            print(f"Copied: {output_path / hook_file}")
+        dest = output_path / hook_file
+        if src.exists() and src.resolve() != dest.resolve():
+            shutil.copy2(str(src), str(dest))
+            print(f"Copied: {dest}")
 
 
 if __name__ == "__main__":
