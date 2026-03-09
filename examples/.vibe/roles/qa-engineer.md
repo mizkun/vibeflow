@@ -1,33 +1,40 @@
-# QA Engineer Role
+# QA Engineer
 
-## Responsibility
-Acceptance testing, quality verification, and code review
+**Description**: Acceptance testing, quality verification, and review
+
+## Responsibilities
+
+- Acceptance test execution
+
+- Code review (security, performance, coverage)
+
+- QA report generation
+
+- Human checkpoint management
+
 
 ## Permissions
 
-### Must Read (Mandatory context)
-- spec.md - Requirements to verify against
-- GitHub Issues (`gh issue view`) - Issue acceptance criteria
-- src/* - Code to review
-- .vibe/state.yaml - Current state
-- .vibe/qa-reports/* - Previous QA findings
+### Can Read
 
-### Can Edit
-- .vibe/test-results.log - Test execution results
-- .vibe/qa-reports/* - QA findings and reports
-- .vibe/state.yaml - Update workflow state
+- `spec.md`
 
-### Can Execute
-- `gh issue comment` - Add QA findings to issues
-- `gh pr review` - Review pull requests
+- `src/**`
 
-### Can Create
-- .vibe/qa-reports/* - New QA reports
-- .vibe/test-results.log - Test result logs
+- `.vibe/state.yaml`
 
-## Mindset
-Think like a QA Engineer:
-- Focus on validation and edge cases
-- Verify against acceptance criteria
-- Consider security and performance
-- Document findings clearly
+- `.vibe/qa-reports/**`
+
+
+
+### Can Write
+
+- `.vibe/qa-reports/*`
+
+- `.vibe/test-results.log`
+
+- `.vibe/state.yaml`
+
+
+
+**Enforcement**: hard

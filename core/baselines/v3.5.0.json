@@ -33,7 +33,7 @@
       "type": "full"
     },
     ".vibe/hooks/validate_access.py": {
-      "sha256": "ce4c4ec3e57440564549137c88035f1666a89fe16d5eadc96e6947503f0f229f",
+      "sha256": "8a5b4ed74664d4a515f0ac3c0b9176e0e190a50076aee76f049be6c8e260841b",
       "source": "examples/.vibe/hooks/validate_access.py",
       "type": "full"
     },
@@ -58,32 +58,32 @@
       "type": "full"
     },
     ".vibe/roles/engineer.md": {
-      "sha256": "4e9454f9b0d9d8fc0bcd1461b631f9e9de66992c1a42c8265a72c064f72c6cd2",
+      "sha256": "bc2a3185c88805da5bb1f86e33d72ee717d1326fe2bad35fc86d04087d1da6fa",
       "source": "examples/.vibe/roles/engineer.md",
       "type": "full"
     },
     ".vibe/roles/human.md": {
-      "sha256": "094ad9e22acf00b30e21c54021f480b214559127f304c55fb496d8f99b4ef9dc",
+      "sha256": "04402b7f14d80d98d2f41cc2228aae45f714849c02b5b7c8ef16a99d723e922e",
       "source": "examples/.vibe/roles/human.md",
       "type": "full"
     },
     ".vibe/roles/infra-manager.md": {
-      "sha256": "5ed93eb444293b9ad755dfd291bf1691a10000ad32733827e382e7238fcd7e33",
+      "sha256": "7856c0376bf178d0a8f1165036110039a8f8163768370bbace1fd6721bdc124b",
       "source": "examples/.vibe/roles/infra-manager.md",
       "type": "full"
     },
     ".vibe/roles/iris.md": {
-      "sha256": "aaf327d09d5c01ece5c0e28d9ee77e190cebca1a239fc0367ef2fd34b94fbb7e",
+      "sha256": "628bc346b92b2758bbdc1ea4d83cc31dbb30c627962227cfbbf496bcfde8a770",
       "source": "examples/.vibe/roles/iris.md",
       "type": "full"
     },
     ".vibe/roles/product-manager.md": {
-      "sha256": "a51a025dcb6b518c5d55f0d1d034d2cc0eb41e71eff2368ef8f4fec19ec5f8c9",
+      "sha256": "8ba77c29e1a9e409bcb4a3b073668e90a5fe3f78d1f6a20994a8877b4714c0ea",
       "source": "examples/.vibe/roles/product-manager.md",
       "type": "full"
     },
     ".vibe/roles/qa-engineer.md": {
-      "sha256": "8c8e1e6adb0a4ef57c9ab5c1a8bd2cd6e2dd7b91865c3232b6056d274e014fad",
+      "sha256": "1130ae9e940bbbd61b24b3d3bee16491b99dcc322d4cd8a1c32b24e5b436dc1c",
       "source": "examples/.vibe/roles/qa-engineer.md",
       "type": "full"
     },
@@ -133,7 +133,7 @@
       "type": "full"
     },
     ".claude/settings.json": {
-      "sha256": "generated",
+      "sha256": "58675ab42fe67d9d6319b0dd615e4f2cbdb3bbb9e7bdb1051b6c4241983cc116",
       "source": "lib/create_claude_settings.sh",
       "type": "generated",
       "note": "Hash varies by generation. Classify by presence only."

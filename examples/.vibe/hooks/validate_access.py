@@ -4,6 +4,10 @@ VibeFlow Access Guard Hook
 Validates file access permissions based on current role in .vibe/state.yaml.
 Used as a PreToolUse hook to block unauthorized file edits.
 Exit code 2 blocks the tool call (Claude Code specification).
+
+GENERATED FILE — Do not edit manually.
+Source: core/schema/policy.yaml
+Generator: core/generators/generate_hooks.py
 """
 
 import fnmatch
@@ -19,48 +23,97 @@ import sys
 # - If in doubt, fix the role in state.yaml before editing, don't expand permissions.
 
 ROLE_EDIT_ALLOW = {
-    # Iris - project docs, context management, state
+
+    # Iris
+
     "Iris": [
+
         "vision.md",
+
         "spec.md",
+
         "plan.md",
+
         ".vibe/context/*",
+
         ".vibe/references/*",
+
         ".vibe/archive/*",
+
         ".vibe/state.yaml",
+
     ],
+
+    # Product Manager
+
     "Product Manager": [
+
         "plan.md",
+
         ".vibe/state.yaml",
+
     ],
+
+    # Engineer
+
     "Engineer": [
+
         "src/*",
+
         "tests/*",
+
         "**/*.test.*",
+
         "**/__tests__/*",
+
         ".vibe/state.yaml",
+
         ".vibe/test-results.log",
+
     ],
+
+    # QA Engineer
+
     "QA Engineer": [
+
         ".vibe/qa-reports/*",
+
         ".vibe/test-results.log",
+
         ".vibe/state.yaml",
+
     ],
-    # Infrastructure Manager - hooks and state
+
+    # Infrastructure Manager
+
     "Infrastructure Manager": [
+
         ".vibe/hooks/*",
+
         "validate-write*",
+
         "validate_write*",
+
         ".vibe/state.yaml",
+
     ],
-    # Human checkpoint - only state updates allowed
+
+    # Human
+
     "Human": [
+
         ".vibe/state.yaml",
+
     ],
+
 }
 
 # Files that are always allowed regardless of role
-ALWAYS_ALLOW = [".vibe/state.yaml"]
+ALWAYS_ALLOW = [
+
+    ".vibe/state.yaml",
+
+]
 
 
 def project_root() -> str:
@@ -99,7 +152,7 @@ def get_target_paths(tool_name: str, tool_input: dict) -> list:
     if tool_name in ("Write", "Edit", "MultiEdit", "Read"):
         p = tool_input.get("file_path") or tool_input.get("path") or ""
         return [p] if p else []
-    
+
     # Fallback for batch operations
     paths = []
     for k in ("file_paths", "paths"):
@@ -141,10 +194,10 @@ def main() -> None:
         # Skip if path couldn't be extracted (edge cases)
         if not t:
             continue
-        
+
         if match_any(t, ALWAYS_ALLOW):
             continue
-        
+
         if not match_any(t, allow):
             block(
                 f"[VibeFlow AccessGuard]\n"
@@ -160,4 +213,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
