@@ -1,0 +1,60 @@
+# VibeFlow Issue Labels Schema — Single Source of Truth
+# Defines GitHub label categories and their labels.
+# Used by vibeflow setup to create labels in the repository.
+# Taxonomy: Rev.4 (type / risk / qa / workflow)
+
+categories:
+  type:
+    description: "Issue type classification"
+    labels:
+      - name: "type:dev"
+        color: "0e8a16"
+        description: "通常の開発タスク（設計→実装→テスト）"
+      - name: "type:patch"
+        color: "d93f0b"
+        description: "緊急バグ修正（短縮フロー）"
+      - name: "type:spike"
+        color: "c5def5"
+        description: "調査・PoC（時間制限付き探索）"
+      - name: "type:ops"
+        color: "fbca04"
+        description: "運用タスク（CI/CD、インフラ、依存更新）"
+
+  risk:
+    description: "Risk level for review gate"
+    labels:
+      - name: "risk:low"
+        color: "c2e0c6"
+        description: "低リスク — ドキュメント、テスト追加、軽微な修正"
+      - name: "risk:medium"
+        color: "fbca04"
+        description: "中リスク — 機能追加、リファクタリング"
+      - name: "risk:high"
+        color: "b60205"
+        description: "高リスク — 破壊的変更、セキュリティ、データマイグレーション"
+
+  qa:
+    description: "QA checkpoint behavior"
+    labels:
+      - name: "qa:auto"
+        color: "0e8a16"
+        description: "自動テストで完全検証可能。Step 7a 自動承認"
+      - name: "qa:manual"
+        color: "e4e669"
+        description: "人間の手動確認が必要（UI、CLI、外部連携など）"
+
+  workflow:
+    description: "Workflow type selection"
+    labels:
+      - name: "workflow:standard"
+        color: "0075ca"
+        description: "標準11ステップワークフロー"
+      - name: "workflow:patch"
+        color: "d93f0b"
+        description: "Patch Loop（緊急修正用短縮フロー）"
+      - name: "workflow:spike"
+        color: "c5def5"
+        description: "Spike ワークフロー（調査・PoC）"
+      - name: "workflow:ops"
+        color: "fbca04"
+        description: "Ops ワークフロー（運用タスク）"
