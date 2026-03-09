@@ -207,8 +207,36 @@ MOCK
 run_test "mock codex produces review JSON" test_mock_codex_review
 
 test_mock_review_has_findings() {
+    # Run a fresh mock review for this test
+    local mock_dir="${TEST_DIR}/mock_bin2"
+    mkdir -p "$mock_dir"
+    cat > "${mock_dir}/mock_codex" << 'MOCK'
+#!/bin/bash
+echo "## Review Summary"
+echo "Found 1 issue."
+echo ""
+echo "### Finding 1"
+echo "- File: src/main.py"
+echo "- Line: 5"
+echo "- Severity: warning"
+echo "- Issue: Missing docstring"
+echo "- Suggestion: Add a module docstring"
+MOCK
+    chmod +x "${mock_dir}/mock_codex"
+
+    local project="${TEST_DIR}/findings_project"
+    mkdir -p "${project}/.vibe/reviews"
+    echo "test diff" > "${project}/test.diff"
+
+    VIBEFLOW_CODEX_CMD="${mock_dir}/mock_codex" \
+    VIBEFLOW_PROJECT_DIR="$project" \
+    VIBEFLOW_FRAMEWORK_DIR="$FRAMEWORK_DIR" \
+    bash "${FRAMEWORK_DIR}/scripts/codex_review.sh" \
+        --diff "${project}/test.diff" \
+        --output-dir "${project}/.vibe/reviews" 2>&1 || true
+
     local review_file
-    review_file=$(ls "${TEST_DIR}/mock_project/.vibe/reviews/"*.json 2>/dev/null | head -1)
+    review_file=$(ls "${project}/.vibe/reviews/"*.json 2>/dev/null | head -1)
     if [ -n "$review_file" ]; then
         assert_file_contains "$review_file" "findings" \
             "Review JSON should contain findings"
