@@ -58,8 +58,8 @@ def check_manifest_exists(project_dir: Path) -> list[Check]:
     """Check that generated-manifest.json exists."""
     manifest_path = project_dir / ".vibe" / "generated-manifest.json"
     if not manifest_path.exists():
-        return [Check("manifest_missing", "error",
-                       "generated-manifest.json not found. Run vibeflow generate.")]
+        return [Check("manifest_missing", "warn",
+                       "generated-manifest.json not found. Run vibeflow generate to enable integrity checks.")]
     return [Check("manifest_exists", "ok", "generated-manifest.json found")]
 
 
@@ -80,15 +80,22 @@ def check_file_integrity(project_dir: Path, manifest: dict) -> list[Check]:
         file_type = entry.get("type", "full")
 
         if file_type == "partial" and "section_hashes" in entry:
-            # For partial files, check managed sections only
+            # For partial files, check managed sections
             content = abs_path.read_text()
+            current_sections = {}
             for match in MARKER_RE.finditer(content):
-                section_name = match.group(1)
-                section_content = match.group(2)
-                recorded_hash = entry["section_hashes"].get(section_name)
-                if recorded_hash is None:
+                current_sections[match.group(1)] = match.group(2)
+
+            # Check each recorded section
+            for section_name, recorded_hash in entry["section_hashes"].items():
+                if section_name not in current_sections:
+                    checks.append(Check(
+                        "section_missing", "warn",
+                        f"{rel_path}: managed section '{section_name}' is missing "
+                        f"(VF:BEGIN/VF:END markers removed)"
+                    ))
                     continue
-                current_hash = _hash_bytes(section_content.encode())
+                current_hash = _hash_bytes(current_sections[section_name].encode())
                 if current_hash != recorded_hash:
                     checks.append(Check(
                         "section_modified", "warn",

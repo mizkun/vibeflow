@@ -373,9 +373,109 @@ test_doctor_no_manifest() {
 
     assert_file_contains "${TEST_DIR}/doctor_output.json" "manifest_missing" \
         "Should report manifest missing"
-    assert_equals "1" "$code" "Missing manifest should be error"
+    assert_equals "0" "$code" "Missing manifest should be warn (exit 0 in normal mode)"
 }
-run_test "Reports missing manifest as error" test_doctor_no_manifest
+run_test "Reports missing manifest as warn" test_doctor_no_manifest
+
+test_doctor_no_manifest_strict() {
+    local outdir="${TEST_DIR}/project"
+    mkdir -p "${outdir}/.vibe"
+
+    set +e
+    python3 "${FRAMEWORK_DIR}/core/doctor.py" \
+        --project-dir "$outdir" \
+        --schema-dir "${FRAMEWORK_DIR}/core/schema" \
+        --strict > /dev/null 2>&1
+    local code=$?
+    set -e
+
+    assert_equals "1" "$code" "Missing manifest should exit 1 with --strict"
+}
+run_test "Missing manifest exits 1 with --strict" test_doctor_no_manifest_strict
+
+# ──────────────────────────────────────────────
+describe "doctor — section missing detection"
+
+test_doctor_detects_section_missing() {
+    local outdir="${TEST_DIR}/project"
+    mkdir -p "$outdir"
+    generate_project "$outdir"
+
+    # Remove the workflow section markers entirely from CLAUDE.md
+    python3 -c "
+import re
+with open('${outdir}/CLAUDE.md') as f:
+    content = f.read()
+content = re.sub(r'<!-- VF:BEGIN workflow -->.*?<!-- VF:END workflow -->\n?', '', content, flags=re.DOTALL)
+with open('${outdir}/CLAUDE.md', 'w') as f:
+    f.write(content)
+"
+
+    local output
+    output=$(python3 "${FRAMEWORK_DIR}/core/doctor.py" \
+        --project-dir "$outdir" \
+        --schema-dir "${FRAMEWORK_DIR}/core/schema" \
+        --json 2>&1)
+
+    echo "$output" > "${TEST_DIR}/doctor_output.json"
+
+    assert_file_contains "${TEST_DIR}/doctor_output.json" "section_missing" \
+        "Should detect missing managed section"
+    assert_file_contains "${TEST_DIR}/doctor_output.json" "workflow" \
+        "Should identify workflow as the missing section"
+}
+run_test "Detects CLAUDE.md section removed" test_doctor_detects_section_missing
+
+# ──────────────────────────────────────────────
+describe "doctor — setup without generate"
+
+test_doctor_setup_only_project() {
+    # Simulate a project created by setup_vibeflow.sh (no manifest)
+    local outdir="${TEST_DIR}/project"
+    mkdir -p "${outdir}/.vibe/hooks" "${outdir}/.claude"
+    echo "# CLAUDE.md" > "${outdir}/CLAUDE.md"
+    echo '#!/bin/bash' > "${outdir}/.vibe/hooks/validate_write.sh"
+
+    set +e
+    local output
+    output=$(python3 "${FRAMEWORK_DIR}/core/doctor.py" \
+        --project-dir "$outdir" \
+        --schema-dir "${FRAMEWORK_DIR}/core/schema" \
+        --json 2>&1)
+    local code=$?
+    set -e
+
+    echo "$output" > "${TEST_DIR}/doctor_output.json"
+
+    assert_file_contains "${TEST_DIR}/doctor_output.json" "manifest_missing" \
+        "Should warn about missing manifest"
+    assert_file_contains "${TEST_DIR}/doctor_output.json" "vibeflow generate" \
+        "Should suggest running vibeflow generate"
+    assert_equals "0" "$code" "Setup-only project should exit 0 (warn, not error)"
+}
+run_test "Setup-only project gets warn, not error" test_doctor_setup_only_project
+
+test_doctor_after_generate() {
+    local outdir="${TEST_DIR}/project"
+    mkdir -p "$outdir"
+    generate_project "$outdir"
+
+    set +e
+    local output
+    output=$(python3 "${FRAMEWORK_DIR}/core/doctor.py" \
+        --project-dir "$outdir" \
+        --schema-dir "${FRAMEWORK_DIR}/core/schema" \
+        --json 2>&1)
+    local code=$?
+    set -e
+
+    echo "$output" > "${TEST_DIR}/doctor_output.json"
+
+    assert_file_not_contains "${TEST_DIR}/doctor_output.json" "manifest_missing" \
+        "Generated project should not have manifest_missing"
+    assert_equals "0" "$code" "Generated project should exit 0"
+}
+run_test "Generated project passes doctor cleanly" test_doctor_after_generate
 
 # ──────────────────────────────────────────────
 describe "doctor — CLI integration"
