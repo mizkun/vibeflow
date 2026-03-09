@@ -14,6 +14,10 @@
 #
 # Output:
 #   Structured JSON review saved to .vibe/reviews/
+#
+# Pass/fail logic:
+#   passed=true  if no error-severity findings (warnings alone do not fail)
+#   passed=false if any error-severity finding exists
 
 set -euo pipefail
 
@@ -42,7 +46,7 @@ usage() {
     echo "Run a structured code review using Codex."
     echo "Uses AGENTS.md as the instruction layer for Codex."
     echo ""
-    echo "Input (one required):"
+    echo "Input (exactly one required, mutually exclusive):"
     echo "  --pr <number>        Review a GitHub PR by number"
     echo "  --diff <file>        Review a diff file"
     echo ""
@@ -57,7 +61,11 @@ usage() {
     echo ""
     echo "Output:"
     echo "  Structured JSON review in .vibe/reviews/"
-    echo "  Schema: { identifier, findings[], summary, passed }"
+    echo "  Schema: { identifier, findings[], summary, passed, has_warnings }"
+    echo ""
+    echo "Pass/fail:"
+    echo "  passed=true   No error-severity findings (warnings alone do not fail)"
+    echo "  passed=false  At least one error-severity finding"
     exit 0
 }
 
@@ -71,11 +79,19 @@ fi
 while [[ $# -gt 0 ]]; do
     case $1 in
         --pr)
+            if [ -n "$INPUT_MODE" ]; then
+                log_error "--pr and --diff are mutually exclusive"
+                exit 1
+            fi
             INPUT_MODE="pr"
             INPUT_VALUE="$2"
             shift 2
             ;;
         --diff)
+            if [ -n "$INPUT_MODE" ]; then
+                log_error "--pr and --diff are mutually exclusive"
+                exit 1
+            fi
             INPUT_MODE="diff"
             INPUT_VALUE="$2"
             shift 2
@@ -134,7 +150,7 @@ elif [ "$INPUT_MODE" = "diff" ]; then
     log_info "Reviewing diff file: $INPUT_VALUE"
 fi
 
-# --- Find AGENTS.md ---
+# --- Find AGENTS.md (instruction layer) ---
 AGENTS_MD=""
 if [ -f "${PROJECT_DIR}/AGENTS.md" ]; then
     AGENTS_MD="${PROJECT_DIR}/AGENTS.md"
@@ -142,12 +158,24 @@ elif [ -f "${FRAMEWORK_DIR}/examples/AGENTS.md" ]; then
     AGENTS_MD="${FRAMEWORK_DIR}/examples/AGENTS.md"
 fi
 
+# --- Build instruction context ---
+# When AGENTS.md exists, its content is prepended to the review prompt
+# as the instruction layer. This gives Codex project-specific rules
+# (file access, workflow, validation) to apply during review.
+INSTRUCTION_CONTEXT=""
 if [ -n "$AGENTS_MD" ]; then
-    log_info "Using instruction layer: $(basename "$AGENTS_MD")"
+    log_info "Using instruction layer: ${AGENTS_MD}"
+    INSTRUCTION_CONTEXT="$(cat "$AGENTS_MD")
+
+---
+
+"
+else
+    log_info "No AGENTS.md found — using default review prompt (no instruction layer)"
 fi
 
 # --- Build review prompt ---
-REVIEW_PROMPT="Review the following code changes. For each issue found, output in this exact format:
+REVIEW_PROMPT="${INSTRUCTION_CONTEXT}Review the following code changes. For each issue found, output in this exact format:
 
 ## Review Summary
 <summary of findings>
@@ -169,9 +197,14 @@ ${DIFF_CONTENT}"
 # --- Execute Codex review ---
 log_info "Running review with: ${CODEX_CMD}"
 
+# Pass AGENTS.md as --instructions if the codex command supports it,
+# otherwise the instruction context is already embedded in the prompt.
 RAW_OUTPUT=""
 if [ -n "$AGENTS_MD" ]; then
-    RAW_OUTPUT=$($CODEX_CMD "$REVIEW_PROMPT" 2>/dev/null || echo "## Review Summary
+    # Try --instructions flag first (Codex CLI native), fall back to prompt-embedded
+    RAW_OUTPUT=$($CODEX_CMD --instructions "$AGENTS_MD" "$REVIEW_PROMPT" 2>/dev/null || \
+                 $CODEX_CMD "$REVIEW_PROMPT" 2>/dev/null || \
+                 echo "## Review Summary
 Review execution failed.")
 else
     RAW_OUTPUT=$($CODEX_CMD "$REVIEW_PROMPT" 2>/dev/null || echo "## Review Summary
@@ -201,7 +234,8 @@ import json
 with open('${REVIEW_FILE}') as f:
     r = json.load(f)
 passed = '✓ PASSED' if r['passed'] else '✗ FAILED'
-print(f'  Result: {passed}')
+warnings = ' (has warnings)' if r.get('has_warnings') else ''
+print(f'  Result: {passed}{warnings}')
 print(f'  Findings: {r[\"finding_count\"]}')
 if r['summary']:
     print(f'  Summary: {r[\"summary\"][:100]}')

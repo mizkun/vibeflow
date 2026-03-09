@@ -78,9 +78,12 @@ def parse_review(raw_output: str, identifier: str = "unknown") -> dict:
     )
     summary = summary_match.group(1).strip() if summary_match else ""
 
-    # Determine pass/fail
+    # Determine pass/fail:
+    # - passed=true if no error-severity findings (warnings alone do not fail)
+    # - has_warnings=true if any warning-severity findings exist
     has_errors = any(f["severity"] == "error" for f in findings)
-    passed = len(findings) == 0 or not has_errors
+    has_warnings = any(f["severity"] == "warning" for f in findings)
+    passed = not has_errors
 
     return {
         "identifier": identifier,
@@ -88,6 +91,7 @@ def parse_review(raw_output: str, identifier: str = "unknown") -> dict:
         "findings": findings,
         "summary": summary,
         "passed": passed,
+        "has_warnings": has_warnings,
         "finding_count": len(findings),
         "raw_output": raw_output,
     }

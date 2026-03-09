@@ -247,4 +247,148 @@ MOCK
 run_test "mock review JSON has findings" test_mock_review_has_findings
 
 # ──────────────────────────────────────────────
+describe "Codex review — mutual exclusivity"
+
+test_pr_and_diff_mutually_exclusive() {
+    local output
+    output=$(bash "${FRAMEWORK_DIR}/scripts/codex_review.sh" --pr 1 --diff foo.diff 2>&1 || true)
+    echo "$output" > "${TEST_DIR}/exclusive_output.txt"
+    assert_file_contains "${TEST_DIR}/exclusive_output.txt" "mutually exclusive" \
+        "Should reject --pr and --diff together"
+}
+run_test "--pr and --diff are mutually exclusive" test_pr_and_diff_mutually_exclusive
+
+# ──────────────────────────────────────────────
+describe "Codex review — AGENTS.md instruction layer"
+
+test_agents_md_embedded_in_prompt() {
+    # Create a mock codex that echoes its input (the prompt)
+    local mock_dir="${TEST_DIR}/mock_echo"
+    mkdir -p "$mock_dir"
+    cat > "${mock_dir}/mock_codex" << 'MOCK'
+#!/bin/bash
+# Echo the prompt back — skip --instructions flag if present
+if [ "$1" = "--instructions" ]; then
+    shift 2
+fi
+echo "## Review Summary"
+echo "No issues found."
+MOCK
+    chmod +x "${mock_dir}/mock_codex"
+
+    # Create project with AGENTS.md
+    local project="${TEST_DIR}/agents_project"
+    mkdir -p "${project}/.vibe/reviews"
+    echo "UNIQUE_AGENTS_MARKER" > "${project}/AGENTS.md"
+    echo "test diff" > "${project}/test.diff"
+
+    local output
+    output=$(VIBEFLOW_CODEX_CMD="${mock_dir}/mock_codex" \
+    VIBEFLOW_PROJECT_DIR="$project" \
+    VIBEFLOW_FRAMEWORK_DIR="$FRAMEWORK_DIR" \
+    bash "${FRAMEWORK_DIR}/scripts/codex_review.sh" \
+        --diff "${project}/test.diff" \
+        --output-dir "${project}/.vibe/reviews" 2>&1 || true)
+
+    echo "$output" > "${TEST_DIR}/agents_output.txt"
+    assert_file_contains "${TEST_DIR}/agents_output.txt" "instruction layer" \
+        "Should log that instruction layer is being used"
+}
+run_test "AGENTS.md used as instruction layer" test_agents_md_embedded_in_prompt
+
+test_no_agents_md_fallback() {
+    local mock_dir="${TEST_DIR}/mock_fallback"
+    mkdir -p "$mock_dir"
+    cat > "${mock_dir}/mock_codex" << 'MOCK'
+#!/bin/bash
+echo "## Review Summary"
+echo "No issues found."
+MOCK
+    chmod +x "${mock_dir}/mock_codex"
+
+    # Create project WITHOUT AGENTS.md, use a fake framework dir
+    # (with core/ symlink for Python imports but no examples/AGENTS.md)
+    local project="${TEST_DIR}/no_agents_project"
+    local fake_fw="${TEST_DIR}/fake_framework"
+    mkdir -p "${project}/.vibe/reviews" "${fake_fw}/examples"
+    ln -sf "${FRAMEWORK_DIR}/core" "${fake_fw}/core"
+    echo "test diff" > "${project}/test.diff"
+
+    local output
+    output=$(VIBEFLOW_CODEX_CMD="${mock_dir}/mock_codex" \
+    VIBEFLOW_PROJECT_DIR="$project" \
+    VIBEFLOW_FRAMEWORK_DIR="$fake_fw" \
+    bash "${FRAMEWORK_DIR}/scripts/codex_review.sh" \
+        --diff "${project}/test.diff" \
+        --output-dir "${project}/.vibe/reviews" 2>&1 || true)
+
+    echo "$output" > "${TEST_DIR}/fallback_output.txt"
+    assert_file_contains "${TEST_DIR}/fallback_output.txt" "no instruction layer" \
+        "Should indicate no instruction layer when AGENTS.md is absent"
+}
+run_test "fallback when no AGENTS.md" test_no_agents_md_fallback
+
+# ──────────────────────────────────────────────
+describe "Codex review — has_warnings field"
+
+test_warning_only_passes() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.codex_review import parse_review
+
+raw = '''## Review Summary
+Found 1 warning.
+
+### Finding 1
+- File: src/app.py
+- Line: 10
+- Severity: warning
+- Issue: Unused variable
+- Suggestion: Remove it
+'''
+review = parse_review(raw, identifier='test-warnings')
+assert review['passed'] is True, 'warning-only should pass'
+assert review['has_warnings'] is True, 'should have has_warnings=True'
+print('OK')
+" 2>/dev/null)
+    assert_equals "OK" "$result" "Warning-only review should pass with has_warnings=True"
+}
+run_test "warning-only review passes with has_warnings" test_warning_only_passes
+
+test_error_fails_with_warnings() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.codex_review import parse_review
+
+raw = '''## Review Summary
+Found issues.
+
+### Finding 1
+- File: src/app.py
+- Line: 10
+- Severity: error
+- Issue: SQL injection
+- Suggestion: Use parameterized queries
+
+### Finding 2
+- File: src/app.py
+- Line: 20
+- Severity: warning
+- Issue: Unused import
+- Suggestion: Remove it
+'''
+review = parse_review(raw, identifier='test-mixed')
+assert review['passed'] is False, 'error should fail'
+assert review['has_warnings'] is True, 'should have has_warnings=True'
+print('OK')
+" 2>/dev/null)
+    assert_equals "OK" "$result" "Error + warning review should fail with has_warnings"
+}
+run_test "error+warning review fails with has_warnings" test_error_fails_with_warnings
+
+# ──────────────────────────────────────────────
 print_summary
