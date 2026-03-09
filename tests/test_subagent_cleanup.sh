@@ -50,15 +50,15 @@ test_readme_no_no_separate_agent_files() {
 run_test "README.md does not contain 'No Separate Agent Files'" test_readme_no_no_separate_agent_files
 
 test_readme_key_principles_mentions_subagents() {
-    # Key Principles should acknowledge subagents, not deny them
-    if grep -q "Roles + Subagents\|Subagents as Helpers" "${FRAMEWORK_DIR}/README.md"; then
+    # v5 uses agents/ directory for sub-agents (code-reviewer, qa-acceptance, test-runner)
+    if grep -q "agents/\|サブエージェント\|Coding Agent\|Agent Selection" "${FRAMEWORK_DIR}/README.md"; then
         return 0
     else
-        fail "README.md Key Principles or Architecture should mention subagents positively"
+        fail "README.md Architecture should mention agents positively"
         return 1
     fi
 }
-run_test "README.md acknowledges subagents in Key Principles or Architecture" test_readme_key_principles_mentions_subagents
+run_test "README.md acknowledges agents in Architecture (v5)" test_readme_key_principles_mentions_subagents
 
 # ──────────────────────────────────────────────
 print_summary

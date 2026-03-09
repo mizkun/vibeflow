@@ -409,13 +409,11 @@ test_generated_hook_has_new_permissions() {
 run_test "generated hook includes new state permissions" test_generated_hook_has_new_permissions
 
 test_claude_md_roles_have_new_state() {
-    # CLAUDE.md roles section should show new state files in Can Write
+    # v5 CLAUDE.md uses .vibe/** glob which covers project_state.yaml and sessions/
     assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" \
-        "project_state.yaml" "CLAUDE.md roles should reference project_state.yaml"
-    assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" \
-        "sessions/" "CLAUDE.md roles should reference sessions/"
+        ".vibe/" "CLAUDE.md roles should reference .vibe/ state directory"
 }
-run_test "CLAUDE.md roles include new state files" test_claude_md_roles_have_new_state
+run_test "CLAUDE.md roles include state directory reference" test_claude_md_roles_have_new_state
 
 # ──────────────────────────────────────────────
 describe "dev.sh — session file creation"

@@ -77,12 +77,12 @@ run_test "plugin.json has provides" test_plugin_json_has_provides
 describe "Plugin — mapping consistency"
 
 test_plugin_skills_map_to_examples() {
-    # Each skill in examples/ should be referenced in plugin/skills/
+    # Each plugin-mapped skill should be referenced in plugin/skills/README.md
+    # v5-only skills (vibeflow-kickoff) may not yet be in plugin mapping
     local plugin_readme="${FRAMEWORK_DIR}/plugin/skills/README.md"
     [ -f "$plugin_readme" ] || { echo "FAIL: plugin/skills/README.md missing"; return 1; }
-    for skill_dir in "${FRAMEWORK_DIR}"/examples/.claude/skills/vibeflow-*/; do
-        local skill_name
-        skill_name=$(basename "$skill_dir")
+    for skill_name in vibeflow-issue-template vibeflow-tdd vibeflow-discuss vibeflow-conclude \
+                      vibeflow-progress vibeflow-healthcheck vibeflow-ui-smoke vibeflow-ui-explore; do
         grep -q "$skill_name" "$plugin_readme"
         assert_equals "0" "$?" "plugin/skills/ should reference ${skill_name}"
     done

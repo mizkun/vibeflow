@@ -24,18 +24,18 @@ test_no_discussion_mode() {
 run_test "No 'Discussion mode' in CLAUDE.md" test_no_discussion_mode
 
 test_main_terminal_iris() {
-    assert_file_contains "$CLAUDE_MD" "Main Terminal" \
-        "CLAUDE.md should mention Main Terminal"
+    assert_file_contains "$CLAUDE_MD" "Iris-Only" \
+        "CLAUDE.md should mention Iris-Only architecture"
     assert_file_contains "$CLAUDE_MD" "Iris" \
         "CLAUDE.md should mention Iris"
 }
-run_test "Main Terminal (Iris) mentioned" test_main_terminal_iris
+run_test "Iris-Only architecture mentioned" test_main_terminal_iris
 
 test_worker_terminal() {
-    assert_file_contains "$CLAUDE_MD" "Worker Terminal" \
-        "CLAUDE.md should mention Worker Terminal"
+    assert_file_contains "$CLAUDE_MD" "Coding Agent" \
+        "CLAUDE.md should mention Coding Agent (replaces Worker Terminal in v5)"
 }
-run_test "Worker Terminal mentioned" test_worker_terminal
+run_test "Coding Agent mentioned (v5)" test_worker_terminal
 
 test_no_quick_fix_section() {
     assert_file_not_contains "$CLAUDE_MD" "## Quick Fix Mode" \
@@ -50,10 +50,10 @@ test_patch_loop_reference() {
 run_test "Patch Loop referenced in CLAUDE.md" test_patch_loop_reference
 
 test_terminal_architecture_section() {
-    assert_file_contains "$CLAUDE_MD" "Terminal Architecture" \
-        "CLAUDE.md should have Terminal Architecture section"
+    assert_file_contains "$CLAUDE_MD" "## Architecture" \
+        "CLAUDE.md should have Architecture section"
 }
-run_test "Terminal Architecture section exists" test_terminal_architecture_section
+run_test "Architecture section exists (v5)" test_terminal_architecture_section
 
 test_no_old_labels_in_operations() {
     assert_file_not_contains "$CLAUDE_MD" "priority:" \
@@ -64,12 +64,12 @@ test_no_old_labels_in_operations() {
 run_test "No priority:/status: labels in CLAUDE.md" test_no_old_labels_in_operations
 
 test_operations_use_rev4_labels() {
-    assert_file_contains "$CLAUDE_MD" "workflow:standard" \
-        "CLAUDE.md Operations should use workflow:standard"
+    assert_file_contains "$CLAUDE_MD" "type:dev" \
+        "CLAUDE.md should use type:dev label (v5 label taxonomy)"
     assert_file_contains "$CLAUDE_MD" "risk:medium" \
-        "CLAUDE.md Operations should use risk:medium"
+        "CLAUDE.md should use risk:medium label"
 }
-run_test "Operations use Rev.4 label taxonomy" test_operations_use_rev4_labels
+run_test "Operations use v5 label taxonomy" test_operations_use_rev4_labels
 
 # ──────────────────────────────────────────────
 describe "Iris-first — roles.yaml"

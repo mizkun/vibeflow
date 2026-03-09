@@ -80,10 +80,11 @@ test_claude_md_has_patch_command() {
 run_test "CLAUDE.md lists /patch" test_claude_md_has_patch_command
 
 test_claude_md_quickfix_is_alias() {
+    # v5 removed /quickfix from CLAUDE.md; verify /patch is listed as the command
     assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" \
-        "互換 alias" "CLAUDE.md should mark /quickfix as compat alias"
+        "/patch" "CLAUDE.md should list /patch command"
 }
-run_test "CLAUDE.md marks /quickfix as alias" test_claude_md_quickfix_is_alias
+run_test "CLAUDE.md lists /patch command (v5)" test_claude_md_quickfix_is_alias
 
 test_claude_md_patch_loop_section() {
     assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" \
@@ -92,10 +93,11 @@ test_claude_md_patch_loop_section() {
 run_test "CLAUDE.md has Patch Loop section" test_claude_md_patch_loop_section
 
 test_claude_md_patch_parent_issue() {
-    assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" \
-        "親 Issue" "CLAUDE.md Patch Loop should mention parent Issue"
+    # v5 moved detailed patch rules to rules/workflow-patch.md
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/rules/workflow-patch.md" \
+        "親 Issue" "workflow-patch.md should mention parent Issue requirement"
 }
-run_test "CLAUDE.md Patch Loop mentions parent Issue" test_claude_md_patch_parent_issue
+run_test "Patch workflow rules mention parent Issue (v5)" test_claude_md_patch_parent_issue
 
 # ──────────────────────────────────────────────
 describe "Consistency — patch.md and CLAUDE.md alignment"
