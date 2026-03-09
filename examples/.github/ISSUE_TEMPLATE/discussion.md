@@ -1,6 +1,7 @@
+<!-- DEPRECATED: Use spike.md instead. This template will be removed in v4.0.0. -->
 ---
-name: Discussion
-about: 議論・意思決定が必要なトピック
+name: "[DEPRECATED] Discussion"
+about: "⚠ 非推奨 — spike.md を使用してください"
 labels: type:discussion
 ---
 

@@ -1,27 +1,19 @@
-<!-- DEPRECATED: Use standard.md instead. This template will be removed in v4.0.0. -->
 ---
-name: "[DEPRECATED] Dev Task"
-about: "⚠ 非推奨 — standard.md を使用してください"
-labels: type:dev
+name: Standard Issue
+about: 通常の開発タスク（機能追加・バグ修正・リファクタリング）
+labels: type:dev, workflow:standard
 ---
 
 ## Overview
 [1-2文で概要を記述]
 
-## Requirements
-- [ ] 要件1
-- [ ] 要件2
-- [ ] 要件3
+## Background
+[このタスクが必要な背景・理由]
 
 ## Acceptance Criteria
 - [ ] 具体的・テスト可能な基準1
 - [ ] 具体的・テスト可能な基準2
 - [ ] 具体的・テスト可能な基準3
-
-## Technical Details
-- 実装アプローチ: [説明]
-- 影響を受けるコンポーネント: [リスト]
-- API変更: [あれば記述]
 
 ## File Locations
 - `src/[path]` - [説明]
@@ -31,6 +23,10 @@ labels: type:dev
 - ユニットテスト: [必要なテスト]
 - 統合テスト: [該当する場合]
 - E2Eテスト: [該当する場合]
+
+## Risk Assessment
+- risk: [low / medium / high]
+- 理由: [リスク判定の根拠]
 
 ## Dependencies
 - 依存: [他のIssue]

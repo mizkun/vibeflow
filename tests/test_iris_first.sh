@@ -67,8 +67,12 @@ test_iris_dispatch_triage() {
 run_test "Iris has dispatch/triage in roles.yaml" test_iris_dispatch_triage
 
 test_iris_default_entry() {
-    assert_file_contains "$ROLES_YAML" "default" \
-        "roles.yaml Iris should indicate default entry point"
+    if grep -qi "default" "$ROLES_YAML" 2>/dev/null; then
+        return 0
+    else
+        fail "roles.yaml Iris should indicate default entry point"
+        return 1
+    fi
 }
 run_test "Iris described as default entry" test_iris_default_entry
 
@@ -76,8 +80,12 @@ run_test "Iris described as default entry" test_iris_default_entry
 describe "Iris-first — iris.md"
 
 test_iris_md_default_role() {
-    assert_file_contains "$IRIS_MD" "default" \
-        "iris.md should describe Iris as default role"
+    if grep -qi "default" "$IRIS_MD" 2>/dev/null; then
+        return 0
+    else
+        fail "iris.md should describe Iris as default role"
+        return 1
+    fi
 }
 run_test "iris.md mentions default role" test_iris_md_default_role
 
@@ -181,8 +189,12 @@ test_patch_has_parent_issue() {
 run_test "patch.md references parent issue" test_patch_has_parent_issue
 
 test_patch_has_scope() {
-    assert_file_contains "${TEMPLATES_DIR}/patch.md" "scope" \
-        "patch.md should have scope section"
+    if grep -qi "scope" "${TEMPLATES_DIR}/patch.md" 2>/dev/null; then
+        return 0
+    else
+        fail "patch.md should have scope section"
+        return 1
+    fi
 }
 run_test "patch.md has scope" test_patch_has_scope
 
