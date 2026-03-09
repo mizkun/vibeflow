@@ -1,10 +1,11 @@
 ---
-description: Start a Iris session
+description: Start Discovery (Spike workflow) via Iris
 ---
 
-# Iris セッションを開始する
+# Iris の Discovery を開始する（Spike workflow）
 
-IMPORTANT: このコマンドはトピックの有無に関わらず、必ず Iris セッションを開始すること。使い方の案内を表示して終了してはならない。
+IMPORTANT: このコマンドはトピックの有無に関わらず、必ず Discovery セッションを開始すること。使い方の案内を表示して終了してはならない。
+IMPORTANT: Discovery は Iris の機能の一つ。「特殊モード」ではなく、Iris が実行する Spike workflow です。
 
 ## 処理フロー
 

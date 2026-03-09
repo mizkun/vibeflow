@@ -1,6 +1,7 @@
+<!-- DEPRECATED: Use ops.md instead. This template will be removed in v4.0.0. -->
 ---
-name: Human Task
-about: 人間が実行するタスク（非開発作業）
+name: "[DEPRECATED] Human Task"
+about: "⚠ 非推奨 — ops.md を使用してください"
 labels: type:human
 ---
 

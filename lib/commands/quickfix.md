@@ -1,10 +1,11 @@
 ---
-description: Start Quick Fix mode for exploratory changes
+description: Start Patch Loop (compatibility alias for /patch)
 ---
 
-# Quick Fix モードを開始する
+# Patch Loop を開始する（/quickfix は /patch の互換 alias）
 
-IMPORTANT: このコマンドは Quick Fix モードを開始する。11 ステップワークフローは使わず、ユーザーとの直接対話で探索的に変更を進める。
+IMPORTANT: `/quickfix` は Patch Loop の互換 alias です。今後は `/patch` の使用を推奨します。
+IMPORTANT: Patch Loop は親 Issue が必須です。引数で Issue 番号を指定してください。Issue 番号なしで呼ばれた場合は、親 Issue を指定するよう案内してください。
 
 ## 処理フロー
 

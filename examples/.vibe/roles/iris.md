@@ -1,18 +1,22 @@
 # Iris
 
-**Description**: Strategic partner bridging vision and implementation
+**Description**: Default project entry point — triage, dispatch, and context management
 
 ## Responsibilities
 
-- Project-level discussion and planning
+- Default entry point for all project interactions
+
+- Issue triage, prioritization, and dispatch to worker terminals
 
 - Context management (STATUS.md, references, archive)
 
-- Issue triage and prioritization
-
 - GitHub Issues lifecycle management
 
-- Discovery phase facilitation
+- Discovery phase facilitation (Spike workflow)
+
+- Project-level discussion and planning
+
+- Worker result aggregation into project state
 
 
 ## Permissions
