@@ -13,7 +13,7 @@ create_impl_project() {
     mkdir -p "${dir}/.vibe/worktrees" "${dir}/src" "${dir}/tests"
 
     cd "$dir"
-    git init -q
+    git init -q -b main
     git config user.email "test@test.com"
     git config user.name "Test"
     echo "initial" > README.md
@@ -342,8 +342,27 @@ MOCK
 run_test "mock codex creates branch" test_mock_codex_impl
 
 test_no_auto_merge() {
-    # After mock execution, main should still be at original state
-    local project="${TEST_DIR}/mock_impl"
+    # Self-contained: create project, run mock codex, verify main untouched
+    local project="${TEST_DIR}/no_merge_impl"
+    create_impl_project "$project"
+    create_packet "$project"
+
+    local mock_dir="${TEST_DIR}/mock_nomerge_bin"
+    mkdir -p "$mock_dir"
+    cat > "${mock_dir}/mock_codex" << 'MOCK'
+#!/bin/bash
+echo "modified" > src/app.py
+git add -A
+git commit -q -m "codex: implement feature" 2>/dev/null || true
+MOCK
+    chmod +x "${mock_dir}/mock_codex"
+
+    VIBEFLOW_CODEX_CMD="${mock_dir}/mock_codex" \
+    VIBEFLOW_PROJECT_DIR="$project" \
+    VIBEFLOW_FRAMEWORK_DIR="$FRAMEWORK_DIR" \
+    bash "${FRAMEWORK_DIR}/scripts/codex_impl.sh" \
+        --packet "${project}/packet.json" 2>&1 || true
+
     local main_content
     main_content=$(cd "$project" && git show main:src/app.py 2>/dev/null || echo "")
     assert_equals "app code" "$main_content" "Main branch should not be modified (no auto-merge)"
