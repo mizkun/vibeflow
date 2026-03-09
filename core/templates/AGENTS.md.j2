@@ -1,0 +1,97 @@
+# AGENTS.md — Codex Instruction Layer
+# Auto-generated from VibeFlow schema. Do not edit manually.
+# Source: core/schema/policy.yaml, workflow.yaml, roles.yaml
+
+## Overview
+
+This file provides instructions for Codex (or any headless worker) executing
+tasks in a VibeFlow-managed project. All rules here derive from the same
+schema that governs Claude Code via CLAUDE.md.
+
+## File Access Rules
+
+Workers must respect the following file access constraints.
+These are enforced by the VibeFlow hook system and validated post-execution.
+
+### Role Permissions
+
+{% for role_id, role in roles.items() %}
+#### {{ role.name }}
+- **Description**: {{ role.description }}
+- **can_write**: {{ policy_roles[role_id].can_write | join(', ') if policy_roles[role_id].can_write else '(none)' }}
+- **can_read**: {{ policy_roles[role_id].can_read | join(', ') if policy_roles[role_id].can_read else '(none)' }}
+- **enforcement**: {{ policy_roles[role_id].enforcement | default('hard') }}
+
+{% endfor %}
+
+### Default Forbidden Paths
+
+The following paths are always forbidden for workers, regardless of role:
+
+- `plans/*` — planning documents are read-only for workers
+- `.vibe/hooks/*` — hook scripts must not be modified by workers
+- `.claude/settings.json` — settings are managed by the framework
+
+### Constraints
+
+- **max_files_changed**: Workers should not modify more than the limit specified
+  in the handoff packet (default: 20 files). Exceeding this limit signals scope creep.
+- **allowed_paths**: Only write to paths listed in the handoff packet's
+  `constraints.allowed_paths`. These derive from the role's `can_write` permissions.
+- **forbidden_paths**: Never write to paths in `constraints.forbidden_paths`.
+
+## Workflow Rules
+
+Workers receive tasks via handoff packets that specify which workflow to follow.
+
+{% for wtype, wdef in workflows.items() %}
+### {{ wtype | title }} Workflow
+{{ wdef.description }}
+
+| Step | Role | Mode |
+|------|------|------|
+{% for step in wdef.steps %}
+| {{ step.id }} | {{ step.role }} | {{ step.mode }} |
+{% endfor %}
+
+{% endfor %}
+
+## Task Execution Protocol
+
+1. **Read the handoff packet** — it contains goal, acceptance criteria, constraints,
+   and validation commands.
+2. **Check constraints** — verify allowed_paths and forbidden_paths before writing.
+3. **Execute the task** — implement the goal within the specified constraints.
+4. **Run validation** — execute all commands in `validation.required_commands`.
+5. **Report results** — update artifacts (qa_report, pr_number, branch).
+
+## Validation
+
+After task execution, the following validation rules apply:
+
+- All commands in `validation.required_commands` must pass (exit code 0).
+- Modified files must be within `constraints.allowed_paths`.
+- No files in `constraints.forbidden_paths` may be modified.
+- Total files changed must not exceed `constraints.max_files_changed`.
+
+## Handoff Packet Format
+
+Workers receive a JSON packet with this structure:
+
+```json
+{
+  "task_id": "task-123-dev",
+  "task_type": "dev | patch | spike | ops",
+  "source_of_truth": { "issue_number": 123, "repo": "owner/repo" },
+  "goal": "One-line description from Issue title",
+  "acceptance_criteria": ["..."],
+  "constraints": {
+    "allowed_paths": ["src/**", "tests/**"],
+    "forbidden_paths": ["plans/*", ".vibe/hooks/*"],
+    "max_files_changed": 20
+  },
+  "must_read": ["vision.md", "spec.md"],
+  "validation": { "required_commands": ["npm test"] },
+  "worker_type": "claude | codex | human"
+}
+```

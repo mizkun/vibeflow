@@ -24,13 +24,14 @@ from core.generators.generate_settings import generate_settings
 from core.generators.generate_policy import generate_policy
 from core.generators.generate_docs import generate_role_docs
 from core.generators.generate_claude_md import load_schemas, update_managed_sections
+from core.generators.generate_agents_md import generate_agents_md
 from core.generators.manifest import Manifest
 
 # Valid targets for --target
-VALID_TARGETS = ("hooks", "settings", "policy", "docs", "claude_md", "state", "manifest")
+VALID_TARGETS = ("hooks", "settings", "policy", "docs", "claude_md", "agents_md", "state", "manifest")
 
-# Generation order: policy → hooks → settings → docs → claude_md → state → manifest
-GENERATION_ORDER = ["policy", "hooks", "settings", "docs", "claude_md", "state", "manifest"]
+# Generation order: policy → hooks → settings → docs → claude_md → agents_md → state → manifest
+GENERATION_ORDER = ["policy", "hooks", "settings", "docs", "claude_md", "agents_md", "state", "manifest"]
 
 
 def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: str,
@@ -88,6 +89,11 @@ def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: st
                     f"Skipping. Add markers manually to enable managed sections.",
                     file=sys.stderr,
                 )
+
+    elif target == "agents_md":
+        agents_md_path = str(project / "AGENTS.md")
+        generate_agents_md(schema_dir, agents_md_path)
+        generated_files.append(("AGENTS.md", "core/schema"))
 
     elif target == "state":
         # Copy state templates (project_state.yaml + sessions/iris-main.yaml)
