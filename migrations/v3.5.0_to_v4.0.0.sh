@@ -16,7 +16,7 @@ cd "$PROJECT"
 log_info "VibeFlow v3.5.0 → v4.0.0 マイグレーション開始"
 
 # ============================================================
-# 0/7: Pre-flight — dirty tree check
+# 0/8: Pre-flight — dirty tree check
 # ============================================================
 if git rev-parse --is-inside-work-tree &>/dev/null; then
     if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
@@ -31,7 +31,7 @@ if git rev-parse --is-inside-work-tree &>/dev/null; then
 fi
 
 # ============================================================
-# 0b/7: Dry-run guard
+# 0b/8: Dry-run guard
 # ============================================================
 if [ "$DRY_RUN" = "1" ]; then
     log_info "[DRY RUN] 以下の変更が適用されます:"
@@ -46,9 +46,9 @@ if [ "$DRY_RUN" = "1" ]; then
 fi
 
 # ============================================================
-# 1/7: ファイル分類（baseline hash 照合）
+# 1/8: ファイル分類（baseline hash 照合）
 # ============================================================
-log_info "1/7: ファイル分類"
+log_info "1/8: ファイル分類"
 
 CUSTOMIZED_FILES=()
 
@@ -75,10 +75,19 @@ else
     log_ok "  カスタマイズ済みファイルなし（全ファイルがストック）"
 fi
 
+# Helper: check if a file is customized
+is_customized() {
+    local path="$1"
+    for cf in "${CUSTOMIZED_FILES[@]:-}"; do
+        [ "$cf" = "$path" ] && return 0
+    done
+    return 1
+}
+
 # ============================================================
-# 2/7: state.yaml 分割 → project_state.yaml + sessions/
+# 2/8: state.yaml 分割 → project_state.yaml + sessions/
 # ============================================================
-log_info "2/7: state.yaml 分割"
+log_info "2/8: state.yaml 分割"
 
 if [ -f ".vibe/state.yaml" ]; then
     # Backup
@@ -88,7 +97,7 @@ if [ -f ".vibe/state.yaml" ]; then
     # Create sessions directory
     ensure_dir ".vibe/sessions"
 
-    # Split using Python for YAML parsing
+    # Split using Python for YAML parsing — schema-compliant output
     if command -v python3 &>/dev/null; then
         python3 -c "
 import yaml, sys, os
@@ -96,14 +105,24 @@ import yaml, sys, os
 with open('.vibe/state.yaml', 'r') as f:
     state = yaml.safe_load(f) or {}
 
-# --- project_state.yaml ---
+# Extract safety sub-fields for split
+old_safety = state.get('safety', {})
+
+# --- project_state.yaml (matches core/schema/project_state.yaml) ---
 project_state = {
     'active_issue': state.get('current_issue', None),
-    'phase': state.get('phase', 'development'),
-    'issues_recent': state.get('issues_recent', []),
+    'active_pr': None,
+    'current_phase': state.get('phase', 'development'),
     'patch_runs': [],
-    'safety': state.get('safety', {}),
-    'infra_log': state.get('infra_log', {}),
+    'backlog_summary': {
+        'ready': 0,
+        'in_progress': 0,
+        'blocked': 0,
+    },
+    'safety': {
+        'ui_mode': old_safety.get('ui_mode', 'atomic'),
+        'destructive_op': old_safety.get('destructive_op', 'require_confirmation'),
+    },
 }
 
 # Convert quickfix to patch_runs if active
@@ -120,11 +139,23 @@ if qf and qf.get('active', False):
 with open('.vibe/project_state.yaml', 'w') as f:
     yaml.dump(project_state, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
-# --- sessions/iris-main.yaml ---
+# --- sessions/iris-main.yaml (matches core/schema/session_state.yaml) ---
 session = {
+    'session_id': 'iris-main',
+    'kind': 'iris',
     'current_role': state.get('current_role', 'Iris'),
     'current_step': state.get('current_step', None),
-    'discovery': state.get('discovery', {}),
+    'attached_issue': None,
+    'worktree': None,
+    'status': 'active',
+    'safety': {
+        'max_fix_attempts': old_safety.get('max_fix_attempts', 3),
+        'failed_approach_log': old_safety.get('failed_approach_log', []),
+    },
+    'infra_log': state.get('infra_log', {
+        'hook_changes': [],
+        'rollback_pending': False,
+    }),
 }
 
 os.makedirs('.vibe/sessions', exist_ok=True)
@@ -142,9 +173,9 @@ else
 fi
 
 # ============================================================
-# 3/7: /patch コマンド配置
+# 3/8: /patch コマンド配置
 # ============================================================
-log_info "3/7: /patch コマンド配置"
+log_info "3/8: /patch コマンド配置"
 ensure_dir ".claude/commands"
 
 if [ -f "${FRAMEWORK}/lib/commands/patch.md" ]; then
@@ -154,14 +185,6 @@ else
 fi
 
 # /quickfix alias も更新（カスタマイズされていなければ）
-is_customized() {
-    local path="$1"
-    for cf in "${CUSTOMIZED_FILES[@]:-}"; do
-        [ "$cf" = "$path" ] && return 0
-    done
-    return 1
-}
-
 if [ -f "${FRAMEWORK}/lib/commands/quickfix.md" ]; then
     if ! is_customized ".claude/commands/quickfix.md"; then
         cp "${FRAMEWORK}/lib/commands/quickfix.md" ".claude/commands/quickfix.md"
@@ -172,9 +195,9 @@ if [ -f "${FRAMEWORK}/lib/commands/quickfix.md" ]; then
 fi
 
 # ============================================================
-# 4/7: ストックファイル更新（カスタマイズ済みは保護）
+# 4/8: ストックファイル更新（カスタマイズ済みは保護）
 # ============================================================
-log_info "4/7: ストックファイル更新"
+log_info "4/8: ストックファイル更新"
 
 # Hooks
 for hook in validate_write.sh validate_step7a.py checkpoint_alert.sh task_complete.sh waiting_input.sh; do
@@ -226,18 +249,43 @@ if [ -f "${FRAMEWORK}/examples/.vibe/policy.yaml" ]; then
 fi
 
 # ============================================================
-# 5/7: CLAUDE.md マネージドセクション再生成
+# 5/8: CLAUDE.md マネージドセクション再生成（partial update）
 # ============================================================
-log_info "5/7: CLAUDE.md 更新"
-if [ -f "${FRAMEWORK}/examples/CLAUDE.md" ]; then
-    cp "${FRAMEWORK}/examples/CLAUDE.md" "CLAUDE.md"
-    log_ok "  CLAUDE.md を v4.0.0 版に更新"
+log_info "5/8: CLAUDE.md マネージドセクション再生成"
+
+if [ -f "CLAUDE.md" ]; then
+    if grep -q "VF:BEGIN" "CLAUDE.md"; then
+        # Has markers — use generate_claude_md.py for partial update
+        if command -v python3 &>/dev/null; then
+            # Backup first
+            cp "CLAUDE.md" "CLAUDE.md.v3-backup"
+            log_ok "  バックアップ: CLAUDE.md.v3-backup"
+
+            python3 "${FRAMEWORK}/core/generators/generate_claude_md.py" \
+                --input "CLAUDE.md" \
+                --schema-dir "${FRAMEWORK}/core/schema" \
+                --output "CLAUDE.md" 2>/dev/null
+            log_ok "  マネージドセクションを再生成（手書き部分は保持）"
+        else
+            log_warn "  python3 がないため CLAUDE.md の更新をスキップ"
+        fi
+    else
+        log_warn "  CLAUDE.md に VF:BEGIN/VF:END マーカーがありません"
+        log_warn "  マネージドセクションの自動更新をスキップします"
+        log_warn "  手動で examples/CLAUDE.md のマーカーを追加してください"
+    fi
+else
+    # No CLAUDE.md — copy from examples as initial
+    if [ -f "${FRAMEWORK}/examples/CLAUDE.md" ]; then
+        cp "${FRAMEWORK}/examples/CLAUDE.md" "CLAUDE.md"
+        log_ok "  CLAUDE.md を新規作成"
+    fi
 fi
 
 # ============================================================
-# 6/7: settings.json 更新
+# 6/8: settings.json 更新
 # ============================================================
-log_info "6/7: settings.json 更新"
+log_info "6/8: settings.json 更新"
 if [ -f "${FRAMEWORK}/examples/.claude/settings.json" ]; then
     if ! is_customized ".claude/settings.json"; then
         cp "${FRAMEWORK}/examples/.claude/settings.json" ".claude/settings.json"
@@ -248,9 +296,49 @@ if [ -f "${FRAMEWORK}/examples/.claude/settings.json" ]; then
 fi
 
 # ============================================================
-# 7/7: バージョン更新
+# 7/8: アップグレードレポート出力
 # ============================================================
-log_info "7/7: バージョン更新"
+log_info "7/8: アップグレードレポート出力"
+
+REPORT_DIR=".vibe/upgrade-reports"
+ensure_dir "$REPORT_DIR"
+
+REPORT_FILE="${REPORT_DIR}/v3.5.0_to_v4.0.0_$(date +%Y%m%d-%H%M%S).json"
+
+if command -v python3 &>/dev/null; then
+    python3 -c "
+import json, datetime
+
+customized = '''$(printf '%s\n' "${CUSTOMIZED_FILES[@]:-}")'''.strip().split('\n')
+customized = [f for f in customized if f]
+
+report = {
+    'migration': 'v3.5.0 -> v4.0.0',
+    'timestamp': datetime.datetime.now().isoformat(),
+    'customized_files': customized,
+    'actions': [
+        'state.yaml split -> project_state.yaml + sessions/iris-main.yaml',
+        'state.yaml backed up as .v3-backup',
+        '/patch command placed',
+        'CLAUDE.md managed sections regenerated',
+        'stock files updated (customized files preserved)',
+    ],
+    'customized_count': len(customized),
+}
+
+with open('${REPORT_FILE}', 'w') as f:
+    json.dump(report, f, indent=2, ensure_ascii=False)
+    f.write('\n')
+" 2>/dev/null
+    log_ok "  レポート: ${REPORT_FILE}"
+else
+    log_warn "  python3 がないためレポート出力をスキップ"
+fi
+
+# ============================================================
+# 8/8: バージョン更新
+# ============================================================
+log_info "8/8: バージョン更新"
 echo "${VIBEFLOW_TO_VERSION}" > ".vibe/version"
 log_ok "  バージョン: v${VIBEFLOW_TO_VERSION}"
 
