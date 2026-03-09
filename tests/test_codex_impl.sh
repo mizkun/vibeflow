@@ -431,4 +431,161 @@ MOCK
 run_test "fallback when no AGENTS.md" test_no_agents_md_fallback
 
 # ──────────────────────────────────────────────
+describe "Codex impl — failure exits"
+
+test_codex_failure_exits_nonzero() {
+    local project="${TEST_DIR}/fail_codex"
+    create_impl_project "$project"
+    create_packet "$project"
+
+    local mock_dir="${TEST_DIR}/mock_fail_bin"
+    mkdir -p "$mock_dir"
+    cat > "${mock_dir}/mock_codex" << 'MOCK'
+#!/bin/bash
+exit 1
+MOCK
+    chmod +x "${mock_dir}/mock_codex"
+
+    local exit_code=0
+    VIBEFLOW_CODEX_CMD="${mock_dir}/mock_codex" \
+    VIBEFLOW_PROJECT_DIR="$project" \
+    VIBEFLOW_FRAMEWORK_DIR="$FRAMEWORK_DIR" \
+    bash "${FRAMEWORK_DIR}/scripts/codex_impl.sh" \
+        --packet "${project}/packet.json" >/dev/null 2>&1 || exit_code=$?
+
+    [ "$exit_code" -ne 0 ]
+    assert_equals "0" "$?" "Codex failure should cause non-zero exit"
+}
+run_test "codex failure exits non-zero" test_codex_failure_exits_nonzero
+
+test_diff_validation_failure_exits_nonzero() {
+    local project="${TEST_DIR}/fail_diff"
+    create_impl_project "$project"
+
+    # Packet with restrictive allowed_paths
+    cat > "${project}/packet.json" << 'EOF'
+{
+    "task_id": "task-diff-fail",
+    "task_type": "dev",
+    "goal": "Test",
+    "worker_type": "codex",
+    "constraints": {
+        "allowed_paths": ["src/**"],
+        "forbidden_paths": [],
+        "max_files_changed": 5
+    },
+    "validation": { "required_commands": [] }
+}
+EOF
+
+    local mock_dir="${TEST_DIR}/mock_difffail_bin"
+    mkdir -p "$mock_dir"
+    # Mock codex that modifies a file OUTSIDE allowed_paths
+    cat > "${mock_dir}/mock_codex" << 'MOCK'
+#!/bin/bash
+echo "bad change" > docs_forbidden.txt
+git add -A
+git commit -q -m "bad change" 2>/dev/null || true
+MOCK
+    chmod +x "${mock_dir}/mock_codex"
+
+    local exit_code=0
+    VIBEFLOW_CODEX_CMD="${mock_dir}/mock_codex" \
+    VIBEFLOW_PROJECT_DIR="$project" \
+    VIBEFLOW_FRAMEWORK_DIR="$FRAMEWORK_DIR" \
+    bash "${FRAMEWORK_DIR}/scripts/codex_impl.sh" \
+        --packet "${project}/packet.json" >/dev/null 2>&1 || exit_code=$?
+
+    [ "$exit_code" -ne 0 ]
+    assert_equals "0" "$?" "Diff validation failure should cause non-zero exit"
+}
+run_test "diff validation failure exits non-zero" test_diff_validation_failure_exits_nonzero
+
+test_validation_cmd_failure_exits_nonzero() {
+    local project="${TEST_DIR}/fail_valcmd"
+    create_impl_project "$project"
+
+    cat > "${project}/packet.json" << 'EOF'
+{
+    "task_id": "task-valcmd-fail",
+    "task_type": "dev",
+    "goal": "Test",
+    "worker_type": "codex",
+    "constraints": {
+        "allowed_paths": ["src/**"],
+        "forbidden_paths": [],
+        "max_files_changed": 5
+    },
+    "validation": { "required_commands": ["false"] }
+}
+EOF
+
+    local mock_dir="${TEST_DIR}/mock_valcmdfail_bin"
+    mkdir -p "$mock_dir"
+    cat > "${mock_dir}/mock_codex" << 'MOCK'
+#!/bin/bash
+echo "modified" > src/app.py
+git add -A
+git commit -q -m "change" 2>/dev/null || true
+MOCK
+    chmod +x "${mock_dir}/mock_codex"
+
+    local exit_code=0
+    VIBEFLOW_CODEX_CMD="${mock_dir}/mock_codex" \
+    VIBEFLOW_PROJECT_DIR="$project" \
+    VIBEFLOW_FRAMEWORK_DIR="$FRAMEWORK_DIR" \
+    bash "${FRAMEWORK_DIR}/scripts/codex_impl.sh" \
+        --packet "${project}/packet.json" >/dev/null 2>&1 || exit_code=$?
+
+    [ "$exit_code" -ne 0 ]
+    assert_equals "0" "$?" "Validation command failure should cause non-zero exit"
+}
+run_test "validation command failure exits non-zero" test_validation_cmd_failure_exits_nonzero
+
+# ──────────────────────────────────────────────
+describe "Codex impl — uncommitted changes detection"
+
+test_uncommitted_changes_detected() {
+    local project="${TEST_DIR}/uncommit_detect"
+    create_impl_project "$project"
+
+    cat > "${project}/packet.json" << 'EOF'
+{
+    "task_id": "task-uncommit",
+    "task_type": "dev",
+    "goal": "Test",
+    "worker_type": "codex",
+    "constraints": {
+        "allowed_paths": ["src/**"],
+        "forbidden_paths": ["plans/*"],
+        "max_files_changed": 5
+    },
+    "validation": { "required_commands": ["echo ok"] }
+}
+EOF
+
+    local mock_dir="${TEST_DIR}/mock_uncommit_bin"
+    mkdir -p "$mock_dir"
+    # Mock codex that modifies files but does NOT commit
+    cat > "${mock_dir}/mock_codex" << 'MOCK'
+#!/bin/bash
+echo "modified but not committed" > src/app.py
+mkdir -p plans
+echo "forbidden" > plans/roadmap.md
+MOCK
+    chmod +x "${mock_dir}/mock_codex"
+
+    local exit_code=0
+    VIBEFLOW_CODEX_CMD="${mock_dir}/mock_codex" \
+    VIBEFLOW_PROJECT_DIR="$project" \
+    VIBEFLOW_FRAMEWORK_DIR="$FRAMEWORK_DIR" \
+    bash "${FRAMEWORK_DIR}/scripts/codex_impl.sh" \
+        --packet "${project}/packet.json" >/dev/null 2>&1 || exit_code=$?
+
+    [ "$exit_code" -ne 0 ]
+    assert_equals "0" "$?" "Uncommitted forbidden changes should be detected and fail"
+}
+run_test "uncommitted changes detected in validation" test_uncommitted_changes_detected
+
+# ──────────────────────────────────────────────
 print_summary

@@ -198,21 +198,31 @@ log_info "Running implementation with: ${CODEX_CMD}"
 
 cd "$WORKTREE_DIR"
 
+CODEX_EXIT=0
 if [ -n "$AGENTS_MD" ]; then
     $CODEX_CMD --instructions "$AGENTS_MD" "$IMPL_PROMPT" 2>/dev/null || \
-    $CODEX_CMD "$IMPL_PROMPT" 2>/dev/null || {
-        log_error "Codex execution failed"
-    }
+    $CODEX_CMD "$IMPL_PROMPT" 2>/dev/null || CODEX_EXIT=$?
 else
-    $CODEX_CMD "$IMPL_PROMPT" 2>/dev/null || {
-        log_error "Codex execution failed"
-    }
+    $CODEX_CMD "$IMPL_PROMPT" 2>/dev/null || CODEX_EXIT=$?
+fi
+
+if [ "$CODEX_EXIT" -ne 0 ]; then
+    log_error "Codex execution failed (exit ${CODEX_EXIT})"
+    exit 1
 fi
 
 # --- Validate diff ---
 log_info "Validating changes"
 
-CHANGED_FILES=$(git diff --name-only HEAD~1 2>/dev/null || git diff --name-only 2>/dev/null || echo "")
+# Collect all changed files: committed (vs initial), staged, and unstaged
+CHANGED_FILES=$(
+    {
+        git diff --name-only HEAD~1 2>/dev/null || true
+        git diff --name-only --cached 2>/dev/null || true
+        git diff --name-only 2>/dev/null || true
+        git ls-files --others --exclude-standard 2>/dev/null || true
+    } | sort -u
+)
 
 if [ -n "$CHANGED_FILES" ]; then
     VALIDATION_RESULT=$(python3 -c "
@@ -234,6 +244,7 @@ else:
     if [ "$VALIDATION_RESULT" != "OK" ]; then
         log_error "Diff validation failed:"
         echo "$VALIDATION_RESULT"
+        exit 1
     else
         log_ok "Diff validation passed"
     fi
@@ -267,6 +278,7 @@ else:
     if [ "$CMD_ERRORS" != "OK" ]; then
         log_error "Validation commands failed:"
         echo "$CMD_ERRORS"
+        exit 1
     else
         log_ok "All validation commands passed"
     fi
