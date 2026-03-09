@@ -1,0 +1,48 @@
+{
+  "name": "vibeflow",
+  "version": "4.0.0",
+  "description": "VibeFlow — Role-based Vibe Coding Framework for Claude Code",
+  "provides": {
+    "skills": [
+      "vibeflow-issue-template",
+      "vibeflow-tdd",
+      "vibeflow-discuss",
+      "vibeflow-conclude",
+      "vibeflow-progress",
+      "vibeflow-healthcheck",
+      "vibeflow-ui-smoke",
+      "vibeflow-ui-explore"
+    ],
+    "agents": [
+      "code-reviewer",
+      "qa-acceptance",
+      "test-runner"
+    ],
+    "hooks": [
+      "validate_access.py",
+      "validate_write.sh",
+      "validate_step7a.py",
+      "task_complete.sh",
+      "waiting_input.sh",
+      "checkpoint_alert.sh"
+    ],
+    "commands": [
+      "discuss",
+      "conclude",
+      "progress",
+      "healthcheck",
+      "quickfix",
+      "run-e2e"
+    ]
+  },
+  "source": {
+    "skills": "examples/.claude/skills/",
+    "agents": "examples/.claude/agents/",
+    "hooks": "examples/.vibe/hooks/",
+    "commands": "lib/commands/"
+  },
+  "install": {
+    "standalone": "setup_vibeflow.sh",
+    "plugin": "plugin/"
+  }
+}
