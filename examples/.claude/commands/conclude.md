@@ -2,7 +2,7 @@
 description: Conclude Iris session and update STATUS.md (compatibility — prefer vibeflow-conclude skill)
 ---
 
-# Iris Session Conclude
+# Iris セッションを終了する
 
 > **Note**: This command is a compatibility wrapper. The canonical implementation is the `vibeflow-conclude` skill.
 
@@ -11,7 +11,7 @@ description: Conclude Iris session and update STATUS.md (compatibility — prefe
 ## 処理フロー
 
 ### 1. 状態確認
-`.vibe/state.yaml` を読み込み、phase が `discovery` であることを確認する。
+`.vibe/project_state.yaml` を読み込み、`current_phase` が `discovery` であることを確認する。
 - `discovery` でない場合: 「現在セッション中ではありません」と表示
 
 ### 2. セッション成果のまとめ
@@ -33,12 +33,9 @@ description: Conclude Iris session and update STATUS.md (compatibility — prefe
 - archive/ のファイル名: `YYYY-MM-DD-type-topic.md`
 
 ### 5. Phase 復帰
+`.vibe/project_state.yaml`:
 ```yaml
-phase: development
-current_role: "Iris"
-discovery:
-  active: false
-  last_session: "YYYY-MM-DD"
+current_phase: development
 ```
 
 ### 6. 完了バナー表示

@@ -14,11 +14,14 @@ description: Check current project progress and role status. Use when reviewing 
 
 以下を確認して包括的な進捗レポートを作成してください:
 
-1. `.vibe/state.yaml` を読み込み、現在の状態を確認
-2. `.vibe/context/STATUS.md` を読み込み、プロジェクトの全体像を確認
-3. `gh issue list --state open` で未完了の Issue を取得
-4. `gh issue list --state closed --limit 10` で最近完了した Issue を確認
-5. `plan.md` でロードマップの進捗を確認
+1. `.vibe/project_state.yaml` を読み込み、プロジェクト全体の状態を確認
+2. `.vibe/sessions/iris-main.yaml` を読み込み、Iris セッションの状態を確認
+3. `.vibe/context/STATUS.md` を読み込み、プロジェクトの全体像を確認
+4. `gh issue list --state open` で未完了の Issue を取得
+5. `gh issue list --state closed --limit 10` で最近完了した Issue を確認
+6. `plan.md` でロードマップの進捗を確認
+
+> **Note**: `.vibe/state.yaml` が存在する場合は旧形式の fallback として参照してもよいが、正本は `project_state.yaml` + `sessions/*.yaml` です。
 
 ## 出力フォーマット
 
@@ -26,9 +29,9 @@ description: Check current project progress and role status. Use when reviewing 
 Project Progress
 
 ## プロジェクト状態
-- Current Role: [role]
-- Phase: [phase]
-- Current Issue: [issue]
+- Current Phase: [project_state.yaml の current_phase]
+- Current Role: [sessions/iris-main.yaml の current_role]
+- Active Issue: [project_state.yaml の active_issue]
 
 ## GitHub Issues
 - Open: N (dev: X, human: Y, discussion: Z)

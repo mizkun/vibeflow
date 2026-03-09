@@ -156,4 +156,82 @@ test_lib_conclude_unchanged() {
 run_test "lib/commands/conclude.md unchanged" test_lib_conclude_unchanged
 
 # ──────────────────────────────────────────────
+describe "Skills — new state model (project_state + sessions)"
+
+test_discuss_refs_project_state() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-discuss/SKILL.md" \
+        "project_state.yaml" "vibeflow-discuss should reference project_state.yaml"
+}
+run_test "discuss references project_state.yaml" test_discuss_refs_project_state
+
+test_discuss_refs_sessions() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-discuss/SKILL.md" \
+        "sessions/" "vibeflow-discuss should reference sessions/"
+}
+run_test "discuss references sessions/" test_discuss_refs_sessions
+
+test_conclude_refs_project_state() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-conclude/SKILL.md" \
+        "project_state.yaml" "vibeflow-conclude should reference project_state.yaml"
+}
+run_test "conclude references project_state.yaml" test_conclude_refs_project_state
+
+test_progress_refs_project_state() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-progress/SKILL.md" \
+        "project_state.yaml" "vibeflow-progress should reference project_state.yaml"
+}
+run_test "progress references project_state.yaml" test_progress_refs_project_state
+
+test_progress_refs_sessions() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-progress/SKILL.md" \
+        "sessions/" "vibeflow-progress should reference sessions/"
+}
+run_test "progress references sessions/" test_progress_refs_sessions
+
+test_healthcheck_refs_project_state() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-healthcheck/SKILL.md" \
+        "project_state.yaml" "vibeflow-healthcheck should reference project_state.yaml"
+}
+run_test "healthcheck references project_state.yaml" test_healthcheck_refs_project_state
+
+test_healthcheck_refs_sessions() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-healthcheck/SKILL.md" \
+        "sessions/" "vibeflow-healthcheck should reference sessions/"
+}
+run_test "healthcheck references sessions/" test_healthcheck_refs_sessions
+
+# ──────────────────────────────────────────────
+describe "Skills — no old state.yaml as primary"
+
+test_discuss_no_old_state_primary() {
+    # Should NOT have ".vibe/state.yaml" as the first/primary state reference
+    # (it's OK as fallback, but not as the main instruction)
+    assert_file_not_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-discuss/SKILL.md" \
+        "^.*状態確認.*state\.yaml" \
+        "vibeflow-discuss should not use state.yaml as primary state source"
+}
+run_test "discuss does not use state.yaml as primary" test_discuss_no_old_state_primary
+
+test_conclude_no_old_state_primary() {
+    assert_file_not_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-conclude/SKILL.md" \
+        "^.*状態確認.*state\.yaml" \
+        "vibeflow-conclude should not use state.yaml as primary state source"
+}
+run_test "conclude does not use state.yaml as primary" test_conclude_no_old_state_primary
+
+test_discuss_no_discovery_active() {
+    assert_file_not_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-discuss/SKILL.md" \
+        "discovery.active" \
+        "vibeflow-discuss should not reference discovery.active (old field)"
+}
+run_test "discuss does not use discovery.active" test_discuss_no_discovery_active
+
+test_conclude_no_discovery_active() {
+    assert_file_not_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-conclude/SKILL.md" \
+        "discovery.active" \
+        "vibeflow-conclude should not reference discovery.active (old field)"
+}
+run_test "conclude does not use discovery.active" test_conclude_no_discovery_active
+
+# ──────────────────────────────────────────────
 print_summary

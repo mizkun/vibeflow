@@ -15,8 +15,10 @@ description: Conclude Iris session and update STATUS.md. Use when ending a Disco
 ### 処理フロー
 
 #### 1. 状態確認
-`.vibe/state.yaml` を読み込み、phase が `discovery` であることを確認する。
+`.vibe/project_state.yaml` を読み込み、`current_phase` が `discovery` であることを確認する。
 - `discovery` でない場合: 「現在セッション中ではありません」と表示
+
+> **Note**: `.vibe/state.yaml` が存在する場合は旧形式の fallback として参照してもよいが、正本は `project_state.yaml` + `sessions/*.yaml` です。
 
 #### 2. セッション成果のまとめ
 セッション中の活動を振り返り、以下を整理:
@@ -36,14 +38,13 @@ description: Conclude Iris session and update STATUS.md. Use when ending a Disco
 - references/ 内の古い情報を archive/ に移動
 - archive/ のファイル名: `YYYY-MM-DD-type-topic.md`
 
-#### 5. Phase 復帰
+#### 5. State 復帰
+`.vibe/project_state.yaml`:
 ```yaml
-phase: development
-current_role: "Iris"
-discovery:
-  active: false
-  last_session: "YYYY-MM-DD"
+current_phase: development
 ```
+
+`.vibe/sessions/iris-main.yaml` は変更不要（Iris セッションは常駐）。
 
 #### 6. 完了バナー表示
 ```
@@ -56,6 +57,12 @@ Changes:
 Returning to: Development Phase
 ========================================
 ```
+
+## State 更新の対象
+
+| ファイル | フィールド | 値 |
+|---------|-----------|-----|
+| `.vibe/project_state.yaml` | `current_phase` | `development` |
 
 ## Examples
 - "セッションを終了して開発に戻る"

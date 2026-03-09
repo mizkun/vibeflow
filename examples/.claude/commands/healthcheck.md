@@ -19,13 +19,15 @@ VibeFlow プロジェクトの整合性を検証します。
 
 2. **必須ファイル**
    - vision.md, spec.md, plan.md が存在するか
-   - .vibe/state.yaml が有効なYAMLか
+   - .vibe/project_state.yaml が有効なYAMLか
+   - .vibe/sessions/iris-main.yaml が存在し有効か
    - .vibe/policy.yaml が存在するか
 
 3. **State ファイル整合性**
-   - .vibe/state.yaml を読み込み
-   - current_role が有効なロール名か
-   - phase が development, discovery, quickfix のいずれかか
+   - `.vibe/project_state.yaml` を読み込み
+     - `current_phase` が `development` | `discovery` のいずれかか
+   - `.vibe/sessions/iris-main.yaml` を読み込み
+     - `current_role` が有効なロール名か
 
 4. **GitHub Issues 連携**
    - `gh` CLI が利用可能か
