@@ -1,0 +1,45 @@
+# VibeFlow Worker Handoff Packet Schema
+# Defines the structure of a task packet handed from Iris to a Worker.
+# Used by core/runtime/handoff.py to generate packets.
+
+# Unique identifier for this task (auto-generated)
+task_id: null
+
+# Task type derived from Issue labels (dev | patch | spike | ops)
+task_type: null
+
+# Source of truth — where the task is defined
+source_of_truth:
+  issue_number: null
+  repo: null
+
+# One-line goal (from Issue title)
+goal: null
+
+# Acceptance criteria extracted from Issue body
+acceptance_criteria: []
+
+# Write/read constraints derived from policy.yaml
+constraints:
+  # Paths the worker is allowed to write (from policy can_write)
+  allowed_paths: []
+  # Paths the worker must NOT touch
+  forbidden_paths: []
+  # Maximum number of files the worker should change
+  max_files_changed: 20
+
+# Files the worker should read before starting (from policy can_read)
+must_read: []
+
+# Validation commands to run after work is done
+validation:
+  required_commands: []
+
+# Worker type: claude | codex | human (explicit, no auto-selection)
+worker_type: null
+
+# Artifacts produced by the worker
+artifacts:
+  qa_report: null
+  pr_number: null
+  branch: null
