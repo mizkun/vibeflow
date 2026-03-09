@@ -35,6 +35,7 @@ usage() {
   echo "Commands:"
   echo "  setup       新規プロジェクトをセットアップ"
   echo "  upgrade     既存プロジェクトを最新バージョンにアップグレード"
+  echo "  generate    スキーマからプロジェクトファイルを生成"
   echo "  version     バージョン情報を表示"
   echo "  doctor      環境の問題を診断"
   echo "  help        このヘルプを表示"
@@ -51,10 +52,19 @@ usage() {
   echo "    --force              確認をスキップ"
   echo "    --no-backup          バックアップをスキップ"
   echo ""
+  echo "Generate options:"
+  echo "  vibeflow generate [options]"
+  echo "    --target <name>      特定ターゲットのみ生成 (hooks|settings|policy|docs|claude_md|manifest)"
+  echo "    --diff               変更予定を表示（ファイルは書き込まない）"
+  echo "    --schema-dir <dir>   スキーマディレクトリ（デフォルト: \$FRAMEWORK_DIR/core/schema）"
+  echo ""
   echo "Examples:"
   echo "  mkdir my-project && cd my-project && vibeflow setup"
   echo "  cd existing-project && vibeflow upgrade"
   echo "  cd existing-project && vibeflow upgrade --dry-run"
+  echo "  cd existing-project && vibeflow generate"
+  echo "  cd existing-project && vibeflow generate --target hooks"
+  echo "  cd existing-project && vibeflow generate --diff"
   echo ""
 }
 
@@ -295,6 +305,39 @@ print(json.dumps(result, indent=2))
   fi
 }
 
+cmd_generate() {
+  local SCHEMA_DIR="${FRAMEWORK_DIR}/core/schema"
+  local PROJECT_DIR="$(pwd)"
+  local GEN_ARGS=()
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --schema-dir)
+        SCHEMA_DIR="$2"
+        shift 2
+        ;;
+      --target)
+        GEN_ARGS+=("--target" "$2")
+        shift 2
+        ;;
+      --diff)
+        GEN_ARGS+=("--diff")
+        shift
+        ;;
+      *)
+        echo "Unknown generate option: $1"
+        exit 1
+        ;;
+    esac
+  done
+
+  python3 "${FRAMEWORK_DIR}/core/generators/generate_all.py" \
+    --schema-dir "$SCHEMA_DIR" \
+    --project-dir "$PROJECT_DIR" \
+    --framework-dir "$FRAMEWORK_DIR" \
+    "${GEN_ARGS[@]}"
+}
+
 cmd_setup() {
   bash "${FRAMEWORK_DIR}/setup_vibeflow.sh" "$@"
 }
@@ -311,6 +354,7 @@ shift 2>/dev/null || true
 case "$COMMAND" in
   setup)    cmd_setup "$@" ;;
   upgrade)  cmd_upgrade "$@" ;;
+  generate) cmd_generate "$@" ;;
   version)  cmd_version ;;
   doctor)   cmd_doctor "$@" ;;
   help|--help|-h)  usage ;;
