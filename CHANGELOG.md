@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [4.0.0] - 2026-03-09
+
+State Split、Patch Loop、Handoff パケット、/patch コマンド、DoR ゲートを追加。
+
+### Added
+
+#### State Split
+- `state.yaml` を `project_state.yaml`（プロジェクト状態）と `sessions/*.yaml`（セッション状態）に分割
+- セッション解決: `VIBEFLOW_SESSION` 環境変数 → セッション YAML → フォールバック `state.yaml`
+
+#### Patch Loop
+- `/patch <issue番号>`: 親 Issue に紐づく軽微修正ループ
+- 対象テスト必須、ファイル数上限 10、Standard Issue へのエスカレーション
+- 親 PR 自動検出
+
+#### /patch コマンド
+- `/patch` コマンド定義（4 ステップ: Scope Review → Fix → Test → Commit）
+- `/quickfix` を `/patch` の互換 alias に変更
+
+#### DoR ゲート
+- Issue 品質チェック: Hard blocks (title/body/type/workflow labels) + Warnings (risk/qa/AC/Files/Testing)
+
+#### Handoff パケット
+- Iris → Worker 連携用タスクパケット（Issue 情報 + ポリシー権限 + 制約）
+
+### Changed
+- マイグレーション v3.5.0 → v4.0.0: state 分割、quickfix → patch_runs 変換、カスタマイズ済みファイル保護
+
 ## [3.5.0] - 2026-02-24
 
 Dev Launcher、Step 7a Guard、QA ラベル、Batch Execution を追加。
