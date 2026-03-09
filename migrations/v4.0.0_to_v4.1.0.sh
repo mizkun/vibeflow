@@ -40,7 +40,8 @@ if [ "$DRY_RUN" = "1" ]; then
     log_info "  - Commands 互換レイヤの更新"
     log_info "  - Playwright MCP テンプレート配置 (.mcp.json.example)"
     log_info "  - Playwright スクリプト配置 (scripts/playwright_*.sh)"
-    log_info "  - Plugin 構造配置 (.claude-plugin/plugin.json)"
+    log_info "  - Plugin メタデータ配置 (.claude-plugin/plugin.json)"
+    log_info "    ※ plugin/ と docs/architecture.md は framework 側の設計資料（project には配布しません）"
     log_info "  - CLAUDE.md マネージドセクション更新"
     log_info "  - Hooks の更新（カスタマイズ済みは保護）"
     log_info "  - バージョン → 4.1.0"
@@ -180,11 +181,13 @@ for script_name in playwright_smoke.sh playwright_open_report.sh playwright_trac
 done
 
 # ============================================================
-# 5/7: Plugin 構造配置 + Hooks 更新 + CLAUDE.md 更新
+# 5/7: Plugin メタデータ + Hooks 更新 + CLAUDE.md 更新
 # ============================================================
-log_info "5/7: Plugin 構造 + Hooks + CLAUDE.md 更新"
+log_info "5/7: Plugin メタデータ + Hooks + CLAUDE.md 更新"
 
-# Plugin metadata
+# Plugin metadata (.claude-plugin/plugin.json のみ project に配布)
+# Note: plugin/ ディレクトリと docs/architecture.md は framework repo の
+# 設計資料であり、project 側には配布しない
 if [ -f "${FRAMEWORK}/.claude-plugin/plugin.json" ]; then
     ensure_dir ".claude-plugin"
     copy_if_absent "${FRAMEWORK}/.claude-plugin/plugin.json" ".claude-plugin/plugin.json"
@@ -284,7 +287,7 @@ report = {
         'Skills: 8 skills deployed (2 new UI skills + 6 existing updated)',
         'Commands: compatibility wrappers updated',
         'Playwright: .mcp.json.example + 3 scripts deployed',
-        'Plugin: .claude-plugin/plugin.json deployed',
+        'Plugin metadata: .claude-plugin/plugin.json deployed (plugin/ and docs/ are framework-only)',
         'Hooks: stock hooks updated (customized preserved)',
         'CLAUDE.md: managed sections regenerated',
     ],
@@ -314,7 +317,7 @@ log_info "v4.1.0 の主な変更:"
 log_info "  - Skills 化: discuss/conclude/progress/healthcheck を Skills に移行"
 log_info "  - UI Skills: vibeflow-ui-smoke, vibeflow-ui-explore 追加"
 log_info "  - Playwright MCP: .mcp.json.example + スクリプト配置"
-log_info "  - Plugin 構造: .claude-plugin/plugin.json 追加"
+log_info "  - Plugin メタデータ: .claude-plugin/plugin.json 追加"
 
 if [ ${#CUSTOMIZED_FILES[@]} -gt 0 ]; then
     echo ""

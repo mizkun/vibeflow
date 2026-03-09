@@ -263,7 +263,7 @@ test_playwright_scripts_executable() {
 run_test "playwright scripts are executable" test_playwright_scripts_executable
 
 # ──────────────────────────────────────────────
-describe "Migration v4.1.0 — plugin structure deployed"
+describe "Migration v4.1.0 — plugin metadata deployed (framework-only assets excluded)"
 
 test_plugin_json_deployed() {
     local project="${TEST_DIR}/plugin_json"
@@ -279,7 +279,40 @@ test_plugin_json_deployed() {
     assert_file_exists "${project}/.claude-plugin/plugin.json" \
         ".claude-plugin/plugin.json should be deployed"
 }
-run_test "plugin.json deployed" test_plugin_json_deployed
+run_test "plugin.json deployed to project" test_plugin_json_deployed
+
+test_plugin_dir_not_deployed() {
+    local project="${TEST_DIR}/plugin_no_dir"
+    mkdir -p "$project"
+    create_v40_project "$project"
+
+    VIBEFLOW_PROJECT_DIR="$project" \
+    VIBEFLOW_FRAMEWORK_DIR="$FRAMEWORK_DIR" \
+    VIBEFLOW_FROM_VERSION="4.0.0" \
+    VIBEFLOW_TO_VERSION="4.1.0" \
+    bash "${FRAMEWORK_DIR}/migrations/v4.0.0_to_v4.1.0.sh" 2>&1 || true
+
+    # plugin/ and docs/architecture.md are framework-only assets
+    [ ! -d "${project}/plugin" ]
+    assert_equals "0" "$?" "plugin/ dir should NOT be deployed to project (framework-only)"
+}
+run_test "plugin/ dir NOT deployed (framework-only)" test_plugin_dir_not_deployed
+
+test_architecture_doc_not_deployed() {
+    local project="${TEST_DIR}/plugin_no_arch"
+    mkdir -p "$project"
+    create_v40_project "$project"
+
+    VIBEFLOW_PROJECT_DIR="$project" \
+    VIBEFLOW_FRAMEWORK_DIR="$FRAMEWORK_DIR" \
+    VIBEFLOW_FROM_VERSION="4.0.0" \
+    VIBEFLOW_TO_VERSION="4.1.0" \
+    bash "${FRAMEWORK_DIR}/migrations/v4.0.0_to_v4.1.0.sh" 2>&1 || true
+
+    [ ! -f "${project}/docs/architecture.md" ]
+    assert_equals "0" "$?" "docs/architecture.md should NOT be deployed to project (framework-only)"
+}
+run_test "docs/architecture.md NOT deployed (framework-only)" test_architecture_doc_not_deployed
 
 # ──────────────────────────────────────────────
 describe "Migration v4.1.0 — commands compatibility"
