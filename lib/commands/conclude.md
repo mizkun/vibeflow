@@ -1,8 +1,10 @@
 ---
-description: Conclude Iris session and update STATUS.md
+description: Conclude Iris session and update STATUS.md (compatibility — prefer vibeflow-conclude skill)
 ---
 
 # Iris セッションを終了する
+
+> **Note**: This command is a compatibility wrapper. The canonical implementation is the `vibeflow-conclude` skill.
 
 `/conclude` でセッションの成果をまとめ、STATUS.md を更新して開発フェーズに戻ります。
 

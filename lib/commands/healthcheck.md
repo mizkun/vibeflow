@@ -1,4 +1,10 @@
+---
+description: Verify repository consistency (compatibility — prefer vibeflow-healthcheck skill)
+---
+
 # プロジェクト整合性チェック
+
+> **Note**: This command is a compatibility wrapper. The canonical implementation is the `vibeflow-healthcheck` skill.
 
 VibeFlow プロジェクトの整合性を検証します。
 

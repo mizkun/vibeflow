@@ -1,8 +1,10 @@
 ---
-description: Start Discovery (Spike workflow) via Iris
+description: Start Discovery (Spike workflow) via Iris (compatibility — prefer vibeflow-discuss skill)
 ---
 
 # Iris の Discovery を開始する（Spike workflow）
+
+> **Note**: This command is a compatibility wrapper. The canonical implementation is the `vibeflow-discuss` skill.
 
 IMPORTANT: このコマンドはトピックの有無に関わらず、必ず Discovery セッションを開始すること。使い方の案内を表示して終了してはならない。
 IMPORTANT: Discovery は Iris の機能の一つ。「特殊モード」ではなく、Iris が実行する Spike workflow です。

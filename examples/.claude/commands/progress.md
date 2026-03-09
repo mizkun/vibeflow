@@ -1,4 +1,10 @@
+---
+description: Check project progress (compatibility — prefer vibeflow-progress skill)
+---
+
 # プロジェクト進捗確認
+
+> **Note**: This command is a compatibility wrapper. The canonical implementation is the `vibeflow-progress` skill.
 
 以下を確認して包括的な進捗レポートを作成してください:
 
@@ -11,7 +17,7 @@
 ## 出力フォーマット
 
 ```
-📊 Project Progress
+Project Progress
 
 ## プロジェクト状態
 - Current Role: [role]

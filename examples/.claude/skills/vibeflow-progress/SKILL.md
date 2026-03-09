@@ -1,10 +1,16 @@
 ---
-description: Check project progress (compatibility — prefer vibeflow-progress skill)
+name: vibeflow-progress
+description: Check current project progress and role status. Use when reviewing project state, open issues, and roadmap progress.
 ---
 
-# プロジェクト進捗確認
+# VibeFlow Progress Check
 
-> **Note**: This command is a compatibility wrapper. The canonical implementation is the `vibeflow-progress` skill.
+## When to Use
+- When checking current project status
+- When reviewing open issues and roadmap
+- When preparing for sprint planning or standup
+
+## Instructions
 
 以下を確認して包括的な進捗レポートを作成してください:
 
@@ -17,7 +23,7 @@ description: Check project progress (compatibility — prefer vibeflow-progress 
 ## 出力フォーマット
 
 ```
-📊 Project Progress
+Project Progress
 
 ## プロジェクト状態
 - Current Role: [role]
@@ -44,4 +50,8 @@ description: Check project progress (compatibility — prefer vibeflow-progress 
 2. [次に着手すべきIssue]
 ```
 
-日本語で表示し、絵文字で視認性を向上させてください。
+日本語で表示してください。
+
+## Examples
+- "プロジェクトの進捗を確認"
+- "/progress"

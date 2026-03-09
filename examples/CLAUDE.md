@@ -425,6 +425,10 @@ Invoke with: `/agents` command in Claude Code
 
 Skills are reusable procedure templates loaded on demand:
 
+- `vibeflow-discuss`: Start Discovery (Spike workflow) via Iris
+- `vibeflow-conclude`: Conclude Iris session and update STATUS.md
+- `vibeflow-progress`: Check project progress and role status
+- `vibeflow-healthcheck`: Verify repository consistency
 - `vibeflow-issue-template`: Create structured issue files with all required sections
 - `vibeflow-tdd`: TDD Red-Green-Refactor cycle guidance
 
