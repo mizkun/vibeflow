@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 VibeFlow Access Guard Hook
-Validates file access permissions based on current role in .vibe/state.yaml.
-Used as a PreToolUse hook to block unauthorized file edits.
+Validates file access permissions based on current role.
+Reads role from session state (VIBEFLOW_SESSION) or falls back to .vibe/state.yaml.
 Exit code 2 blocks the tool call (Claude Code specification).
 
 GENERATED FILE — Do not edit manually.
@@ -121,10 +121,10 @@ def project_root() -> str:
     return os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
 
 
-def read_current_role(state_path: str) -> str:
-    """Read current_role from state.yaml."""
+def read_current_role_from_file(path: str) -> str:
+    """Read current_role from a YAML file (line-based parsing)."""
     try:
-        with open(state_path, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8") as f:
             for line in f:
                 s = line.strip()
                 if s.startswith("current_role:"):
@@ -132,6 +132,25 @@ def read_current_role(state_path: str) -> str:
     except FileNotFoundError:
         return ""
     return ""
+
+
+def resolve_current_role(root: str) -> str:
+    """Resolve current_role from session state or legacy state.yaml.
+
+    Resolution order:
+    1. VIBEFLOW_SESSION env var → .vibe/sessions/<session>.yaml
+    2. Fallback: .vibe/state.yaml (backward compat with v3)
+    """
+    session_id = os.environ.get("VIBEFLOW_SESSION")
+    if session_id:
+        session_path = os.path.join(root, ".vibe", "sessions", f"{session_id}.yaml")
+        role = read_current_role_from_file(session_path)
+        if role:
+            return role
+
+    # Fallback to legacy state.yaml
+    state_path = os.path.join(root, ".vibe", "state.yaml")
+    return read_current_role_from_file(state_path)
 
 
 def match_any(path: str, patterns: list) -> bool:
@@ -184,8 +203,7 @@ def main() -> None:
         sys.exit(0)
 
     root = project_root()
-    state_path = os.path.join(root, ".vibe", "state.yaml")
-    role = read_current_role(state_path) or ""
+    role = resolve_current_role(root)
     allow = ROLE_EDIT_ALLOW.get(role, [])
 
     targets = get_target_paths(tool_name, tool_input)

@@ -1,0 +1,15 @@
+# VibeFlow Project State
+active_issue: null
+active_pr: null
+current_phase: development
+
+patch_runs: []
+
+backlog_summary:
+  ready: 0
+  in_progress: 0
+  blocked: 0
+
+safety:
+  ui_mode: atomic
+  destructive_op: require_confirmation

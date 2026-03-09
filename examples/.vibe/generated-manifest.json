@@ -6,15 +6,15 @@
       "sha256": "f7e1af335f255c39f1bd9ae06681011ee0603334331c172e26fb36a04d9054d3",
       "source": "core/schema/policy.yaml",
       "generator_version": "3.5.0",
-      "generated_at": "2026-03-09T06:56:44.609240+00:00",
+      "generated_at": "2026-03-09T07:26:50.881250+00:00",
       "type": "full",
       "schema_hash": "61631b4db3ba07e012003fc7a6dc5d7da6bff7387c57eb1be8260c83f48888b1"
     },
     ".vibe/hooks/validate_access.py": {
-      "sha256": "8a5b4ed74664d4a515f0ac3c0b9176e0e190a50076aee76f049be6c8e260841b",
+      "sha256": "6076f3b4efd4ffc19f54bb9d54b1ae676a81dd291b4ae2148e4b84079480eac7",
       "source": "core/schema/policy.yaml",
       "generator_version": "3.5.0",
-      "generated_at": "2026-03-09T06:56:44.609389+00:00",
+      "generated_at": "2026-03-09T07:26:50.881541+00:00",
       "type": "full",
       "schema_hash": "61631b4db3ba07e012003fc7a6dc5d7da6bff7387c57eb1be8260c83f48888b1"
     },
@@ -22,7 +22,7 @@
       "sha256": "579b91113e841832a72497410278549fc0ff8c1a7c8a13c4bd317b66ca4f9694",
       "source": "core/schema/policy.yaml",
       "generator_version": "3.5.0",
-      "generated_at": "2026-03-09T06:56:44.609435+00:00",
+      "generated_at": "2026-03-09T07:26:50.881805+00:00",
       "type": "full",
       "schema_hash": "61631b4db3ba07e012003fc7a6dc5d7da6bff7387c57eb1be8260c83f48888b1"
     },
@@ -30,7 +30,7 @@
       "sha256": "b605535325a2eb5c3fce5190d02d0e4b37a04caf50ae7b1d99f9cc32a384fce9",
       "source": "core/schema/policy.yaml",
       "generator_version": "3.5.0",
-      "generated_at": "2026-03-09T06:56:44.609482+00:00",
+      "generated_at": "2026-03-09T07:26:50.882186+00:00",
       "type": "full",
       "schema_hash": "61631b4db3ba07e012003fc7a6dc5d7da6bff7387c57eb1be8260c83f48888b1"
     },
@@ -38,7 +38,7 @@
       "sha256": "58675ab42fe67d9d6319b0dd615e4f2cbdb3bbb9e7bdb1051b6c4241983cc116",
       "source": "core/schema/policy.yaml",
       "generator_version": "3.5.0",
-      "generated_at": "2026-03-09T06:56:44.609519+00:00",
+      "generated_at": "2026-03-09T07:26:50.882223+00:00",
       "type": "full",
       "schema_hash": "61631b4db3ba07e012003fc7a6dc5d7da6bff7387c57eb1be8260c83f48888b1"
     },
@@ -46,7 +46,7 @@
       "sha256": "bc2a3185c88805da5bb1f86e33d72ee717d1326fe2bad35fc86d04087d1da6fa",
       "source": "core/schema/roles.yaml",
       "generator_version": "3.5.0",
-      "generated_at": "2026-03-09T06:56:44.609554+00:00",
+      "generated_at": "2026-03-09T07:26:50.882258+00:00",
       "type": "full",
       "schema_hash": "2c2545060d0db1425fa31d3edebcde6a30c747643ff5e9188be2c3d8d0fe607c"
     },
@@ -54,7 +54,7 @@
       "sha256": "04402b7f14d80d98d2f41cc2228aae45f714849c02b5b7c8ef16a99d723e922e",
       "source": "core/schema/roles.yaml",
       "generator_version": "3.5.0",
-      "generated_at": "2026-03-09T06:56:44.609590+00:00",
+      "generated_at": "2026-03-09T07:26:50.882292+00:00",
       "type": "full",
       "schema_hash": "2c2545060d0db1425fa31d3edebcde6a30c747643ff5e9188be2c3d8d0fe607c"
     },
@@ -62,7 +62,7 @@
       "sha256": "7856c0376bf178d0a8f1165036110039a8f8163768370bbace1fd6721bdc124b",
       "source": "core/schema/roles.yaml",
       "generator_version": "3.5.0",
-      "generated_at": "2026-03-09T06:56:44.609626+00:00",
+      "generated_at": "2026-03-09T07:26:50.882326+00:00",
       "type": "full",
       "schema_hash": "2c2545060d0db1425fa31d3edebcde6a30c747643ff5e9188be2c3d8d0fe607c"
     },
@@ -70,7 +70,7 @@
       "sha256": "9ea8345cf4d478aaa805fd9d7218a1a9accc0f0b08cccafe07587b9de8517b97",
       "source": "core/schema/roles.yaml",
       "generator_version": "3.5.0",
-      "generated_at": "2026-03-09T06:56:44.609661+00:00",
+      "generated_at": "2026-03-09T07:26:50.882359+00:00",
       "type": "full",
       "schema_hash": "2c2545060d0db1425fa31d3edebcde6a30c747643ff5e9188be2c3d8d0fe607c"
     },
@@ -78,7 +78,7 @@
       "sha256": "8ba77c29e1a9e409bcb4a3b073668e90a5fe3f78d1f6a20994a8877b4714c0ea",
       "source": "core/schema/roles.yaml",
       "generator_version": "3.5.0",
-      "generated_at": "2026-03-09T06:56:44.609696+00:00",
+      "generated_at": "2026-03-09T07:26:50.882392+00:00",
       "type": "full",
       "schema_hash": "2c2545060d0db1425fa31d3edebcde6a30c747643ff5e9188be2c3d8d0fe607c"
     },
@@ -86,7 +86,7 @@
       "sha256": "1130ae9e940bbbd61b24b3d3bee16491b99dcc322d4cd8a1c32b24e5b436dc1c",
       "source": "core/schema/roles.yaml",
       "generator_version": "3.5.0",
-      "generated_at": "2026-03-09T06:56:44.609731+00:00",
+      "generated_at": "2026-03-09T07:26:50.882424+00:00",
       "type": "full",
       "schema_hash": "2c2545060d0db1425fa31d3edebcde6a30c747643ff5e9188be2c3d8d0fe607c"
     },
@@ -94,7 +94,7 @@
       "sha256": "cc85a62bbfda1c9a28af2edf6078f281aabe6f74903789af5e92256338f92b74",
       "source": "core/schema",
       "generator_version": "3.5.0",
-      "generated_at": "2026-03-09T06:56:44.609772+00:00",
+      "generated_at": "2026-03-09T07:26:50.882464+00:00",
       "type": "partial",
       "managed_sections": [
         "roles",
@@ -106,6 +106,22 @@
         "workflow": "c6513c46befe4cf46a5feb4a6bd827a625418d5a506da3dd1203f30585181e4e",
         "hook_list": "c8e66d2e3fd4509ad5543ba8b70ea78af660d9d56b51e9eb798507db66fd7a39"
       }
+    },
+    ".vibe/project_state.yaml": {
+      "sha256": "e0b0950dfb68e64c8d2f132dd279a5403477478d9d5cd6e4eb47e55da9b9cd9d",
+      "source": "core/schema/project_state.yaml",
+      "generator_version": "3.5.0",
+      "generated_at": "2026-03-09T07:26:50.882687+00:00",
+      "type": "full",
+      "schema_hash": "483ed6fefd64c515160406635b5a591527f536f9eb5675c10f09f91e05d7e194"
+    },
+    ".vibe/sessions/iris-main.yaml": {
+      "sha256": "c265e2735dc583a447e3b2f73e6f071f526bfce83dde6e9839507abafafc8209",
+      "source": "core/schema/session_state.yaml",
+      "generator_version": "3.5.0",
+      "generated_at": "2026-03-09T07:26:50.882957+00:00",
+      "type": "full",
+      "schema_hash": "30484236aa69396334724475e2fb8a94c03f86b07a8e1bb934a4d817ef382465"
     }
   }
 }

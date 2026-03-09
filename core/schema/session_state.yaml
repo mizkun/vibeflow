@@ -1,0 +1,34 @@
+# VibeFlow Session State Schema
+# Per-session state for each terminal (Iris main, dev workers, etc.)
+# Project-wide state lives in project_state.yaml.
+
+# Unique session identifier
+session_id: null
+
+# Session kind: iris | worker
+kind: iris
+
+# Current role for this session
+current_role: "Iris"
+
+# Current workflow step (null if not in a step-based workflow)
+current_step: null
+
+# Attached GitHub Issue number (null for Iris main session)
+attached_issue: null
+
+# Git worktree path (null if using main working tree)
+worktree: null
+
+# Session status: active | completed | abandoned
+status: active
+
+# Safety tracking (per-session)
+safety:
+  max_fix_attempts: 3
+  failed_approach_log: []
+
+# Infrastructure Manager audit log (per-session)
+infra_log:
+  hook_changes: []
+  rollback_pending: false

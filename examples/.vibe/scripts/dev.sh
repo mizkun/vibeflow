@@ -3,6 +3,9 @@
 # Usage: .vibe/scripts/dev.sh <issue-number>
 #
 # Starts a Claude Code development session for the given GitHub Issue.
+# Creates a session file at .vibe/sessions/dev-issue-<N>.yaml and
+# sets VIBEFLOW_SESSION so validate_access.py reads the correct role.
+#
 # Uses --dangerously-skip-permissions because VibeFlow hooks provide
 # role-based access control (validate_access.py, validate_write.sh,
 # validate_step7a.py).
@@ -26,9 +29,10 @@ if [ $# -lt 1 ]; then
     echo "  Example: $0 32    # Start dev session for Issue #32"
     echo ""
     echo "  This launches a Claude Code session with:"
-    echo "    - Role: Engineer"
-    echo "    - 11-step workflow auto-progression"
+    echo "    - Role: Product Manager → Engineer → QA (auto-progression)"
+    echo "    - Standard workflow (11 steps)"
     echo "    - VibeFlow hooks as guardrails"
+    echo "    - Session state in .vibe/sessions/dev-issue-<N>.yaml"
     exit 1
 fi
 
@@ -56,20 +60,50 @@ echo -e "${GREEN}Issue #${ISSUE_NUM}: ${ISSUE_TITLE}${NC}"
 echo ""
 
 # ──────────────────────────────────────────────
+# Create session state
+# ──────────────────────────────────────────────
+SESSION_ID="dev-issue-${ISSUE_NUM}"
+SESSION_DIR=".vibe/sessions"
+SESSION_FILE="${SESSION_DIR}/${SESSION_ID}.yaml"
+
+mkdir -p "$SESSION_DIR"
+
+cat > "$SESSION_FILE" << YAML
+# VibeFlow Dev Session — Issue #${ISSUE_NUM}
+session_id: ${SESSION_ID}
+kind: worker
+current_role: "Product Manager"
+current_step: 1_issue_review
+attached_issue: ${ISSUE_NUM}
+worktree: null
+status: active
+
+safety:
+  max_fix_attempts: 3
+  failed_approach_log: []
+
+infra_log:
+  hook_changes: []
+  rollback_pending: false
+YAML
+
+echo -e "${CYAN}Session: ${SESSION_FILE}${NC}"
+
+# ──────────────────────────────────────────────
 # Launch Claude Code
 # ──────────────────────────────────────────────
 PROMPT="Issue #${ISSUE_NUM} の実装を開始してください。
 
 まず以下を実行:
 1. \`gh issue view ${ISSUE_NUM}\` で Issue の詳細を確認
-2. state.yaml を更新: current_issue=\"#${ISSUE_NUM}\", current_role=\"Product Manager\", current_step=1, phase=development
-3. Step 1 (Issue Review) から 11 ステップワークフローを順に実行
+2. Step 1 (Issue Review) から Standard workflow を順に実行
 
 Step 7a では必ず停止してユーザーの手動確認を待ってください。"
 
 echo -e "${CYAN}Claude Code を起動中...${NC}"
-echo -e "${CYAN}  Role: Engineer → PM → Engineer → QA (auto-progression)${NC}"
+echo -e "${CYAN}  Session: ${SESSION_ID}${NC}"
 echo -e "${CYAN}  Hooks: validate_access.py, validate_write.sh, validate_step7a.py${NC}"
 echo ""
 
+export VIBEFLOW_SESSION="$SESSION_ID"
 exec claude --dangerously-skip-permissions -p "$PROMPT"
