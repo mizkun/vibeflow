@@ -272,7 +272,8 @@ gh issue close 12
 - `/discuss [topic]` - Iris の Discovery を開始（Spike workflow — 壁打ち・議論・コンテキスト管理）
 - `/discuss --continue` - 前回の Discovery セッションを継続
 - `/conclude` - Discovery を要約し、結論を vision/spec/plan/STATUS.md に反映して終了
-- `/quickfix [description]` - Patch Loop の互換 alias（今後は `/patch` を推奨。親 Issue 必須）
+- `/patch <issue番号>` - 親 Issue に紐づく Patch Loop を開始（対象テスト必須、ファイル上限 10）
+- `/quickfix [issue番号]` - `/patch` の互換 alias（今後は `/patch` を推奨。親 Issue 必須）
 - `/progress` - Check current progress and role status (GitHub Issues integrated)
 - `/healthcheck` - Verify repository consistency
 - `/run-e2e` - Run E2E tests with Playwright
