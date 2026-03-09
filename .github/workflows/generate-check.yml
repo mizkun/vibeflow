@@ -1,0 +1,30 @@
+name: Generate Freshness Check
+
+on:
+  push:
+    paths:
+      - 'core/schema/**'
+      - 'core/generators/**'
+      - 'core/validators/**'
+  pull_request:
+    paths:
+      - 'core/schema/**'
+      - 'core/generators/**'
+      - 'core/validators/**'
+
+jobs:
+  freshness-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install pyyaml jinja2
+
+      - name: Check generated files are fresh
+        run: bash scripts/check_freshness.sh
