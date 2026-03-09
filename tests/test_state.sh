@@ -287,6 +287,137 @@ YAML
 run_test "validate_access falls back to state.yaml" test_validate_access_fallback_to_state_yaml
 
 # ──────────────────────────────────────────────
+describe "Permission model — new state files"
+
+test_policy_has_project_state() {
+    assert_file_contains "${FRAMEWORK_DIR}/core/schema/policy.yaml" \
+        "project_state.yaml" "policy should reference project_state.yaml"
+}
+run_test "policy.yaml includes project_state.yaml" test_policy_has_project_state
+
+test_policy_has_sessions() {
+    assert_file_contains "${FRAMEWORK_DIR}/core/schema/policy.yaml" \
+        "sessions/\*.yaml" "policy should reference sessions/*.yaml"
+}
+run_test "policy.yaml includes sessions/*.yaml" test_policy_has_sessions
+
+test_always_allow_has_new_state_files() {
+    local policy="${FRAMEWORK_DIR}/core/schema/policy.yaml"
+
+    # Extract always_allow section and check both new files
+    assert_file_contains "$policy" "project_state.yaml" \
+        "always_allow should include project_state.yaml"
+    assert_file_contains "$policy" "sessions/\*.yaml" \
+        "always_allow should include sessions/*.yaml"
+    assert_file_contains "$policy" "state.yaml" \
+        "always_allow should keep legacy state.yaml"
+}
+run_test "always_allow includes new state files + legacy" test_always_allow_has_new_state_files
+
+test_validate_access_allows_project_state() {
+    local tmpdir="${TEST_DIR}/va_perm1"
+    mkdir -p "${tmpdir}/.vibe/sessions" "${tmpdir}/.vibe/hooks"
+
+    cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_access.py" \
+       "${tmpdir}/.vibe/hooks/validate_access.py"
+
+    cat > "${tmpdir}/.vibe/sessions/dev-issue-1.yaml" << 'YAML'
+session_id: dev-issue-1
+current_role: "Engineer"
+current_step: 5_implementation
+YAML
+
+    # Engineer writing to project_state.yaml should be allowed
+    local payload='{"tool_name":"Write","tool_input":{"file_path":".vibe/project_state.yaml"}}'
+
+    set +e
+    echo "$payload" | VIBEFLOW_SESSION=dev-issue-1 \
+        CLAUDE_PROJECT_DIR="$tmpdir" \
+        python3 "${tmpdir}/.vibe/hooks/validate_access.py" 2>/dev/null
+    local code=$?
+    set -e
+
+    assert_equals "0" "$code" "Engineer should be allowed to write project_state.yaml"
+}
+run_test "validate_access allows project_state.yaml write" test_validate_access_allows_project_state
+
+test_validate_access_allows_session_file() {
+    local tmpdir="${TEST_DIR}/va_perm2"
+    mkdir -p "${tmpdir}/.vibe/sessions" "${tmpdir}/.vibe/hooks"
+
+    cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_access.py" \
+       "${tmpdir}/.vibe/hooks/validate_access.py"
+
+    cat > "${tmpdir}/.vibe/sessions/dev-issue-2.yaml" << 'YAML'
+session_id: dev-issue-2
+current_role: "Product Manager"
+current_step: 1_issue_review
+YAML
+
+    # PM writing to session file should be allowed
+    local payload='{"tool_name":"Write","tool_input":{"file_path":".vibe/sessions/dev-issue-2.yaml"}}'
+
+    set +e
+    echo "$payload" | VIBEFLOW_SESSION=dev-issue-2 \
+        CLAUDE_PROJECT_DIR="$tmpdir" \
+        python3 "${tmpdir}/.vibe/hooks/validate_access.py" 2>/dev/null
+    local code=$?
+    set -e
+
+    assert_equals "0" "$code" "PM should be allowed to write session files"
+}
+run_test "validate_access allows session file write" test_validate_access_allows_session_file
+
+test_validate_access_error_msg_no_legacy_reference() {
+    local tmpdir="${TEST_DIR}/va_errmsg"
+    mkdir -p "${tmpdir}/.vibe/sessions" "${tmpdir}/.vibe/hooks"
+
+    cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_access.py" \
+       "${tmpdir}/.vibe/hooks/validate_access.py"
+
+    cat > "${tmpdir}/.vibe/sessions/qa-errmsg.yaml" << 'YAML'
+session_id: qa-errmsg
+current_role: "QA Engineer"
+current_step: 7_acceptance_test
+YAML
+
+    # QA trying to write src/ → blocked, check error message
+    local payload='{"tool_name":"Write","tool_input":{"file_path":"src/main.py"}}'
+
+    set +e
+    local stderr_output
+    stderr_output=$(echo "$payload" | VIBEFLOW_SESSION=qa-errmsg \
+        CLAUDE_PROJECT_DIR="$tmpdir" \
+        python3 "${tmpdir}/.vibe/hooks/validate_access.py" 2>&1 >/dev/null)
+    set -e
+
+    echo "$stderr_output" > "${TEST_DIR}/errmsg_output.txt"
+
+    # Error message should reference session files, not just state.yaml
+    assert_file_contains "${TEST_DIR}/errmsg_output.txt" "セッション状態ファイル" \
+        "Error message should reference session state files"
+}
+run_test "validate_access error message references sessions" test_validate_access_error_msg_no_legacy_reference
+
+test_generated_hook_has_new_permissions() {
+    # Verify the generated validate_access.py has project_state + sessions in ALWAYS_ALLOW
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_access.py" \
+        "project_state.yaml" "Generated hook should have project_state.yaml"
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_access.py" \
+        "sessions/" "Generated hook should have sessions/"
+}
+run_test "generated hook includes new state permissions" test_generated_hook_has_new_permissions
+
+test_claude_md_roles_have_new_state() {
+    # CLAUDE.md roles section should show new state files in Can Write
+    assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" \
+        "project_state.yaml" "CLAUDE.md roles should reference project_state.yaml"
+    assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" \
+        "sessions/" "CLAUDE.md roles should reference sessions/"
+}
+run_test "CLAUDE.md roles include new state files" test_claude_md_roles_have_new_state
+
+# ──────────────────────────────────────────────
 describe "dev.sh — session file creation"
 
 test_dev_sh_has_session_creation() {

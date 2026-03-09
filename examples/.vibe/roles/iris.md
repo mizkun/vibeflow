@@ -35,6 +35,10 @@
 
 - `.vibe/archive/**`
 
+- `.vibe/project_state.yaml`
+
+- `.vibe/sessions/*.yaml`
+
 - `.vibe/state.yaml`
 
 - `src/**`
@@ -54,6 +58,10 @@
 - `.vibe/references/*`
 
 - `.vibe/archive/*`
+
+- `.vibe/project_state.yaml`
+
+- `.vibe/sessions/*.yaml`
 
 - `.vibe/state.yaml`
 

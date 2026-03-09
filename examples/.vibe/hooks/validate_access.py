@@ -40,6 +40,10 @@ ROLE_EDIT_ALLOW = {
 
         ".vibe/archive/*",
 
+        ".vibe/project_state.yaml",
+
+        ".vibe/sessions/*.yaml",
+
         ".vibe/state.yaml",
 
     ],
@@ -49,6 +53,10 @@ ROLE_EDIT_ALLOW = {
     "Product Manager": [
 
         "plan.md",
+
+        ".vibe/project_state.yaml",
+
+        ".vibe/sessions/*.yaml",
 
         ".vibe/state.yaml",
 
@@ -66,6 +74,10 @@ ROLE_EDIT_ALLOW = {
 
         "**/__tests__/*",
 
+        ".vibe/project_state.yaml",
+
+        ".vibe/sessions/*.yaml",
+
         ".vibe/state.yaml",
 
         ".vibe/test-results.log",
@@ -79,6 +91,10 @@ ROLE_EDIT_ALLOW = {
         ".vibe/qa-reports/*",
 
         ".vibe/test-results.log",
+
+        ".vibe/project_state.yaml",
+
+        ".vibe/sessions/*.yaml",
 
         ".vibe/state.yaml",
 
@@ -94,6 +110,10 @@ ROLE_EDIT_ALLOW = {
 
         "validate_write*",
 
+        ".vibe/project_state.yaml",
+
+        ".vibe/sessions/*.yaml",
+
         ".vibe/state.yaml",
 
     ],
@@ -101,6 +121,10 @@ ROLE_EDIT_ALLOW = {
     # Human
 
     "Human": [
+
+        ".vibe/project_state.yaml",
+
+        ".vibe/sessions/*.yaml",
 
         ".vibe/state.yaml",
 
@@ -110,6 +134,10 @@ ROLE_EDIT_ALLOW = {
 
 # Files that are always allowed regardless of role
 ALWAYS_ALLOW = [
+
+    ".vibe/project_state.yaml",
+
+    ".vibe/sessions/*.yaml",
 
     ".vibe/state.yaml",
 
@@ -153,14 +181,22 @@ def resolve_current_role(root: str) -> str:
     return read_current_role_from_file(state_path)
 
 
+def _normalize(s: str) -> str:
+    """Strip leading ./ without eating .vibe-style dotted directories."""
+    if s.startswith("./"):
+        return s[2:]
+    return s
+
+
 def match_any(path: str, patterns: list) -> bool:
     """Check if path matches any of the given glob patterns."""
-    p = path.lstrip("./")
+    p = _normalize(path)
     for pat in patterns:
-        if fnmatch.fnmatch(p, pat):
+        np = _normalize(pat)
+        if fnmatch.fnmatch(p, np):
             return True
         # Also try matching with ** prefix for nested paths
-        if fnmatch.fnmatch(p, f"**/{pat}"):
+        if fnmatch.fnmatch(p, f"**/{np}"):
             return True
     return False
 
@@ -222,7 +258,7 @@ def main() -> None:
                 f"current_role='{role}' では '{t}' を編集できません。\n"
                 f"許可パターン: {allow}\n\n"
                 f"対処:\n"
-                f"  1) `.vibe/state.yaml` の current_role を正しいロールに遷移してから\n"
+                f"  1) セッション状態ファイル (.vibe/sessions/*.yaml) の current_role を正しいロールに遷移してから\n"
                 f"  2) そのロールのステップで編集してください。\n"
             )
 
