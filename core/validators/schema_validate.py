@@ -111,6 +111,38 @@ def validate_roles(data: dict) -> list[str]:
     return errors
 
 
+def validate_issue_labels(data: dict) -> list[str]:
+    """Validate issue_labels.yaml structure."""
+    errors = []
+
+    categories = data.get("categories")
+    if not isinstance(categories, dict):
+        return ["Top-level 'categories' must be a mapping"]
+
+    required_categories = {"type", "qa"}
+    missing = required_categories - set(categories.keys())
+    if missing:
+        errors.append(f"Missing required categories: {missing}")
+
+    for cat_id, cat_def in categories.items():
+        if not isinstance(cat_def, dict):
+            errors.append(f"{cat_id}: must be a mapping")
+            continue
+        labels = cat_def.get("labels")
+        if not isinstance(labels, list):
+            errors.append(f"{cat_id}: 'labels' must be a list")
+            continue
+        for label in labels:
+            if not isinstance(label, dict):
+                errors.append(f"{cat_id}: each label must be a mapping")
+                continue
+            for field in ("name", "color", "description"):
+                if field not in label:
+                    errors.append(f"{cat_id}.{label.get('name', '?')}: missing '{field}'")
+
+    return errors
+
+
 def detect_schema_type(filepath: str) -> str:
     """Detect schema type from filename."""
     name = Path(filepath).stem
@@ -120,6 +152,8 @@ def detect_schema_type(filepath: str) -> str:
         return "workflow"
     elif name == "roles":
         return "roles"
+    elif name == "issue_labels":
+        return "issue_labels"
     return "unknown"
 
 
@@ -202,6 +236,7 @@ def main() -> None:
         "policy": validate_policy,
         "workflow": validate_workflow,
         "roles": validate_roles,
+        "issue_labels": validate_issue_labels,
     }
 
     validator = validators.get(schema_type)

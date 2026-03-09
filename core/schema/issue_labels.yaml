@@ -1,0 +1,56 @@
+# VibeFlow Issue Labels Schema — Single Source of Truth
+# Defines GitHub label categories and their labels.
+# Used by vibeflow setup to create labels in the repository.
+
+categories:
+  type:
+    description: "Issue type classification"
+    labels:
+      - name: "type:dev"
+        color: "0e8a16"
+        description: "開発タスク（Engineer が実装）"
+      - name: "type:human"
+        color: "d93f0b"
+        description: "ヒューマンアクション必要（外部設定、手動確認など）"
+      - name: "type:discussion"
+        color: "c5def5"
+        description: "議論・検討が必要"
+
+  status:
+    description: "Issue workflow status"
+    labels:
+      - name: "status:implementing"
+        color: "fbca04"
+        description: "実装中"
+      - name: "status:testing"
+        color: "f9d0c4"
+        description: "テスト中"
+      - name: "status:pr-ready"
+        color: "0075ca"
+        description: "PR レビュー待ち"
+
+  qa:
+    description: "QA checkpoint behavior"
+    labels:
+      - name: "qa:auto"
+        color: "0e8a16"
+        description: "自動テストで完全検証可能。Step 7a 自動承認"
+      - name: "qa:manual"
+        color: "e4e669"
+        description: "人間の手動確認が必要（UI、CLI、外部連携など）"
+
+  priority:
+    description: "Issue priority level"
+    labels:
+      - name: "priority:critical"
+        color: "b60205"
+        description: "即座に対応が必要"
+      - name: "priority:high"
+        color: "d93f0b"
+        description: "高優先度"
+      - name: "priority:medium"
+        color: "fbca04"
+        description: "通常優先度"
+      - name: "priority:low"
+        color: "c2e0c6"
+        description: "低優先度"
