@@ -431,6 +431,8 @@ Skills are reusable procedure templates loaded on demand:
 - `vibeflow-healthcheck`: Verify repository consistency
 - `vibeflow-issue-template`: Create structured issue files with all required sections
 - `vibeflow-tdd`: TDD Red-Green-Refactor cycle guidance
+- `vibeflow-ui-smoke`: Run Playwright smoke tests for quick UI health check
+- `vibeflow-ui-explore`: Exploratory UI verification using Playwright MCP
 
 Skills location: `.claude/skills/*/SKILL.md`
 
