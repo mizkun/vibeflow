@@ -24,13 +24,14 @@ These are enforced by the VibeFlow hook system and validated post-execution.
 
 {% endfor %}
 
-### Default Forbidden Paths
+### Default Restricted Paths
 
-The following paths are always forbidden for workers, regardless of role:
+The following paths are restricted by default unless explicitly allowed
+by the role's policy permissions and the handoff packet constraints:
 
-- `plans/*` — planning documents are read-only for workers
-- `.vibe/hooks/*` — hook scripts must not be modified by workers
-- `.claude/settings.json` — settings are managed by the framework
+- `plans/*` — planning documents, typically read-only for workers
+- `.vibe/hooks/*` — hook scripts, restricted unless the role (e.g., Infrastructure Manager) has explicit write permission
+- `.claude/settings.json` — settings, managed by the framework
 
 ### Constraints
 
