@@ -62,7 +62,7 @@ VERSION="$FRAMEWORK_VERSION"
 FORCE_INSTALL=false
 BACKUP_ENABLED=true
 VERBOSE=false
-WITH_E2E=false
+WITH_E2E="${WITH_E2E:-true}"
 # Note: --with-notifications is deprecated; hooks are now integrated by default
 
 # Function to show usage
@@ -78,7 +78,8 @@ Options:
     -n, --no-backup     Skip backup of existing files
     -v, --verbose       Enable verbose output
     -V, --version       Show version information
-    --with-e2e          Include Playwright E2E testing setup
+    --with-e2e          Include Playwright E2E testing setup (default: enabled)
+    --without-e2e       Disable Playwright E2E testing setup
 
 Features (included by default):
     - GitHub Issues integration: Task management via gh CLI
@@ -125,6 +126,10 @@ parse_arguments() {
                 ;;
             --with-e2e)
                 WITH_E2E=true
+                shift
+                ;;
+            --without-e2e|--no-e2e)
+                WITH_E2E=false
                 shift
                 ;;
             --with-notifications)
