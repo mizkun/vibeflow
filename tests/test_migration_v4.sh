@@ -607,13 +607,15 @@ run_test "doctor checks pass after migration" test_doctor_passes_after_migration
 describe "Migration — VERSION file"
 
 test_framework_version_updated() {
-    # VERSION file should be 4.0.0 for this migration to be discoverable
+    # VERSION file should be >= 4.0.0 for this migration to be discoverable
     assert_file_exists "${FRAMEWORK_DIR}/VERSION" "VERSION file must exist"
     local version
     version=$(cat "${FRAMEWORK_DIR}/VERSION")
-    assert_equals "4.0.0" "$version" "Framework VERSION should be 4.0.0"
+    # Version should be 4.x.x (4.0.0 or later)
+    echo "$version" | grep -q "^4\."
+    assert_equals "0" "$?" "Framework VERSION should be 4.x.x (got: $version)"
 }
-run_test "framework VERSION is 4.0.0" test_framework_version_updated
+run_test "framework VERSION is 4.x.x" test_framework_version_updated
 
 # ──────────────────────────────────────────────
 print_summary

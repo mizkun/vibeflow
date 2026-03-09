@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [4.1.0] - 2026-03-09
+
+Skills 化、Playwright MCP テンプレート、Plugin-compatible 構造、v4.0→v4.1 マイグレーションを追加。
+
+### Added
+
+#### Skills 化 (Issue 4-2)
+- `vibeflow-discuss`, `vibeflow-conclude`, `vibeflow-progress`, `vibeflow-healthcheck` を Claude Code Skills に移行
+- Commands (`/discuss` 等) は Skills への互換 wrapper として維持
+- Skills が canonical な実装、Commands は互換レイヤ
+
+#### UI Skills (Issue 4-1)
+- `vibeflow-ui-smoke`: Playwright smoke テスト実行 skill
+- `vibeflow-ui-explore`: 探索的 UI 検証 skill (Playwright MCP)
+- UI Issue の品質ゲート定義 (test / trace / screenshot / exploratory log)
+
+#### Playwright MCP テンプレート (Issue 4-1)
+- `.mcp.json.example`: Playwright MCP 設定テンプレート
+- `scripts/playwright_smoke.sh`: Smoke テストランナー
+- `scripts/playwright_open_report.sh`: レポート表示
+- `scripts/playwright_trace_pack.sh`: Artifact アーカイブ
+- `docs/playwright.md`: 3 層モデル + セットアップガイド
+
+#### Plugin-compatible 構造 (Issue 4-3)
+- `.claude-plugin/plugin.json`: プラグインメタデータ
+- `plugin/`: skills / hooks / agents / commands のマッピング定義
+- `docs/architecture.md`: Standalone / Plugin 両立方針
+
+### Migration
+- `vibeflow upgrade` で v4.0 → v4.1 自動マイグレーション
+- 新規 Skills (UI skills) の自動配置
+- 既存 Skills の更新（カスタマイズ済みファイルは保護）
+- Playwright MCP テンプレート + スクリプトの配置
+- Plugin 構造の配置
+- CLAUDE.md マネージドセクションの再生成
+- Commands 互換レイヤの更新
+
+---
+
 ## [4.0.0] - 2026-03-09
 
 State Split、Patch Loop、Handoff パケット、/patch コマンド、DoR ゲートを追加。

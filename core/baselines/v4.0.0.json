@@ -1,0 +1,225 @@
+{
+  "version": "4.0.0",
+  "description": "Baseline hashes for v4.0.0 stock files",
+  "files": {
+    ".claude/settings.json": {
+      "source": "examples/.claude/settings.json",
+      "type": "generated"
+    },
+    ".vibe/hooks/checkpoint_alert.sh": {
+      "sha256": "9e5728a688a1fdeb44900206f24035ccca45779033f999e0c8ad160d49c14f24",
+      "source": "examples/.vibe/hooks/checkpoint_alert.sh",
+      "type": "full"
+    },
+    ".vibe/hooks/task_complete.sh": {
+      "sha256": "313a408cd08e6b04a70f92140cfd2301e4e2c47c4173353332aa86c517778850",
+      "source": "examples/.vibe/hooks/task_complete.sh",
+      "type": "full"
+    },
+    ".vibe/hooks/validate_access.py": {
+      "sha256": "09227aadc6d03fcab4a88c9b9f006684868b2d2ba3bd7399f8e4d2f84b4b8528",
+      "source": "examples/.vibe/hooks/validate_access.py",
+      "type": "full"
+    },
+    ".vibe/hooks/validate_step7a.py": {
+      "sha256": "b605535325a2eb5c3fce5190d02d0e4b37a04caf50ae7b1d99f9cc32a384fce9",
+      "source": "examples/.vibe/hooks/validate_step7a.py",
+      "type": "full"
+    },
+    ".vibe/hooks/validate_write.sh": {
+      "sha256": "579b91113e841832a72497410278549fc0ff8c1a7c8a13c4bd317b66ca4f9694",
+      "source": "examples/.vibe/hooks/validate_write.sh",
+      "type": "full"
+    },
+    ".vibe/hooks/waiting_input.sh": {
+      "sha256": "97d7dccd4f3bbb0daf2d13e4a99a84640ce25ce798f642d300666c96ae63bbde",
+      "source": "examples/.vibe/hooks/waiting_input.sh",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-conclude/SKILL.md": {
+      "sha256": "75fc45cd5ea67b94aad2b8aeafbd5fb610650c7858f7c4628a5b6cf055a70331",
+      "source": "examples/.claude/skills/vibeflow-conclude/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-discuss/SKILL.md": {
+      "sha256": "9f54aab7b97fa1dbc439c153c25d7d952f6ba4df315554bdc5dffdd77115e0c3",
+      "source": "examples/.claude/skills/vibeflow-discuss/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-healthcheck/SKILL.md": {
+      "sha256": "5d8bfa2a911e77171184e5d7ab850d0bd61d6d8d86b8e34ce682abcd905a4e82",
+      "source": "examples/.claude/skills/vibeflow-healthcheck/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-issue-template/SKILL.md": {
+      "sha256": "c7f601c881bcc8321d7e3072f54530aacf8fa67f611686a87143f55f95649b07",
+      "source": "examples/.claude/skills/vibeflow-issue-template/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-progress/SKILL.md": {
+      "sha256": "5e8dbdd63a930504a00dfd31c6a441a2d8bd8789357253640893df6874f14deb",
+      "source": "examples/.claude/skills/vibeflow-progress/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-tdd/SKILL.md": {
+      "sha256": "dda33c19652758cbbeb3678a981a37f6a8a0b2a2598a744b34781961205b19f4",
+      "source": "examples/.claude/skills/vibeflow-tdd/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-ui-explore/SKILL.md": {
+      "sha256": "4d097dd0b51c951a3359b8783988b4a64402910f500a68b07136c49707f2d4b8",
+      "source": "examples/.claude/skills/vibeflow-ui-explore/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-ui-smoke/SKILL.md": {
+      "sha256": "40e380a9e333f6b0ca146b1426265a961cf1171036f8ec2d49dd39d138781cc2",
+      "source": "examples/.claude/skills/vibeflow-ui-smoke/SKILL.md",
+      "type": "full"
+    },
+    ".claude/agents/code-reviewer.md": {
+      "sha256": "7994d6d3918bdcd478f80381616c5962c2d46fb6b414ae27ad3896fb56b600c3",
+      "source": "examples/.claude/agents/code-reviewer.md",
+      "type": "full"
+    },
+    ".claude/agents/qa-acceptance.md": {
+      "sha256": "b4f83d15e37f575061ab08f9662edb240fc381ea8918286999114c0e8e863e21",
+      "source": "examples/.claude/agents/qa-acceptance.md",
+      "type": "full"
+    },
+    ".claude/agents/test-runner.md": {
+      "sha256": "c33ea918c10dfeb26109bfaf35e5edab48e172472314daae09b05980fdceb159",
+      "source": "examples/.claude/agents/test-runner.md",
+      "type": "full"
+    },
+    ".claude/commands/conclude.md": {
+      "sha256": "1694266f12c9f99797148b1317b8142a5291269078acb2b055e5d0dbc85124bb",
+      "source": "lib/commands/conclude.md",
+      "type": "full"
+    },
+    ".claude/commands/discuss.md": {
+      "sha256": "4921d4582fc91c3c1bdb791c6861a684958a26d8ffba6f3433b7a584a5a10a68",
+      "source": "lib/commands/discuss.md",
+      "type": "full"
+    },
+    ".claude/commands/healthcheck.md": {
+      "sha256": "4811a816d3c472775a6044e7e8d4829c2cbac651a51e1af73bdbfb8b2e93c3b9",
+      "source": "lib/commands/healthcheck.md",
+      "type": "full"
+    },
+    ".claude/commands/next-v2-extension.md": {
+      "sha256": "307bb9af25a2f87bf6c77f1b74e9f4b8cf420d99ffa4f27b43ba9921e0286c1e",
+      "source": "lib/commands/next-v2-extension.md",
+      "type": "full"
+    },
+    ".claude/commands/next.md": {
+      "sha256": "288273d58cc56bca383c182b7d2cb268c9094b9b742f5a456bab43694baa714b",
+      "source": "lib/commands/next.md",
+      "type": "full"
+    },
+    ".claude/commands/patch.md": {
+      "sha256": "3a8bf03d750eb2ab5dfc72f9bc2780353371d4b794c1bec2de2b506c832984d5",
+      "source": "lib/commands/patch.md",
+      "type": "full"
+    },
+    ".claude/commands/progress.md": {
+      "sha256": "1002a672de3454c268e3fff0042ea13ad513a10994e76642978657ab1c9d3d3a",
+      "source": "lib/commands/progress.md",
+      "type": "full"
+    },
+    ".claude/commands/quickfix.md": {
+      "sha256": "12adfe8708715c4c56a3f408a31a67705ed553b3070f839fd4b14c6808aa9a9e",
+      "source": "lib/commands/quickfix.md",
+      "type": "full"
+    },
+    ".claude/commands/run-e2e.md": {
+      "sha256": "50d15e10e545657d1da2bb7cbfaf2e300ea16cbab16987920b0e15bd3a38c15b",
+      "source": "lib/commands/run-e2e.md",
+      "type": "full"
+    },
+    ".vibe/policy.yaml": {
+      "sha256": "3238227ca5abd31d56bdbd30721dbfd8a7eb4c9c9ba4d023061051c0b86968d0",
+      "source": "examples/.vibe/policy.yaml",
+      "type": "full"
+    },
+    ".vibe/context/STATUS.md": {
+      "sha256": "f6ef6460d7b46d27a5e6f7422f5cf368d8325f97ce0aa04139bca1b00eb8821f",
+      "source": "examples/.vibe/context/STATUS.md",
+      "type": "full"
+    },
+    ".vibe/roles/engineer.md": {
+      "sha256": "4b242feffdc8ebe9eb374729f6c20a8ad89f08beb464e2bf5a841192812f0440",
+      "source": "examples/.vibe/roles/engineer.md",
+      "type": "full"
+    },
+    ".vibe/roles/human.md": {
+      "sha256": "be9277be00fe937485d53e3baca97d755318bd92ee6c115881fa533355a5d916",
+      "source": "examples/.vibe/roles/human.md",
+      "type": "full"
+    },
+    ".vibe/roles/infra-manager.md": {
+      "sha256": "2e851daf670c680c08d9321d6614c47721c779518dd538ebf63bf4f103d50cc5",
+      "source": "examples/.vibe/roles/infra-manager.md",
+      "type": "full"
+    },
+    ".vibe/roles/iris.md": {
+      "sha256": "839d65af191833bf88f3ca56be273acd6e7687e18cf2835ae4feb8f87cab5967",
+      "source": "examples/.vibe/roles/iris.md",
+      "type": "full"
+    },
+    ".vibe/roles/product-manager.md": {
+      "sha256": "1c1064a8cc220b1951c8fdbe4a195fd0a17b7d493c8733000881726a37515849",
+      "source": "examples/.vibe/roles/product-manager.md",
+      "type": "full"
+    },
+    ".vibe/roles/qa-engineer.md": {
+      "sha256": "cc01e12f10bd8fa3fa59ce67429a8688bbf8f41c1d006ad208d580eac04f4494",
+      "source": "examples/.vibe/roles/qa-engineer.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/config.yml": {
+      "sha256": "e71bea835ed1158881306294d96968f125b0b0c5eff66cd94df559336bd0b210",
+      "source": "examples/.github/ISSUE_TEMPLATE/config.yml",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/dev.md": {
+      "sha256": "230aaa06436e2b97fa399274dc22cdde6bf683705f1844c6d45e164c67438a6c",
+      "source": "examples/.github/ISSUE_TEMPLATE/dev.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/discussion.md": {
+      "sha256": "c02420f7414b18f7353e6d2175f713ad4916b5a596e5827b2541f7571cfc3d0d",
+      "source": "examples/.github/ISSUE_TEMPLATE/discussion.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/human.md": {
+      "sha256": "02d0c84bb9a8b78c3a5d4a80aad36bc10bada68917b5d585384e12882ee25021",
+      "source": "examples/.github/ISSUE_TEMPLATE/human.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/ops.md": {
+      "sha256": "3eef32f3cd20c0e154fec609ba7710ec853cc708564d0f8ea2860d2bab56c9ca",
+      "source": "examples/.github/ISSUE_TEMPLATE/ops.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/patch.md": {
+      "sha256": "b562dfd9ea163640585c6a2eff69692433c350e3db9f8e0340585cebeec6b5bc",
+      "source": "examples/.github/ISSUE_TEMPLATE/patch.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/spike.md": {
+      "sha256": "4da50645457a61402b6061904b821fdffcf36fb7294dbec5b51e77ee62cbe3a5",
+      "source": "examples/.github/ISSUE_TEMPLATE/spike.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/standard.md": {
+      "sha256": "2b98fe472f813f1740497922237d09d2a43532d18a61be73ab57c3fa504014b2",
+      "source": "examples/.github/ISSUE_TEMPLATE/standard.md",
+      "type": "full"
+    },
+    "CLAUDE.md": {
+      "sha256": "602c98aa63843ac76e0ff15f310e4da579e24eddb7372380e6e5c8c488b0168e",
+      "source": "examples/CLAUDE.md",
+      "type": "partial"
+    }
+  }
+}
