@@ -48,9 +48,8 @@ usage() {
   echo ""
   echo "Upgrade options:"
   echo "  vibeflow upgrade [options]"
-  echo "    --dry-run            変更を実行せず、何が行われるかを表示"
-  echo "    --force              確認をスキップ"
-  echo "    --no-backup          バックアップをスキップ"
+  echo "    --dry-run            変更を実行せず、分類結果と計画を表示"
+  echo "    --allow-dirty        未コミット変更があっても続行"
   echo ""
   echo "Generate options:"
   echo "  vibeflow generate [options]"
@@ -136,7 +135,10 @@ cmd_setup() {
 }
 
 cmd_upgrade() {
-  bash "${FRAMEWORK_DIR}/upgrade_vibeflow.sh" "$@"
+  python3 "${FRAMEWORK_DIR}/core/upgrade.py" \
+    --project-dir "$(pwd)" \
+    --framework-dir "${FRAMEWORK_DIR}" \
+    "$@"
 }
 
 # --- Main routing ---
