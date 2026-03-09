@@ -1,10 +1,16 @@
 ---
-description: Check project progress (compatibility — prefer vibeflow-progress skill)
+name: vibeflow-progress
+description: Check current project progress and role status. Use when reviewing project state, open issues, and roadmap progress.
 ---
 
-# プロジェクト進捗確認
+# VibeFlow Progress Check
 
-> **Note**: This command is a compatibility wrapper. The canonical implementation is the `vibeflow-progress` skill.
+## When to Use
+- When checking current project status
+- When reviewing open issues and roadmap
+- When preparing for sprint planning or standup
+
+## Instructions
 
 以下を確認して包括的な進捗レポートを作成してください:
 
@@ -14,6 +20,8 @@ description: Check project progress (compatibility — prefer vibeflow-progress 
 4. `gh issue list --state open` で未完了の Issue を取得
 5. `gh issue list --state closed --limit 10` で最近完了した Issue を確認
 6. `plan.md` でロードマップの進捗を確認
+
+> **Note**: `.vibe/state.yaml` が存在する場合は旧形式の fallback として参照してもよいが、正本は `project_state.yaml` + `sessions/*.yaml` です。
 
 ## 出力フォーマット
 
@@ -45,4 +53,8 @@ Project Progress
 2. [次に着手すべきIssue]
 ```
 
-日本語で表示し、絵文字で視認性を向上させてください。
+日本語で表示してください。
+
+## Examples
+- "プロジェクトの進捗を確認"
+- "/progress"

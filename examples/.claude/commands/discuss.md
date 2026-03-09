@@ -1,15 +1,19 @@
 ---
-description: Start a Iris session
+description: Start Discovery (Spike workflow) via Iris (compatibility — prefer vibeflow-discuss skill)
 ---
 
-# Iris セッションを開始する
+# Iris の Discovery を開始する（Spike workflow）
 
-IMPORTANT: このコマンドはトピックの有無に関わらず、必ず Iris セッションを開始すること。使い方の案内を表示して終了してはならない。
+> **Note**: This command is a compatibility wrapper. The canonical implementation is the `vibeflow-discuss` skill.
+
+IMPORTANT: このコマンドはトピックの有無に関わらず、必ず Discovery セッションを開始すること。使い方の案内を表示して終了してはならない。
+IMPORTANT: Discovery は Iris の機能の一つ。「特殊モード」ではなく、Iris が実行する Spike workflow です。
 
 ## 処理フロー
 
 ### 1. 状態確認
-`.vibe/state.yaml` を読み込み、現在の phase を確認する。
+`.vibe/project_state.yaml` を読み込み、現在の `current_phase` を確認する。
+`.vibe/sessions/iris-main.yaml` を読み込み、Iris セッションの状態を確認する。
 
 ### 2. コンテキスト読み込み
 1. `.vibe/context/STATUS.md` を読み込み、プロジェクトの現状を把握
@@ -18,16 +22,15 @@ IMPORTANT: このコマンドはトピックの有無に関わらず、必ず Ir
 4. 開発状況を確認（`gh issue list --state open`）
 
 ### 3. セッション開始
-1. **Phase 切り替え**: `phase: discovery` に更新
-2. **Role 切り替え**: `current_role: "Iris"` に更新
-3. **Discovery 更新**: `discovery.active: true`
-4. **バナー表示**:
+1. **Phase 切り替え**: `.vibe/project_state.yaml` の `current_phase: discovery` に更新
+2. **Role 確認**: `.vibe/sessions/iris-main.yaml` の `current_role: "Iris"` を確認
+3. **バナー表示**:
    ```
    ========================================
-   💬 Iris MODE
+   Iris MODE
    [トピックがあれば表示]
    Current Focus: [STATUS.md から]
-   Dev Status: [current_issue の状況]
+   Dev Status: [active_issue の状況]
    ========================================
    ```
 
