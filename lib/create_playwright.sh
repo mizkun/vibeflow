@@ -318,7 +318,44 @@ EOF
     success "Updated verification rules for E2E tests"
 }
 
-# Main function to set up Playwright
+# Framework root (parent of lib/)
+FRAMEWORK_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# Deploy Playwright MCP template and helper scripts to project
+# Called during standard setup (no --with-e2e required)
+create_playwright_mcp() {
+    section "Playwright MCP テンプレートとスクリプトを配置中"
+
+    # Copy .mcp.json.example
+    local mcp_src="${FRAMEWORK_ROOT}/examples/.mcp.json.example"
+    if [ -f "$mcp_src" ]; then
+        cp "$mcp_src" ".mcp.json.example"
+        success ".mcp.json.example を配置しました"
+    else
+        error "Source not found: ${mcp_src}"
+        return 1
+    fi
+
+    # Copy Playwright helper scripts
+    mkdir -p "scripts"
+    local scripts=("playwright_smoke.sh" "playwright_open_report.sh" "playwright_trace_pack.sh")
+    for script_name in "${scripts[@]}"; do
+        local src="${FRAMEWORK_ROOT}/examples/scripts/${script_name}"
+        local dst="scripts/${script_name}"
+        if [ -f "$src" ]; then
+            cp "$src" "$dst"
+            chmod +x "$dst"
+        else
+            error "Source not found: ${src}"
+            return 1
+        fi
+    done
+
+    success "Playwright スクリプトを配置しました (scripts/playwright_*.sh)"
+    return 0
+}
+
+# Main function to set up Playwright (full E2E — requires --with-e2e)
 setup_playwright() {
     check_e2e_prerequisites || true
     create_playwright_config
@@ -336,3 +373,4 @@ export -f create_e2e_scripts
 export -f update_verification_for_e2e
 export -f check_e2e_prerequisites
 export -f merge_e2e_scripts_into_package_json
+export -f create_playwright_mcp

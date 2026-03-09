@@ -308,6 +308,13 @@ run_installation() {
         warning "Skillsモジュールが見つかりません"
     fi
     
+    # Step 7b: Deploy Playwright MCP template and scripts
+    if type create_playwright_mcp &>/dev/null; then
+        if ! create_playwright_mcp; then
+            warning "Playwright MCP テンプレートの配置に失敗しましたが、インストールは続行します"
+        fi
+    fi
+
     # Step 8: Create Subagents
     if type create_subagents &>/dev/null; then
         if ! create_subagents; then
