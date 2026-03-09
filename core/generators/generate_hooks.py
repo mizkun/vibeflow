@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
 VibeFlow Hook Generator
-Generates validate_access.py from core/schema/policy.yaml.
+Generates hook files from core/schema/policy.yaml:
+- validate_access.py (from Jinja2 template)
+- validate_write.sh (copied from examples/)
+- validate_step7a.py (copied from examples/)
 
 Usage:
     python3 core/generators/generate_hooks.py --schema core/schema/policy.yaml --output <dir>
@@ -96,6 +99,27 @@ def main() -> None:
     args = parser.parse_args()
 
     generate_validate_access(args.schema, args.output)
+    copy_static_hooks(args.output)
+
+
+def copy_static_hooks(output_dir: str) -> None:
+    """Copy static hook files (validate_write.sh, validate_step7a.py) from examples/."""
+    import shutil
+
+    # Find examples/ relative to the repo root
+    generators_dir = Path(__file__).parent
+    repo_root = generators_dir.parent.parent
+    examples_hooks = repo_root / "examples" / ".vibe" / "hooks"
+
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    static_hooks = ["validate_write.sh", "validate_step7a.py"]
+    for hook_file in static_hooks:
+        src = examples_hooks / hook_file
+        if src.exists():
+            shutil.copy2(str(src), str(output_path / hook_file))
+            print(f"Copied: {output_path / hook_file}")
 
 
 if __name__ == "__main__":

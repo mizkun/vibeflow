@@ -564,7 +564,7 @@ create_role_documents() {
         "product-manager.md"
         "engineer.md"
         "qa-engineer.md"
-        "infra.md"
+        "infra-manager.md"
     )
 
     for role_file in "${role_files[@]}"; do

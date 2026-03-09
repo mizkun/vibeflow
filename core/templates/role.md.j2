@@ -1,0 +1,28 @@
+# {{ name }}
+
+**Description**: {{ description }}
+
+## Responsibilities
+{% for r in responsibilities %}
+- {{ r }}
+{% endfor %}
+
+## Permissions
+
+### Can Read
+{% for path in can_read %}
+- `{{ path }}`
+{% endfor %}
+{% if not can_read %}
+- (none defined)
+{% endif %}
+
+### Can Write
+{% for path in can_write %}
+- `{{ path }}`
+{% endfor %}
+{% if not can_write %}
+- (none defined)
+{% endif %}
+
+**Enforcement**: {{ enforcement }}

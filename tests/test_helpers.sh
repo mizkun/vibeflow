@@ -129,7 +129,7 @@ YAML
     echo "# Product Manager" > .vibe/roles/product-manager.md
     echo "# Engineer" > .vibe/roles/engineer.md
     echo "# QA Engineer" > .vibe/roles/qa-engineer.md
-    echo "# Infrastructure Manager" > .vibe/roles/infra.md
+    echo "# Infrastructure Manager" > .vibe/roles/infra-manager.md
 
     # Command files (v2)
     echo "# /next command" > .claude/commands/next.md
