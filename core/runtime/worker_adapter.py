@@ -116,6 +116,8 @@ class HumanWorker(WorkerAdapter):
 
 
 # Worker registry — explicit mapping only, no auto-selection
+# Future: "codex-cloud" → CloudCodexWorker (async, submit-then-poll)
+# See docs/codex-cloud-design.md for design details.
 _WORKERS = {
     "claude": ClaudeWorker,
     "codex": CodexWorker,
