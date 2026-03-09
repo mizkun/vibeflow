@@ -55,6 +55,22 @@ test_terminal_architecture_section() {
 }
 run_test "Terminal Architecture section exists" test_terminal_architecture_section
 
+test_no_old_labels_in_operations() {
+    assert_file_not_contains "$CLAUDE_MD" "priority:" \
+        "CLAUDE.md should not reference priority: labels"
+    assert_file_not_contains "$CLAUDE_MD" "status:" \
+        "CLAUDE.md should not reference status: labels"
+}
+run_test "No priority:/status: labels in CLAUDE.md" test_no_old_labels_in_operations
+
+test_operations_use_rev4_labels() {
+    assert_file_contains "$CLAUDE_MD" "workflow:standard" \
+        "CLAUDE.md Operations should use workflow:standard"
+    assert_file_contains "$CLAUDE_MD" "risk:medium" \
+        "CLAUDE.md Operations should use risk:medium"
+}
+run_test "Operations use Rev.4 label taxonomy" test_operations_use_rev4_labels
+
 # ──────────────────────────────────────────────
 describe "Iris-first — roles.yaml"
 
