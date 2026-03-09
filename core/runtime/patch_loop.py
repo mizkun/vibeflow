@@ -6,16 +6,47 @@ Lightweight fix workflow for scoped changes tied to a parent Issue/PR.
 Key constraints:
 - Parent Issue is required (standalone patches are not allowed)
 - Parent PR is optional (auto-detected if available)
+- Target tests are required (no-test fixes belong in Standard Issue)
 - File count and scope are limited; exceeding limits triggers escalation
 - State is recorded in project_state.yaml under patch_runs
 
 Statuses: in_progress → completed | escalated
 """
 
+import json
+import subprocess
+
 from core.runtime.state import read_project_state, write_project_state
 
 # Limits — exceeding these suggests the fix is too large for Patch Loop
 DEFAULT_FILE_LIMIT = 10
+
+
+def detect_parent_pr(issue_number: int) -> int | None:
+    """Auto-detect a PR linked to the given issue number.
+
+    Uses `gh pr list` to find open PRs whose body or title references
+    the issue. Returns the first matching PR number, or None.
+    """
+    try:
+        result = subprocess.run(
+            [
+                "gh", "pr", "list",
+                "--search", f"#{issue_number}",
+                "--json", "number",
+                "--limit", "1",
+            ],
+            capture_output=True, text=True, timeout=10,
+        )
+        if result.returncode != 0:
+            return None
+        prs = json.loads(result.stdout)
+        if prs:
+            return prs[0]["number"]
+    except (subprocess.TimeoutExpired, FileNotFoundError, json.JSONDecodeError,
+            KeyError, IndexError):
+        pass
+    return None
 
 
 def _next_patch_seq(patch_runs: list, parent_issue: int) -> int:
@@ -34,6 +65,7 @@ def create_patch(
     target_files: list[str],
     target_tests: list[str] | None = None,
     parent_pr: int | None = None,
+    pr_detector=None,
 ) -> dict:
     """Create a new Patch Loop run.
 
@@ -42,14 +74,16 @@ def create_patch(
         parent_issue: Parent GitHub Issue number (required)
         description: Short description of the fix
         target_files: List of files to modify
-        target_tests: List of test files to run (optional)
-        parent_pr: Parent PR number (optional)
+        target_tests: List of test files to run (required, non-empty)
+        parent_pr: Parent PR number (optional; auto-detected if None)
+        pr_detector: Callable(issue_number) → int|None for PR detection.
+                     Defaults to detect_parent_pr. Pass a mock for testing.
 
     Returns:
         Patch run dict with patch_id, status, etc.
 
     Raises:
-        ValueError: If parent_issue is None
+        ValueError: If parent_issue is None or target_tests is empty
     """
     if parent_issue is None:
         raise ValueError(
@@ -57,7 +91,16 @@ def create_patch(
             "Standalone fixes are not allowed — create a Standard Issue first."
         )
 
-    target_tests = target_tests or []
+    if not target_tests:
+        raise ValueError(
+            "Patch Loop requires target tests. "
+            "対象テストを指定してください。指定できない場合は Standard Issue を検討してください。"
+        )
+
+    # Auto-detect parent PR if not explicitly provided
+    if parent_pr is None:
+        detector = pr_detector or detect_parent_pr
+        parent_pr = detector(parent_issue)
 
     # Read current state
     ps = read_project_state(project_dir)

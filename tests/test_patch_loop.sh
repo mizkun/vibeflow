@@ -90,6 +90,8 @@ patch = create_patch(
     parent_issue=10,
     description='Fix typo',
     target_files=['README.md'],
+    target_tests=['tests/test_readme.py'],
+    pr_detector=lambda n: None,  # mock: no PR found
 )
 print(json.dumps(patch))
 ")
@@ -97,7 +99,7 @@ print(json.dumps(patch))
     # parent_pr should be None/null
     local parent_pr
     parent_pr=$(echo "$result" | python3 -c "import sys,json; print(json.load(sys.stdin).get('parent_pr'))")
-    assert_equals "None" "$parent_pr" "parent_pr should be None when not specified"
+    assert_equals "None" "$parent_pr" "parent_pr should be None when not detected"
 }
 run_test "creates patch without parent PR" test_create_patch_without_parent_pr
 
@@ -122,6 +124,8 @@ create_patch(
     parent_issue=42,
     description='Fix button color',
     target_files=['src/button.css'],
+    target_tests=['tests/test_button.py'],
+    pr_detector=lambda n: None,
 )
 "
 
@@ -183,7 +187,7 @@ import sys
 sys.path.insert(0, '${FRAMEWORK_DIR}')
 from core.runtime.patch_loop import create_patch
 try:
-    create_patch(project_dir='${tmpdir}', parent_issue=None, description='x', target_files=['y'])
+    create_patch(project_dir='${tmpdir}', parent_issue=None, description='x', target_files=['y'], target_tests=['t'])
     print('ERROR')
 except ValueError:
     print('OK')
@@ -219,6 +223,8 @@ patch = create_patch(
     parent_issue=10,
     description='big fix',
     target_files=many_files,
+    target_tests=['tests/test_big.py'],
+    pr_detector=lambda n: None,
 )
 print(json.dumps(patch))
 ")
@@ -258,6 +264,8 @@ patch = create_patch(
     parent_issue=42,
     description='Fix CSS',
     target_files=['src/style.css'],
+    target_tests=['tests/test_style.py'],
+    pr_detector=lambda n: None,
 )
 patch_id = patch['patch_id']
 
@@ -296,6 +304,8 @@ patch = create_patch(
     parent_issue=77,
     description='Fix bug',
     target_files=['src/foo.py'],
+    target_tests=['tests/test_foo.py'],
+    pr_detector=lambda n: None,
 )
 print(patch['patch_id'])
 ")
@@ -370,6 +380,7 @@ patch = create_patch(
     parent_pr=30,
     description='Fix review feedback',
     target_files=['src/foo.py'],
+    target_tests=['tests/test_foo.py'],
 )
 print(json.dumps(patch))
 ")
@@ -379,6 +390,275 @@ print(json.dumps(patch))
     assert_equals "30" "$parent_pr" "parent_pr should be 30"
 }
 run_test "patch with parent PR" test_patch_with_parent_pr
+
+# ──────────────────────────────────────────────
+describe "Patch Loop — reject (no target tests)"
+
+test_reject_no_target_tests() {
+    local tmpdir="${TEST_DIR}/pl_no_tests"
+    mkdir -p "${tmpdir}/.vibe"
+
+    python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.state import write_project_state
+write_project_state('${tmpdir}', {'patch_runs': []})
+"
+
+    local output
+    output=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.patch_loop import create_patch
+try:
+    create_patch(
+        project_dir='${tmpdir}',
+        parent_issue=42,
+        description='fix something',
+        target_files=['src/foo.py'],
+        target_tests=[],
+        pr_detector=lambda n: None,
+    )
+    print('ERROR: should have raised')
+except ValueError as e:
+    if 'テスト' in str(e) or 'test' in str(e).lower():
+        print('OK')
+    else:
+        print(f'Wrong error: {e}')
+")
+    assert_equals "OK" "$output" "Empty target_tests should raise ValueError"
+}
+run_test "rejects patch without target tests" test_reject_no_target_tests
+
+test_reject_none_target_tests() {
+    local tmpdir="${TEST_DIR}/pl_none_tests"
+    mkdir -p "${tmpdir}/.vibe"
+
+    python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.state import write_project_state
+write_project_state('${tmpdir}', {'patch_runs': []})
+"
+
+    local output
+    output=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.patch_loop import create_patch
+try:
+    create_patch(
+        project_dir='${tmpdir}',
+        parent_issue=42,
+        description='fix something',
+        target_files=['src/foo.py'],
+        target_tests=None,
+        pr_detector=lambda n: None,
+    )
+    print('ERROR: should have raised')
+except ValueError as e:
+    print('OK')
+")
+    assert_equals "OK" "$output" "None target_tests should raise ValueError"
+}
+run_test "rejects patch with None target tests" test_reject_none_target_tests
+
+# ──────────────────────────────────────────────
+describe "Patch Loop — parent PR auto-detection"
+
+test_auto_detect_parent_pr() {
+    local tmpdir="${TEST_DIR}/pl_autopr"
+    mkdir -p "${tmpdir}/.vibe"
+
+    python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.state import write_project_state
+write_project_state('${tmpdir}', {'patch_runs': []})
+"
+
+    local result
+    result=$(python3 -c "
+import sys, json
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.patch_loop import create_patch
+
+# Mock detector that returns PR #99
+patch = create_patch(
+    project_dir='${tmpdir}',
+    parent_issue=42,
+    description='Fix from review',
+    target_files=['src/foo.py'],
+    target_tests=['tests/test_foo.py'],
+    pr_detector=lambda n: 99,
+)
+print(json.dumps(patch))
+")
+
+    local parent_pr
+    parent_pr=$(echo "$result" | python3 -c "import sys,json; print(json.load(sys.stdin)['parent_pr'])")
+    assert_equals "99" "$parent_pr" "parent_pr should be auto-detected as 99"
+}
+run_test "auto-detects parent PR via detector" test_auto_detect_parent_pr
+
+test_auto_detect_no_pr_found() {
+    local tmpdir="${TEST_DIR}/pl_nopr"
+    mkdir -p "${tmpdir}/.vibe"
+
+    python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.state import write_project_state
+write_project_state('${tmpdir}', {'patch_runs': []})
+"
+
+    local result
+    result=$(python3 -c "
+import sys, json
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.patch_loop import create_patch
+
+# Mock detector that returns None (no PR found)
+patch = create_patch(
+    project_dir='${tmpdir}',
+    parent_issue=42,
+    description='Fix bug',
+    target_files=['src/foo.py'],
+    target_tests=['tests/test_foo.py'],
+    pr_detector=lambda n: None,
+)
+print(json.dumps(patch))
+")
+
+    local parent_pr
+    parent_pr=$(echo "$result" | python3 -c "import sys,json; print(json.load(sys.stdin)['parent_pr'])")
+    assert_equals "None" "$parent_pr" "parent_pr should be None when no PR detected"
+}
+run_test "parent PR is None when not detected" test_auto_detect_no_pr_found
+
+test_explicit_pr_skips_detection() {
+    local tmpdir="${TEST_DIR}/pl_explicit_pr"
+    mkdir -p "${tmpdir}/.vibe"
+
+    python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.state import write_project_state
+write_project_state('${tmpdir}', {'patch_runs': []})
+"
+
+    local result
+    result=$(python3 -c "
+import sys, json
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.patch_loop import create_patch
+
+# Provide explicit parent_pr — detector should NOT be called
+def bad_detector(n):
+    raise RuntimeError('detector should not be called')
+
+patch = create_patch(
+    project_dir='${tmpdir}',
+    parent_issue=42,
+    parent_pr=55,
+    description='Fix bug',
+    target_files=['src/foo.py'],
+    target_tests=['tests/test_foo.py'],
+    pr_detector=bad_detector,
+)
+print(json.dumps(patch))
+")
+
+    local parent_pr
+    parent_pr=$(echo "$result" | python3 -c "import sys,json; print(json.load(sys.stdin)['parent_pr'])")
+    assert_equals "55" "$parent_pr" "Explicit parent_pr should skip auto-detection"
+}
+run_test "explicit parent_pr skips auto-detection" test_explicit_pr_skips_detection
+
+# ──────────────────────────────────────────────
+describe "Patch Loop — manual escalation"
+
+test_manual_escalate_patch() {
+    local tmpdir="${TEST_DIR}/pl_manual_esc"
+    mkdir -p "${tmpdir}/.vibe"
+
+    python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.state import write_project_state
+write_project_state('${tmpdir}', {'patch_runs': []})
+"
+
+    local result
+    result=$(python3 -c "
+import sys, json
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.patch_loop import create_patch, escalate_patch
+
+patch = create_patch(
+    project_dir='${tmpdir}',
+    parent_issue=42,
+    description='Fix CSS',
+    target_files=['src/style.css'],
+    target_tests=['tests/test_style.py'],
+    pr_detector=lambda n: None,
+)
+
+updated = escalate_patch('${tmpdir}', patch['patch_id'], 'Scope grew too large')
+print(json.dumps(updated))
+")
+
+    local status
+    status=$(echo "$result" | python3 -c "import sys,json; print(json.load(sys.stdin)['status'])")
+    assert_equals "escalated" "$status" "Manual escalation should set status=escalated"
+
+    local reason
+    reason=$(echo "$result" | python3 -c "import sys,json; print(json.load(sys.stdin)['escalation_reason'])")
+    echo "$reason" | grep -q "Scope" || { fail "escalation_reason should contain the provided reason"; return 1; }
+}
+run_test "manually escalates a patch" test_manual_escalate_patch
+
+test_escalate_nonexistent_patch() {
+    local tmpdir="${TEST_DIR}/pl_esc_missing"
+    mkdir -p "${tmpdir}/.vibe"
+
+    python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.state import write_project_state
+write_project_state('${tmpdir}', {'patch_runs': []})
+"
+
+    local output
+    output=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.patch_loop import escalate_patch
+try:
+    escalate_patch('${tmpdir}', 'patch-999-1', 'reason')
+    print('ERROR')
+except ValueError:
+    print('OK')
+")
+    assert_equals "OK" "$output" "Should raise ValueError for nonexistent patch"
+}
+run_test "escalate nonexistent patch raises error" test_escalate_nonexistent_patch
+
+# ──────────────────────────────────────────────
+describe "Patch Loop — detect_parent_pr function"
+
+test_detect_parent_pr_exists() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.patch_loop import detect_parent_pr
+# Just verify the function exists and is callable
+print('OK' if callable(detect_parent_pr) else 'FAIL')
+")
+    assert_equals "OK" "$result" "detect_parent_pr should be callable"
+}
+run_test "detect_parent_pr function exists" test_detect_parent_pr_exists
 
 # ──────────────────────────────────────────────
 print_summary
