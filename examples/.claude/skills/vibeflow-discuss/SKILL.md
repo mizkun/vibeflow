@@ -1,13 +1,17 @@
 ---
 name: vibeflow-discuss
-description: Start Discovery (Spike workflow) via Iris. Use when brainstorming, exploring ideas, or starting a discussion session.
+description: "[DEPRECATED] v5 では Iris が常にアクティブです。/discuss は不要です。そのまま Iris に話しかけてください。"
 ---
 
-# VibeFlow Discovery Session
+# VibeFlow Discovery Session (deprecated)
+
+> **⚠️ v5 で廃止 (deprecated)**: Iris は常にアクティブです。`/discuss` を使わなくても、
+> Iris にそのまま話しかけるだけで Discovery が始まります。
 
 ## When to Use
-- When starting a new brainstorming or discussion session
-- When exploring ideas before implementation
+- v5: **不要**。Iris に直接話しかけてください
+- Legacy: When starting a new brainstorming or discussion session
+- Legacy: When exploring ideas before implementation
 - When doing project kickoff
 - When reviewing and updating project direction
 
