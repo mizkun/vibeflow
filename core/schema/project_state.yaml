@@ -1,0 +1,27 @@
+# VibeFlow Project State Schema
+# Project-wide state shared across all sessions.
+# Per-session state (role, step) lives in sessions/*.yaml.
+
+# Active issue being worked on (GitHub Issue number, null if none)
+active_issue: null
+
+# Active PR number (null if none)
+active_pr: null
+
+# Current project phase
+# Values: development | discovery
+current_phase: development
+
+# Patch Loop runs (populated by Patch Loop workflow)
+patch_runs: []
+
+# Backlog summary (updated by Iris)
+backlog_summary:
+  ready: 0
+  in_progress: 0
+  blocked: 0
+
+# Safety tracking (project-wide)
+safety:
+  ui_mode: atomic
+  destructive_op: require_confirmation

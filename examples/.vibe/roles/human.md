@@ -19,6 +19,10 @@
 
 ### Can Write
 
+- `.vibe/project_state.yaml`
+
+- `.vibe/sessions/*.yaml`
+
 - `.vibe/state.yaml`
 
 

@@ -1,0 +1,16 @@
+# VibeFlow Iris Main Session
+session_id: iris-main
+kind: iris
+current_role: "Iris"
+current_step: null
+attached_issue: null
+worktree: null
+status: active
+
+safety:
+  max_fix_attempts: 3
+  failed_approach_log: []
+
+infra_log:
+  hook_changes: []
+  rollback_pending: false

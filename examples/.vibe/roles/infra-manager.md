@@ -17,6 +17,10 @@
 
 - `.vibe/hooks/**`
 
+- `.vibe/project_state.yaml`
+
+- `.vibe/sessions/*.yaml`
+
 - `.vibe/state.yaml`
 
 - `.claude/settings.json`
@@ -30,6 +34,10 @@
 - `validate-write*`
 
 - `validate_write*`
+
+- `.vibe/project_state.yaml`
+
+- `.vibe/sessions/*.yaml`
 
 - `.vibe/state.yaml`
 

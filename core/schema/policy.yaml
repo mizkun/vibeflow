@@ -12,6 +12,8 @@ roles:
       - ".vibe/context/**"
       - ".vibe/references/**"
       - ".vibe/archive/**"
+      - ".vibe/project_state.yaml"
+      - ".vibe/sessions/*.yaml"
       - ".vibe/state.yaml"
       - "src/**"
     can_write:
@@ -21,6 +23,8 @@ roles:
       - ".vibe/context/*"
       - ".vibe/references/*"
       - ".vibe/archive/*"
+      - ".vibe/project_state.yaml"
+      - ".vibe/sessions/*.yaml"
       - ".vibe/state.yaml"
     enforcement: hard
 
@@ -30,10 +34,14 @@ roles:
       - "vision.md"
       - "spec.md"
       - "plan.md"
+      - ".vibe/project_state.yaml"
+      - ".vibe/sessions/*.yaml"
       - ".vibe/state.yaml"
       - ".vibe/qa-reports/**"
     can_write:
       - "plan.md"
+      - ".vibe/project_state.yaml"
+      - ".vibe/sessions/*.yaml"
       - ".vibe/state.yaml"
     enforcement: hard
 
@@ -42,12 +50,16 @@ roles:
     can_read:
       - "spec.md"
       - "src/**"
+      - ".vibe/project_state.yaml"
+      - ".vibe/sessions/*.yaml"
       - ".vibe/state.yaml"
     can_write:
       - "src/*"
       - "tests/*"
       - "**/*.test.*"
       - "**/__tests__/*"
+      - ".vibe/project_state.yaml"
+      - ".vibe/sessions/*.yaml"
       - ".vibe/state.yaml"
       - ".vibe/test-results.log"
     enforcement: hard
@@ -57,11 +69,15 @@ roles:
     can_read:
       - "spec.md"
       - "src/**"
+      - ".vibe/project_state.yaml"
+      - ".vibe/sessions/*.yaml"
       - ".vibe/state.yaml"
       - ".vibe/qa-reports/**"
     can_write:
       - ".vibe/qa-reports/*"
       - ".vibe/test-results.log"
+      - ".vibe/project_state.yaml"
+      - ".vibe/sessions/*.yaml"
       - ".vibe/state.yaml"
     enforcement: hard
 
@@ -69,12 +85,16 @@ roles:
     display_name: "Infrastructure Manager"
     can_read:
       - ".vibe/hooks/**"
+      - ".vibe/project_state.yaml"
+      - ".vibe/sessions/*.yaml"
       - ".vibe/state.yaml"
       - ".claude/settings.json"
     can_write:
       - ".vibe/hooks/*"
       - "validate-write*"
       - "validate_write*"
+      - ".vibe/project_state.yaml"
+      - ".vibe/sessions/*.yaml"
       - ".vibe/state.yaml"
     enforcement: hard
 
@@ -82,9 +102,15 @@ roles:
     display_name: "Human"
     can_read: []
     can_write:
+      - ".vibe/project_state.yaml"
+      - ".vibe/sessions/*.yaml"
       - ".vibe/state.yaml"
     enforcement: hard
 
 # Files always allowed regardless of role
+# project_state and session files are the primary state;
+# state.yaml is kept as backward-compatible fallback
 always_allow:
+  - ".vibe/project_state.yaml"
+  - ".vibe/sessions/*.yaml"
   - ".vibe/state.yaml"

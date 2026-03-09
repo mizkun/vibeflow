@@ -21,6 +21,10 @@
 
 - `src/**`
 
+- `.vibe/project_state.yaml`
+
+- `.vibe/sessions/*.yaml`
+
 - `.vibe/state.yaml`
 
 
@@ -34,6 +38,10 @@
 - `**/*.test.*`
 
 - `**/__tests__/*`
+
+- `.vibe/project_state.yaml`
+
+- `.vibe/sessions/*.yaml`
 
 - `.vibe/state.yaml`
 

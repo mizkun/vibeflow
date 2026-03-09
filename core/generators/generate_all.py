@@ -27,10 +27,10 @@ from core.generators.generate_claude_md import load_schemas, update_managed_sect
 from core.generators.manifest import Manifest
 
 # Valid targets for --target
-VALID_TARGETS = ("hooks", "settings", "policy", "docs", "claude_md", "manifest")
+VALID_TARGETS = ("hooks", "settings", "policy", "docs", "claude_md", "state", "manifest")
 
-# Generation order: policy → hooks → settings → docs → claude_md → manifest
-GENERATION_ORDER = ["policy", "hooks", "settings", "docs", "claude_md", "manifest"]
+# Generation order: policy → hooks → settings → docs → claude_md → state → manifest
+GENERATION_ORDER = ["policy", "hooks", "settings", "docs", "claude_md", "state", "manifest"]
 
 
 def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: str,
@@ -88,6 +88,32 @@ def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: st
                     f"Skipping. Add markers manually to enable managed sections.",
                     file=sys.stderr,
                 )
+
+    elif target == "state":
+        # Copy state templates (project_state.yaml + sessions/iris-main.yaml)
+        import shutil
+
+        fw = Path(framework_dir)
+
+        # project_state.yaml
+        src_ps = fw / "examples" / ".vibe" / "project_state.yaml"
+        dest_ps = project / ".vibe" / "project_state.yaml"
+        if src_ps.exists() and not dest_ps.exists():
+            os.makedirs(dest_ps.parent, exist_ok=True)
+            shutil.copy2(str(src_ps), str(dest_ps))
+            print(f"Generated: {dest_ps}")
+        if dest_ps.exists():
+            generated_files.append((".vibe/project_state.yaml", "core/schema/project_state.yaml"))
+
+        # sessions/iris-main.yaml
+        src_iris = fw / "examples" / ".vibe" / "sessions" / "iris-main.yaml"
+        dest_iris = project / ".vibe" / "sessions" / "iris-main.yaml"
+        if src_iris.exists() and not dest_iris.exists():
+            os.makedirs(dest_iris.parent, exist_ok=True)
+            shutil.copy2(str(src_iris), str(dest_iris))
+            print(f"Generated: {dest_iris}")
+        if dest_iris.exists():
+            generated_files.append((".vibe/sessions/iris-main.yaml", "core/schema/session_state.yaml"))
 
     elif target == "manifest":
         # Record all previously generated files in the manifest

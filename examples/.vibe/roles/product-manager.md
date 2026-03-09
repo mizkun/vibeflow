@@ -23,6 +23,10 @@
 
 - `plan.md`
 
+- `.vibe/project_state.yaml`
+
+- `.vibe/sessions/*.yaml`
+
 - `.vibe/state.yaml`
 
 - `.vibe/qa-reports/**`
@@ -32,6 +36,10 @@
 ### Can Write
 
 - `plan.md`
+
+- `.vibe/project_state.yaml`
+
+- `.vibe/sessions/*.yaml`
 
 - `.vibe/state.yaml`
 

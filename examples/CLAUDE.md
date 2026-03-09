@@ -12,32 +12,32 @@
 ### Iris
 **Description**: Default project entry point — triage, dispatch, and context management
 **Enforcement**: hard
-**Can Write**: `vision.md`, `spec.md`, `plan.md`, `.vibe/context/*`, `.vibe/references/*`, `.vibe/archive/*`, `.vibe/state.yaml`
+**Can Write**: `vision.md`, `spec.md`, `plan.md`, `.vibe/context/*`, `.vibe/references/*`, `.vibe/archive/*`, `.vibe/project_state.yaml`, `.vibe/sessions/*.yaml`, `.vibe/state.yaml`
 
 ### Product Manager
 **Description**: Vision alignment, planning, and issue management
 **Enforcement**: hard
-**Can Write**: `plan.md`, `.vibe/state.yaml`
+**Can Write**: `plan.md`, `.vibe/project_state.yaml`, `.vibe/sessions/*.yaml`, `.vibe/state.yaml`
 
 ### Engineer
 **Description**: Implementation, testing, and refactoring
 **Enforcement**: hard
-**Can Write**: `src/*`, `tests/*`, `**/*.test.*`, `**/__tests__/*`, `.vibe/state.yaml`, `.vibe/test-results.log`
+**Can Write**: `src/*`, `tests/*`, `**/*.test.*`, `**/__tests__/*`, `.vibe/project_state.yaml`, `.vibe/sessions/*.yaml`, `.vibe/state.yaml`, `.vibe/test-results.log`
 
 ### QA Engineer
 **Description**: Acceptance testing, quality verification, and review
 **Enforcement**: hard
-**Can Write**: `.vibe/qa-reports/*`, `.vibe/test-results.log`, `.vibe/state.yaml`
+**Can Write**: `.vibe/qa-reports/*`, `.vibe/test-results.log`, `.vibe/project_state.yaml`, `.vibe/sessions/*.yaml`, `.vibe/state.yaml`
 
 ### Infrastructure Manager
 **Description**: Hook and guardrail management
 **Enforcement**: hard
-**Can Write**: `.vibe/hooks/*`, `validate-write*`, `validate_write*`, `.vibe/state.yaml`
+**Can Write**: `.vibe/hooks/*`, `validate-write*`, `validate_write*`, `.vibe/project_state.yaml`, `.vibe/sessions/*.yaml`, `.vibe/state.yaml`
 
 ### Human
 **Description**: Human checkpoint for manual verification
 **Enforcement**: hard
-**Can Write**: `.vibe/state.yaml`
+**Can Write**: `.vibe/project_state.yaml`, `.vibe/sessions/*.yaml`, `.vibe/state.yaml`
 
 <!-- VF:END roles -->
 

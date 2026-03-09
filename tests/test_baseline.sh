@@ -81,16 +81,16 @@ test_classify_stock_managed() {
     local project="${TEST_DIR}/project"
     mkdir -p "${project}/.vibe/hooks"
 
-    # Copy the stock file (hash will match baseline)
-    cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_access.py" \
-       "${project}/.vibe/hooks/validate_access.py"
+    # Copy a stock file whose hash still matches v3.5.0 baseline
+    cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_write.sh" \
+       "${project}/.vibe/hooks/validate_write.sh"
 
     local result
     result=$(python3 -c "
 import sys
 sys.path.insert(0, '${FRAMEWORK_DIR}')
 from core.baselines.loader import classify_file
-result = classify_file('${project}', '.vibe/hooks/validate_access.py', '3.5.0',
+result = classify_file('${project}', '.vibe/hooks/validate_write.sh', '3.5.0',
                        baselines_dir='${FRAMEWORK_DIR}/core/baselines')
 print(result)
 ")
@@ -143,10 +143,10 @@ test_classify_all_project_files() {
     local project="${TEST_DIR}/project"
     mkdir -p "${project}/.vibe/hooks" "${project}/.vibe/roles" "${project}/.claude/commands"
 
-    # Copy stock files
-    cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_access.py" "${project}/.vibe/hooks/"
+    # Copy stock files (use files whose hashes still match v3.5.0 baseline)
     cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_write.sh" "${project}/.vibe/hooks/"
-    cp "${FRAMEWORK_DIR}/examples/.vibe/policy.yaml" "${project}/.vibe/"
+    cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_step7a.py" "${project}/.vibe/hooks/"
+    cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/waiting_input.sh" "${project}/.vibe/hooks/"
     # Modify one
     echo "# custom" >> "${project}/.vibe/hooks/validate_write.sh"
     # Add unknown
@@ -165,8 +165,8 @@ for path, status in sorted(results.items()):
 
     echo "$output" > "${TEST_DIR}/classify_output.txt"
 
-    assert_file_contains "${TEST_DIR}/classify_output.txt" "stock-managed: .vibe/hooks/validate_access.py" \
-        "validate_access.py should be stock-managed"
+    assert_file_contains "${TEST_DIR}/classify_output.txt" "stock-managed: .vibe/hooks/validate_step7a.py" \
+        "validate_step7a.py should be stock-managed"
     assert_file_contains "${TEST_DIR}/classify_output.txt" "customized: .vibe/hooks/validate_write.sh" \
         "Modified validate_write.sh should be customized"
 }
@@ -176,27 +176,27 @@ run_test "classify_project classifies multiple files" test_classify_all_project_
 describe "Baseline — hash accuracy"
 
 test_baseline_hashes_match_source() {
-    # Verify a few baseline hashes match actual source files
+    # Verify baseline hashes match actual source files (using files unchanged since v3.5.0)
     local result
     result=$(python3 -c "
 import hashlib, json
 with open('${FRAMEWORK_DIR}/core/baselines/v3.5.0.json') as f:
     baseline = json.load(f)
 
-# Check validate_access.py
-with open('${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_access.py', 'rb') as f:
+# Check validate_write.sh (unchanged since v3.5.0)
+with open('${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_write.sh', 'rb') as f:
     actual = hashlib.sha256(f.read()).hexdigest()
-recorded = baseline['files']['.vibe/hooks/validate_access.py']['sha256']
+recorded = baseline['files']['.vibe/hooks/validate_write.sh']['sha256']
 if actual != recorded:
-    print(f'MISMATCH: validate_access.py actual={actual[:16]} recorded={recorded[:16]}')
+    print(f'MISMATCH: validate_write.sh actual={actual[:16]} recorded={recorded[:16]}')
     exit(1)
 
-# Check policy.yaml
-with open('${FRAMEWORK_DIR}/examples/.vibe/policy.yaml', 'rb') as f:
+# Check validate_step7a.py (unchanged since v3.5.0)
+with open('${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_step7a.py', 'rb') as f:
     actual = hashlib.sha256(f.read()).hexdigest()
-recorded = baseline['files']['.vibe/policy.yaml']['sha256']
+recorded = baseline['files']['.vibe/hooks/validate_step7a.py']['sha256']
 if actual != recorded:
-    print(f'MISMATCH: policy.yaml actual={actual[:16]} recorded={recorded[:16]}')
+    print(f'MISMATCH: validate_step7a.py actual={actual[:16]} recorded={recorded[:16]}')
     exit(1)
 
 print('OK')

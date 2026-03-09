@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 VibeFlow Access Guard Hook
-Validates file access permissions based on current role in .vibe/state.yaml.
-Used as a PreToolUse hook to block unauthorized file edits.
+Validates file access permissions based on current role.
+Reads role from session state (VIBEFLOW_SESSION) or falls back to .vibe/state.yaml.
 Exit code 2 blocks the tool call (Claude Code specification).
 
 GENERATED FILE — Do not edit manually.
@@ -40,6 +40,10 @@ ROLE_EDIT_ALLOW = {
 
         ".vibe/archive/*",
 
+        ".vibe/project_state.yaml",
+
+        ".vibe/sessions/*.yaml",
+
         ".vibe/state.yaml",
 
     ],
@@ -49,6 +53,10 @@ ROLE_EDIT_ALLOW = {
     "Product Manager": [
 
         "plan.md",
+
+        ".vibe/project_state.yaml",
+
+        ".vibe/sessions/*.yaml",
 
         ".vibe/state.yaml",
 
@@ -66,6 +74,10 @@ ROLE_EDIT_ALLOW = {
 
         "**/__tests__/*",
 
+        ".vibe/project_state.yaml",
+
+        ".vibe/sessions/*.yaml",
+
         ".vibe/state.yaml",
 
         ".vibe/test-results.log",
@@ -79,6 +91,10 @@ ROLE_EDIT_ALLOW = {
         ".vibe/qa-reports/*",
 
         ".vibe/test-results.log",
+
+        ".vibe/project_state.yaml",
+
+        ".vibe/sessions/*.yaml",
 
         ".vibe/state.yaml",
 
@@ -94,6 +110,10 @@ ROLE_EDIT_ALLOW = {
 
         "validate_write*",
 
+        ".vibe/project_state.yaml",
+
+        ".vibe/sessions/*.yaml",
+
         ".vibe/state.yaml",
 
     ],
@@ -101,6 +121,10 @@ ROLE_EDIT_ALLOW = {
     # Human
 
     "Human": [
+
+        ".vibe/project_state.yaml",
+
+        ".vibe/sessions/*.yaml",
 
         ".vibe/state.yaml",
 
@@ -110,6 +134,10 @@ ROLE_EDIT_ALLOW = {
 
 # Files that are always allowed regardless of role
 ALWAYS_ALLOW = [
+
+    ".vibe/project_state.yaml",
+
+    ".vibe/sessions/*.yaml",
 
     ".vibe/state.yaml",
 
@@ -121,10 +149,10 @@ def project_root() -> str:
     return os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
 
 
-def read_current_role(state_path: str) -> str:
-    """Read current_role from state.yaml."""
+def read_current_role_from_file(path: str) -> str:
+    """Read current_role from a YAML file (line-based parsing)."""
     try:
-        with open(state_path, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8") as f:
             for line in f:
                 s = line.strip()
                 if s.startswith("current_role:"):
@@ -134,14 +162,41 @@ def read_current_role(state_path: str) -> str:
     return ""
 
 
+def resolve_current_role(root: str) -> str:
+    """Resolve current_role from session state or legacy state.yaml.
+
+    Resolution order:
+    1. VIBEFLOW_SESSION env var → .vibe/sessions/<session>.yaml
+    2. Fallback: .vibe/state.yaml (backward compat with v3)
+    """
+    session_id = os.environ.get("VIBEFLOW_SESSION")
+    if session_id:
+        session_path = os.path.join(root, ".vibe", "sessions", f"{session_id}.yaml")
+        role = read_current_role_from_file(session_path)
+        if role:
+            return role
+
+    # Fallback to legacy state.yaml
+    state_path = os.path.join(root, ".vibe", "state.yaml")
+    return read_current_role_from_file(state_path)
+
+
+def _normalize(s: str) -> str:
+    """Strip leading ./ without eating .vibe-style dotted directories."""
+    if s.startswith("./"):
+        return s[2:]
+    return s
+
+
 def match_any(path: str, patterns: list) -> bool:
     """Check if path matches any of the given glob patterns."""
-    p = path.lstrip("./")
+    p = _normalize(path)
     for pat in patterns:
-        if fnmatch.fnmatch(p, pat):
+        np = _normalize(pat)
+        if fnmatch.fnmatch(p, np):
             return True
         # Also try matching with ** prefix for nested paths
-        if fnmatch.fnmatch(p, f"**/{pat}"):
+        if fnmatch.fnmatch(p, f"**/{np}"):
             return True
     return False
 
@@ -184,8 +239,7 @@ def main() -> None:
         sys.exit(0)
 
     root = project_root()
-    state_path = os.path.join(root, ".vibe", "state.yaml")
-    role = read_current_role(state_path) or ""
+    role = resolve_current_role(root)
     allow = ROLE_EDIT_ALLOW.get(role, [])
 
     targets = get_target_paths(tool_name, tool_input)
@@ -204,7 +258,7 @@ def main() -> None:
                 f"current_role='{role}' では '{t}' を編集できません。\n"
                 f"許可パターン: {allow}\n\n"
                 f"対処:\n"
-                f"  1) `.vibe/state.yaml` の current_role を正しいロールに遷移してから\n"
+                f"  1) セッション状態ファイル (.vibe/sessions/*.yaml) の current_role を正しいロールに遷移してから\n"
                 f"  2) そのロールのステップで編集してください。\n"
             )
 
