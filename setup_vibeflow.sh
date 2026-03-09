@@ -53,6 +53,9 @@ fi
 if [ -f "${LIB_DIR}/create_dev_launcher.sh" ]; then
     source "${LIB_DIR}/create_dev_launcher.sh"
 fi
+if [ -f "${LIB_DIR}/create_labels.sh" ]; then
+    source "${LIB_DIR}/create_labels.sh"
+fi
 
 # Global variables — version comes from framework_version.sh (sourced above)
 VERSION="$FRAMEWORK_VERSION"
@@ -325,6 +328,13 @@ run_installation() {
     if type create_dev_launcher &>/dev/null; then
         if ! create_dev_launcher; then
             warning "開発ランチャーの作成に失敗しましたが、インストールは続行します"
+        fi
+    fi
+
+    # Step 9: Create GitHub Labels from issue_labels.yaml
+    if type create_github_labels &>/dev/null; then
+        if ! create_github_labels; then
+            warning "GitHub ラベルの作成に失敗しましたが、インストールは続行します"
         fi
     fi
 

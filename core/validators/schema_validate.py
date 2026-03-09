@@ -119,7 +119,7 @@ def validate_issue_labels(data: dict) -> list[str]:
     if not isinstance(categories, dict):
         return ["Top-level 'categories' must be a mapping"]
 
-    required_categories = {"type", "qa"}
+    required_categories = {"type", "risk", "qa", "workflow"}
     missing = required_categories - set(categories.keys())
     if missing:
         errors.append(f"Missing required categories: {missing}")
