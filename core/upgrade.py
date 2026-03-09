@@ -80,6 +80,34 @@ def build_source_map(framework_dir: str) -> dict[str, str]:
     if claude_md.exists():
         source_map["CLAUDE.md"] = str(claude_md)
 
+    # examples/.claude/skills/*/SKILL.md → .claude/skills/*/SKILL.md
+    skills_dir = fw / "examples" / ".claude" / "skills"
+    if skills_dir.exists():
+        for skill in skills_dir.iterdir():
+            if skill.is_dir():
+                skill_md = skill / "SKILL.md"
+                if skill_md.exists():
+                    source_map[f".claude/skills/{skill.name}/SKILL.md"] = str(skill_md)
+
+    # examples/.claude/agents/*.md → .claude/agents/*.md
+    agents_dir = fw / "examples" / ".claude" / "agents"
+    if agents_dir.exists():
+        for f in agents_dir.iterdir():
+            if f.is_file() and f.suffix == ".md":
+                source_map[f".claude/agents/{f.name}"] = str(f)
+
+    # examples/.mcp.json.example → .mcp.json.example
+    mcp_example = fw / "examples" / ".mcp.json.example"
+    if mcp_example.exists():
+        source_map[".mcp.json.example"] = str(mcp_example)
+
+    # examples/scripts/* → scripts/*
+    scripts_dir = fw / "examples" / "scripts"
+    if scripts_dir.exists():
+        for f in scripts_dir.iterdir():
+            if f.is_file() and not f.name.startswith("."):
+                source_map[f"scripts/{f.name}"] = str(f)
+
     return source_map
 
 
