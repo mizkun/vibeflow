@@ -324,7 +324,19 @@ run_installation() {
         success ".claude/rules/ を配置しました"
     fi
 
-    # Step 7c: Deploy Playwright MCP template and scripts
+    # Step 7c: Deploy runtime modules (v5)
+    if [ -d "${SCRIPT_DIR}/core/runtime" ]; then
+        info ".vibe/runtime/ モジュールを配置中..."
+        mkdir -p ".vibe/runtime"
+        for py_file in "${SCRIPT_DIR}/core/runtime/"*.py; do
+            [ -f "$py_file" ] || continue
+            cp "$py_file" ".vibe/runtime/$(basename "$py_file")"
+        done
+        touch ".vibe/runtime/__init__.py"
+        success ".vibe/runtime/ を配置しました"
+    fi
+
+    # Step 7d: Deploy Playwright MCP template and scripts
     if type create_playwright_mcp &>/dev/null; then
         if ! create_playwright_mcp; then
             warning "Playwright MCP テンプレートの配置に失敗しましたが、インストールは続行します"
@@ -534,11 +546,13 @@ show_completion() {
     echo "   claude コマンドで Iris に話しかけるだけ！"
     echo ""
     echo "利用可能なコマンド:"
-    echo "   (自然言語)   - Iris に直接話しかける（メイン）"
-    echo "   /conclude    - セッション終了・STATUS.md 更新"
-    echo "   /progress    - 現在の進捗確認（GitHub Issues 統合）"
-    echo "   /healthcheck - 整合性チェック"
-    echo "   /run-e2e     - E2Eテスト実行（Playwright）"
+    echo "   (自然言語)      - Iris に直接話しかける（メイン）"
+    echo "   /execute-issue  - 指定 Issue を 11-Step で自動完遂"
+    echo "   /execute-all    - Open Issues を依存順に一括実行"
+    echo "   /conclude       - セッション終了・STATUS.md 更新"
+    echo "   /progress       - 現在の進捗確認（GitHub Issues 統合）"
+    echo "   /healthcheck    - 整合性チェック"
+    echo "   /run-e2e        - E2Eテスト実行（Playwright）"
     echo ""
     print_color "$PURPLE" "🎉 Happy Vibe Coding!"
 }

@@ -127,6 +127,8 @@ Non-development project tasks (release, docs, backlog grooming)
 
 ## Available Commands
 
+- `/execute-issue <番号>` — 指定 Issue を 11-Step で自動完遂
+- `/execute-all` — Open Issues を依存順に一括実行
 - `/conclude` — 会話をまとめ、Plan/Spec/STATUS.md を更新
 - `/patch <issue番号>` — Patch Loop 開始
 - `/progress` — 進捗確認
@@ -149,6 +151,8 @@ Configuration: `.claude/settings.json`
 
 ## Skills
 
+- `vibeflow-execute-issue` — Issue を 11-Step ワークフローで自動完遂
+- `vibeflow-execute-all` — Open Issues を依存順に一括実行
 - `vibeflow-kickoff` — Vision/Spec/Plan キックオフ生成
 - `vibeflow-conclude` — セッション終了・Plan/Spec 更新
 - `vibeflow-progress` — 進捗確認

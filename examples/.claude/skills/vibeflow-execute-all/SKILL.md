@@ -25,30 +25,23 @@ gh issue list --state open --json number,title,body,labels --limit 100
 
 ### 2. 依存関係を分析して実行順序を決定
 
-```bash
-python3 -c "
+Iris は以下の手順で依存順序を決定する:
+
+1. `gh issue list --state open --json number,title,body,labels --limit 100` で Issue 一覧を取得
+2. `.vibe/runtime/dependency_analyzer.py` の `execution_order()` で依存順にソート
+
+```python
+# Iris が Python で実行する（.vibe/runtime/ にモジュールがある）
 import sys, json
-sys.path.insert(0, '.')
-from core.runtime.dependency_analyzer import analyze, execution_order
+sys.path.insert(0, '.vibe/runtime')
+from dependency_analyzer import analyze, execution_order
 
-issues = json.loads('''$(gh issue list --state open --json number,title,body,labels --limit 100)''')
+# issues は gh issue list の JSON 出力をパースしたもの
 result = analyze(issues)
-
-print('=== 実行バッチ ===')
-for i, batch in enumerate(result['batches'], 1):
-    nums = ', '.join(f'#{n}' for n in batch)
-    print(f'  Batch {i}: {nums}')
-
-if result['warnings']:
-    print('⚠️ 警告:')
-    for w in result['warnings']:
-        print(f'  {w}')
-
 ordered = execution_order(issues)
-print('\\n=== 実行順序 ===')
-for issue in ordered:
-    print(f'  #{issue[\"number\"]}: {issue[\"title\"]}')
-"
+
+for i, batch in enumerate(result['batches'], 1):
+    print(f'Batch {i}: {[f"#{n}" for n in batch]}')
 ```
 
 ### 3. ユーザーに実行計画を提示

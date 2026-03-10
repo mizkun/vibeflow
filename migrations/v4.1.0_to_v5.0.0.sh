@@ -36,10 +36,11 @@ fi
 if [ "$DRY_RUN" = "1" ]; then
     log_info "[DRY RUN] 以下の変更が適用されます:"
     log_info "  - .claude/rules/ ディレクトリを新規配置 (iris-core, workflow-standard, workflow-patch, safety, playwright)"
-    log_info "  - Skills 更新: vibeflow-kickoff 追加、vibeflow-discuss を deprecated に更新"
+    log_info "  - Skills 更新: vibeflow-kickoff, execute-issue, execute-all 追加、vibeflow-discuss を deprecated に更新"
     log_info "  - CLAUDE.md を v5 Iris-Only Architecture に更新"
     log_info "  - /discuss コマンドを deprecated に更新"
     log_info "  - dev.sh (Dev Launcher) を削除"
+    log_info "  - Runtime モジュール (.vibe/runtime/) を配置"
     log_info "  - マルチターミナル参照を削除"
     log_info "  - バージョン → 5.0.0"
     log_info "[DRY RUN] 実際の変更は行いません。"
@@ -123,6 +124,8 @@ ALL_SKILLS=(
     "vibeflow-ui-smoke"
     "vibeflow-ui-explore"
     "vibeflow-kickoff"
+    "vibeflow-execute-issue"
+    "vibeflow-execute-all"
 )
 
 for skill_name in "${ALL_SKILLS[@]}"; do
@@ -208,6 +211,27 @@ if [ -f "${FRAMEWORK}/examples/.claude/settings.json" ]; then
 fi
 
 # ============================================================
+# 6b/8: Runtime モジュール配置 (v5 新規)
+# ============================================================
+log_info "6b/8: Runtime モジュール配置"
+
+RUNTIME_SRC="${FRAMEWORK}/core/runtime"
+RUNTIME_DST=".vibe/runtime"
+
+if [ -d "$RUNTIME_SRC" ]; then
+    ensure_dir "$RUNTIME_DST"
+    for py_file in "${RUNTIME_SRC}/"*.py; do
+        [ -f "$py_file" ] || continue
+        cp "$py_file" "${RUNTIME_DST}/$(basename "$py_file")"
+    done
+    # __init__.py for import support
+    touch "${RUNTIME_DST}/__init__.py"
+    log_ok "  Runtime モジュールを ${RUNTIME_DST}/ に配置しました"
+else
+    log_warn "  Runtime ソースが見つかりません: ${RUNTIME_SRC}"
+fi
+
+# ============================================================
 # 7/8: アップグレードレポート出力
 # ============================================================
 log_info "7/8: アップグレードレポート出力"
@@ -230,7 +254,8 @@ report = {
     'customized_files': customized,
     'actions': [
         'Rules: .claude/rules/ deployed (iris-core, workflow-standard, workflow-patch, safety, playwright)',
-        'Skills: vibeflow-kickoff added, all skills updated',
+        'Skills: vibeflow-kickoff, execute-issue, execute-all added, all skills updated',
+        'Runtime: .vibe/runtime/ deployed (qa_judge, dependency_analyzer, etc.)',
         'CLAUDE.md: rewritten for v5 Iris-Only Architecture',
         'Multi-terminal: dev.sh removed',
         'Hooks: updated for v5',

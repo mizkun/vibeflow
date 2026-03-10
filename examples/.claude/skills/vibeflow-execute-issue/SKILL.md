@@ -115,26 +115,36 @@ bash scripts/playwright_smoke.sh
 
 ### 7-3. qa_judge で自動判定
 
-```bash
-python3 -c "
-import sys, json
-sys.path.insert(0, '.')
-from core.runtime.qa_judge import judge, is_ui_task
+以下の情報を集めて `qa_judge.judge()` を呼ぶ:
 
+```python
+# Iris が Python で実行する（.vibe/runtime/ にモジュールがある）
+import sys, json
+sys.path.insert(0, '.vibe/runtime')
+from qa_judge import judge, is_ui_task
+
+# 各値は Step 7-1, 7-2 の結果と git diff から取得
 context = {
-    'labels': $(gh issue view <NUMBER> --json labels --jq '[.labels[].name]'),
-    'tests_passed': True,  # ← 7-1 の結果
-    'review_verdict': 'pass',  # ← 初回は仮 pass
-    'files_changed': $(git diff --stat main...HEAD | tail -1 | grep -oE '[0-9]+ file' | grep -oE '[0-9]+'),
-    'lines_changed': $(git diff --shortstat main...HEAD | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+'),
-    'has_ui_changes': $(# UI ファイルの有無),
-    'playwright_passed': $(# Playwright の結果),
-    'has_playwright_artifact': $(# artifact の有無),
+    'labels': ['type:dev', 'risk:low', 'qa:auto'],  # ← gh issue view で取得
+    'tests_passed': True,       # ← 7-1 のテスト結果
+    'review_verdict': 'pass',   # ← 初回は仮 pass
+    'files_changed': 5,         # ← git diff --stat から算出
+    'lines_changed': 120,       # ← git diff --shortstat から算出
+    'has_ui_changes': False,    # ← UI ファイルの有無を確認
+    'playwright_passed': None,  # ← UI task なら 7-2 の結果、非 UI なら None
+    'has_playwright_artifact': False,  # ← artifact の有無
 }
 result = judge(context)
-print(json.dumps(result, indent=2))
-"
+# result['verdict']: 'auto_pass' | 'needs_human' | 'fail'
 ```
+
+**値の取得方法:**
+- `labels`: `gh issue view <NUMBER> --json labels --jq '[.labels[].name]'`
+- `files_changed`: `git diff --stat main...HEAD | tail -1` からファイル数を抽出
+- `lines_changed`: `git diff --shortstat main...HEAD` から行数を抽出
+- `has_ui_changes`: 変更ファイルに `.tsx`, `.jsx`, `.vue`, `.css` 等が含まれるか
+- `playwright_passed`: UI task なら `scripts/playwright_smoke.sh` の exit code
+- `has_playwright_artifact`: `tests/e2e/` や `.vibe/artifacts/` にファイルがあるか
 
 ### 判定結果による分岐
 
