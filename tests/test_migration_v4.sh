@@ -611,11 +611,11 @@ test_framework_version_updated() {
     assert_file_exists "${FRAMEWORK_DIR}/VERSION" "VERSION file must exist"
     local version
     version=$(cat "${FRAMEWORK_DIR}/VERSION")
-    # Version should be 4.x.x (4.0.0 or later)
-    echo "$version" | grep -q "^4\."
-    assert_equals "0" "$?" "Framework VERSION should be 4.x.x (got: $version)"
+    # Version should be >= 4.0.0 (4.x.x or 5.x.x)
+    echo "$version" | grep -qE "^[4-9]\."
+    assert_equals "0" "$?" "Framework VERSION should be >= 4.x.x (got: $version)"
 }
-run_test "framework VERSION is 4.x.x" test_framework_version_updated
+run_test "framework VERSION is >= 4.x.x" test_framework_version_updated
 
 # ──────────────────────────────────────────────
 print_summary

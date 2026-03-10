@@ -26,9 +26,9 @@ test_has_select_agent() {
 run_test "has select_agent function" test_has_select_agent
 
 # ──────────────────────────────────────────────
-describe "Agent Selector — default is Codex"
+describe "Agent Selector — default is Claude Code"
 
-test_default_codex() {
+test_default_claude_code() {
     local result
     result=$(python3 -c "
 import sys
@@ -36,17 +36,17 @@ sys.path.insert(0, '${FRAMEWORK_DIR}')
 from core.runtime.agent_selector import select_agent
 
 result = select_agent({'title': 'Add API endpoint', 'labels': ['type:dev']})
-assert result['agent'] == 'codex', f'Default should be codex, got {result[\"agent\"]}'
+assert result['agent'] == 'claude_code', f'Default should be claude_code, got {result[\"agent\"]}'
 print('OK')
 " 2>/dev/null)
-    assert_equals "OK" "$result" "Default agent should be codex"
+    assert_equals "OK" "$result" "Default agent should be claude_code"
 }
-run_test "default agent is codex" test_default_codex
+run_test "default agent is claude_code" test_default_claude_code
 
 # ──────────────────────────────────────────────
-describe "Agent Selector — Claude Code for MCP"
+describe "Agent Selector — Codex for sandbox"
 
-test_mcp_uses_claude() {
+test_sandbox_uses_codex() {
     local result
     result=$(python3 -c "
 import sys
@@ -54,60 +54,16 @@ sys.path.insert(0, '${FRAMEWORK_DIR}')
 from core.runtime.agent_selector import select_agent
 
 result = select_agent({
-    'title': 'Fix UI component',
+    'title': 'Run isolated task',
     'labels': ['type:dev'],
-    'requires_mcp': True
+    'requires_sandbox': True
 })
-assert result['agent'] == 'claude_code', f'MCP tasks should use claude_code, got {result[\"agent\"]}'
+assert result['agent'] == 'codex', f'Sandbox tasks should use codex, got {result[\"agent\"]}'
 print('OK')
 " 2>/dev/null)
-    assert_equals "OK" "$result" "MCP tasks should use claude_code"
+    assert_equals "OK" "$result" "Sandbox tasks should use codex"
 }
-run_test "MCP tasks use claude_code" test_mcp_uses_claude
-
-# ──────────────────────────────────────────────
-describe "Agent Selector — Claude Code for Playwright"
-
-test_playwright_uses_claude() {
-    local result
-    result=$(python3 -c "
-import sys
-sys.path.insert(0, '${FRAMEWORK_DIR}')
-from core.runtime.agent_selector import select_agent
-
-result = select_agent({
-    'title': 'E2E test for dashboard',
-    'labels': ['type:dev'],
-    'requires_playwright': True
-})
-assert result['agent'] == 'claude_code', f'Playwright tasks should use claude_code, got {result[\"agent\"]}'
-print('OK')
-" 2>/dev/null)
-    assert_equals "OK" "$result" "Playwright tasks should use claude_code"
-}
-run_test "Playwright tasks use claude_code" test_playwright_uses_claude
-
-# ──────────────────────────────────────────────
-describe "Agent Selector — Claude Code for local FS"
-
-test_local_fs_uses_claude() {
-    local result
-    result=$(python3 -c "
-import sys
-sys.path.insert(0, '${FRAMEWORK_DIR}')
-from core.runtime.agent_selector import select_agent
-
-result = select_agent({
-    'title': 'Read local config',
-    'labels': ['type:dev'],
-    'requires_local_fs': True
-})
-assert result['agent'] == 'claude_code', f'Local FS tasks should use claude_code, got {result[\"agent\"]}'
-print('OK')
-" 2>/dev/null)
-    assert_equals "OK" "$result" "Local FS tasks should use claude_code"
-}
-run_test "local FS tasks use claude_code" test_local_fs_uses_claude
+run_test "sandbox tasks use codex" test_sandbox_uses_codex
 
 # ──────────────────────────────────────────────
 describe "Agent Selector — user override"
@@ -121,9 +77,9 @@ from core.runtime.agent_selector import select_agent
 
 result = select_agent(
     {'title': 'Normal task', 'labels': ['type:dev']},
-    user_preference='claude_code'
+    user_preference='codex'
 )
-assert result['agent'] == 'claude_code', f'User override should work, got {result[\"agent\"]}'
+assert result['agent'] == 'codex', f'User override should work, got {result[\"agent\"]}'
 print('OK')
 " 2>/dev/null)
     assert_equals "OK" "$result" "User preference should override default"
@@ -142,14 +98,14 @@ from core.runtime.agent_selector import select_agent
 
 result = select_agent(
     {'title': 'Task', 'labels': ['type:dev']},
-    codex_failures=2
+    claude_code_failures=2
 )
-assert result['agent'] == 'claude_code', f'Should fallback after 2 failures, got {result[\"agent\"]}'
+assert result['agent'] == 'codex', f'Should fallback after 2 failures, got {result[\"agent\"]}'
 print('OK')
 " 2>/dev/null)
-    assert_equals "OK" "$result" "Should fallback to claude_code after 2 codex failures"
+    assert_equals "OK" "$result" "Should fallback to codex after 2 claude_code failures"
 }
-run_test "fallback after 2 codex failures" test_fallback_on_failure
+run_test "fallback after 2 claude_code failures" test_fallback_on_failure
 
 # ──────────────────────────────────────────────
 describe "Agent Selector — reason provided"

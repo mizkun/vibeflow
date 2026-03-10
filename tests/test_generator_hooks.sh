@@ -51,7 +51,7 @@ test_generated_has_all_roles() {
 
     local generated="${outdir}/validate_access.py"
     local missing=""
-    for role in '"Iris"' '"Product Manager"' '"Engineer"' '"QA Engineer"' '"Infrastructure Manager"' '"Human"'; do
+    for role in '"Iris"' '"Coding Agent (Claude Code / Codex)"'; do
         if ! grep -q "$role" "$generated"; then
             missing="${missing} ${role}"
         fi

@@ -532,9 +532,13 @@ describe "Migration v4.1.0 — VERSION and CHANGELOG"
 test_framework_version_updated() {
     local version
     version=$(cat "${FRAMEWORK_DIR}/VERSION")
-    assert_equals "4.1.0" "$version" "Framework VERSION should be 4.1.0"
+    # v5.0.0 supersedes 4.1.0 — accept >= 4.1.0
+    local major
+    major=$(echo "$version" | cut -d. -f1)
+    [ "$major" -ge 4 ]
+    assert_equals "0" "$?" "Framework VERSION should be >= 4.1.0 (got: $version)"
 }
-run_test "framework VERSION is 4.1.0" test_framework_version_updated
+run_test "framework VERSION is >= 4.1.0" test_framework_version_updated
 
 test_changelog_has_v410() {
     assert_file_contains "${FRAMEWORK_DIR}/CHANGELOG.md" "4.1.0" \

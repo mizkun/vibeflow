@@ -68,7 +68,7 @@ issue = {
 packet = build_packet(
     issue=issue,
     repo='mizkun/vibeflow',
-    role='engineer',
+    role='coding_agent',
     policy_path='${FRAMEWORK_DIR}/core/schema/policy.yaml',
     worker_type='claude',
 )
@@ -105,7 +105,7 @@ issue = {
 }
 
 packet = build_packet(
-    issue=issue, repo='owner/repo', role='engineer',
+    issue=issue, repo='owner/repo', role='coding_agent',
     policy_path='${FRAMEWORK_DIR}/core/schema/policy.yaml',
     worker_type='claude',
 )
@@ -139,7 +139,7 @@ issue = {
 }
 
 packet = build_packet(
-    issue=issue, repo='o/r', role='engineer',
+    issue=issue, repo='o/r', role='coding_agent',
     policy_path='${FRAMEWORK_DIR}/core/schema/policy.yaml',
     worker_type='claude',
 )
@@ -171,7 +171,7 @@ issue = {
 }
 
 packet = build_packet(
-    issue=issue, repo='o/r', role='engineer',
+    issue=issue, repo='o/r', role='coding_agent',
     policy_path='${FRAMEWORK_DIR}/core/schema/policy.yaml',
     worker_type='claude',
 )
@@ -204,7 +204,7 @@ issue = {
 }
 
 packet = build_packet(
-    issue=issue, repo='o/r', role='engineer',
+    issue=issue, repo='o/r', role='coding_agent',
     policy_path='${FRAMEWORK_DIR}/core/schema/policy.yaml',
     worker_type='claude',
 )
@@ -215,7 +215,7 @@ print(json.dumps(packet['must_read']))
 import sys, json
 mr = json.load(sys.stdin)
 assert isinstance(mr, list), 'must_read should be list'
-assert 'spec.md' in mr, f'Engineer must_read should include spec.md, got {mr}'
+assert 'spec.md' in mr, f'coding_agent must_read should include spec.md, got {mr}'
 print('OK')
 " || { fail "must_read should include policy can_read entries"; return 1; }
 }
@@ -238,7 +238,7 @@ issue = {
 
 for wt in ['claude', 'codex', 'human']:
     packet = build_packet(
-        issue=issue, repo='o/r', role='engineer',
+        issue=issue, repo='o/r', role='coding_agent',
         policy_path='${FRAMEWORK_DIR}/core/schema/policy.yaml',
         worker_type=wt,
     )
@@ -266,7 +266,7 @@ for label, expected in [('type:dev', 'dev'), ('type:patch', 'patch'), ('type:spi
         'labels': [{'name': label}, {'name': 'workflow:standard'}],
     }
     packet = build_packet(
-        issue=issue, repo='o/r', role='engineer',
+        issue=issue, repo='o/r', role='coding_agent',
         policy_path='${FRAMEWORK_DIR}/core/schema/policy.yaml',
         worker_type='claude',
     )
@@ -297,7 +297,7 @@ issue = {
 }
 
 packet = build_packet(
-    issue=issue, repo='o/r', role='engineer',
+    issue=issue, repo='o/r', role='coding_agent',
     policy_path='${FRAMEWORK_DIR}/core/schema/policy.yaml',
     worker_type='claude',
 )
@@ -329,7 +329,7 @@ issue = {
 }
 
 packet = build_packet(
-    issue=issue, repo='o/r', role='engineer',
+    issue=issue, repo='o/r', role='coding_agent',
     policy_path='${FRAMEWORK_DIR}/core/schema/policy.yaml',
     worker_type='claude',
 )
@@ -359,7 +359,7 @@ issue = {
 }
 
 packet = build_packet(
-    issue=issue, repo='o/r', role='engineer',
+    issue=issue, repo='o/r', role='coding_agent',
     policy_path='${FRAMEWORK_DIR}/core/schema/policy.yaml',
     worker_type='claude',
 )
@@ -388,7 +388,7 @@ issue = {
 }
 
 packet = build_packet(
-    issue=issue, repo='o/r', role='engineer',
+    issue=issue, repo='o/r', role='coding_agent',
     policy_path='${FRAMEWORK_DIR}/core/schema/policy.yaml',
     worker_type='claude',
 )

@@ -17,44 +17,16 @@ These are enforced by the VibeFlow hook system and validated post-execution.
 
 
 #### Iris
-- **Description**: Default project entry point — triage, dispatch, and context management
-- **can_write**: vision.md, spec.md, plan.md, .vibe/context/*, .vibe/references/*, .vibe/archive/*, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml
+- **Description**: プロジェクトの唯一のインターフェース (default entry point) — triage、dispatch、QA判断、クローズ
+- **can_write**: vision.md, spec.md, plan.md, .vibe/**
 - **can_read**: vision.md, spec.md, plan.md, .vibe/context/**, .vibe/references/**, .vibe/archive/**, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml, src/**
 - **enforcement**: hard
 
 
-#### Product Manager
-- **Description**: Vision alignment, planning, and issue management
-- **can_write**: plan.md, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml
-- **can_read**: vision.md, spec.md, plan.md, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml, .vibe/qa-reports/**
-- **enforcement**: hard
-
-
-#### Engineer
-- **Description**: Implementation, testing, and refactoring
+#### Coding Agent (Claude Code / Codex)
+- **Description**: コーディング、テスト、リファクタリング
 - **can_write**: src/*, tests/*, **/*.test.*, **/__tests__/*, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml, .vibe/test-results.log
-- **can_read**: spec.md, src/**, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml
-- **enforcement**: hard
-
-
-#### QA Engineer
-- **Description**: Acceptance testing, quality verification, and review
-- **can_write**: .vibe/qa-reports/*, .vibe/test-results.log, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml
-- **can_read**: spec.md, src/**, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml, .vibe/qa-reports/**
-- **enforcement**: hard
-
-
-#### Infrastructure Manager
-- **Description**: Hook and guardrail management
-- **can_write**: .vibe/hooks/*, validate-write*, validate_write*, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml
-- **can_read**: .vibe/hooks/**, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml, .claude/settings.json
-- **enforcement**: hard
-
-
-#### Human
-- **Description**: Human checkpoint for manual verification
-- **can_write**: .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml
-- **can_read**: (none)
+- **can_read**: spec.md, src/**, tests/**, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml
 - **enforcement**: hard
 
 
@@ -82,38 +54,30 @@ Workers receive tasks via handoff packets that specify which workflow to follow.
 
 
 ### Standard Workflow
-Standard development workflow — 11 core steps + infra gates (2.5/6.5) and QA checkpoint (7a)
+Standard development workflow — Iris dispatches to Coding Agent, reviews results
 
 | Step | Role | Mode |
 |------|------|------|
 
-| 1_issue_review | product_manager | solo |
+| 1_issue_review | iris | solo |
 
-| 2_task_breakdown | product_manager | team |
+| 2_task_breakdown | iris | solo |
 
-| 2.5_hook_permission_setup | infra_manager | solo |
+| 3_branch_creation | coding_agent | solo |
 
-| 3_branch_creation | engineer | solo |
+| 4_test_writing | coding_agent | solo |
 
-| 4_test_writing | engineer | fork |
+| 5_implementation | coding_agent | solo |
 
-| 5_implementation | engineer | fork |
+| 6_refactoring | coding_agent | solo |
 
-| 6_refactoring | engineer | fork |
+| 7_acceptance_test | iris | solo |
 
-| 6.5_hook_rollback | infra_manager | solo |
+| 8_pr_creation | coding_agent | solo |
 
-| 7_acceptance_test | qa_engineer | team |
+| 9_code_review | iris | solo |
 
-| 7a_human_checkpoint | human | checkpoint |
-
-| 8_pr_creation | engineer | solo |
-
-| 9_code_review | qa_engineer | team |
-
-| 10_merge | engineer | solo |
-
-| 11_deployment | engineer | solo |
+| 10_merge | coding_agent | solo |
 
 
 
@@ -123,13 +87,13 @@ Lightweight patch loop for scoped fixes from QA/review feedback
 | Step | Role | Mode |
 |------|------|------|
 
-| 1_scope_review | engineer | solo |
+| 1_scope_review | iris | solo |
 
-| 2_fix_implementation | engineer | solo |
+| 2_fix_implementation | coding_agent | solo |
 
-| 3_targeted_test | qa_engineer | solo |
+| 3_targeted_test | coding_agent | solo |
 
-| 4_commit | engineer | solo |
+| 4_commit | coding_agent | solo |
 
 
 
@@ -141,7 +105,7 @@ Exploration and discovery — produces decisions, not production code
 
 | 1_question_framing | iris | solo |
 
-| 2_exploration | engineer | solo |
+| 2_exploration | coding_agent | solo |
 
 | 3_decision_summary | iris | solo |
 

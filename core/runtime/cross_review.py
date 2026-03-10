@@ -1,7 +1,7 @@
 """Cross-Review Model for VibeFlow v5 Iris-Only Architecture.
 
 The agent that did NOT code reviews the changes.
-Codex codes → Claude Code reviews, and vice versa.
+Claude Code codes → Codex reviews (default), and vice versa.
 """
 
 import re

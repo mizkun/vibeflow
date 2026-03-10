@@ -119,8 +119,8 @@ EOF
 
     assert_file_contains "${TEST_DIR}/CLAUDE.md" "Iris" \
         "Generated roles section should contain Iris"
-    assert_file_contains "${TEST_DIR}/CLAUDE.md" "Engineer" \
-        "Generated roles section should contain Engineer"
+    assert_file_contains "${TEST_DIR}/CLAUDE.md" "Coding Agent" \
+        "Generated roles section should contain Coding Agent"
 }
 run_test "Generated roles section has schema-derived content" test_generated_roles_section_has_content
 

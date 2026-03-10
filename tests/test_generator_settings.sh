@@ -112,8 +112,8 @@ test_generate_policy_produces_full_fidelity() {
         "Generated policy should include enforcement field"
     assert_file_contains "${outdir}/policy.yaml" "display_name" \
         "Generated policy should include display_name field"
-    assert_file_contains "${outdir}/policy.yaml" "human" \
-        "Generated policy should include human role"
+    assert_file_contains "${outdir}/policy.yaml" "coding_agent" \
+        "Generated policy should include coding_agent role"
     assert_file_contains "${outdir}/policy.yaml" "always_allow" \
         "Generated policy should include always_allow section"
 }
@@ -135,7 +135,7 @@ test_generate_docs_produces_role_files() {
         --schema-dir "${FRAMEWORK_DIR}/core/schema" \
         --output "$outdir" 2>/dev/null
 
-    for role in iris product-manager engineer qa-engineer infra-manager human; do
+    for role in iris coding-agent; do
         assert_file_exists "${outdir}/${role}.md" \
             "Generator should produce ${role}.md"
     done
@@ -151,8 +151,8 @@ test_role_docs_contain_permissions() {
 
     assert_file_contains "${outdir}/iris.md" "can_write\|Can Edit\|Can Write" \
         "Iris role doc should contain write permissions"
-    assert_file_contains "${outdir}/engineer.md" "src/" \
-        "Engineer role doc should reference src/"
+    assert_file_contains "${outdir}/coding-agent.md" "src/" \
+        "Coding Agent role doc should reference src/"
 }
 run_test "Role docs contain permission info from policy" test_role_docs_contain_permissions
 

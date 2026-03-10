@@ -35,7 +35,7 @@ Iris は起動時に自動で状態を読み込みます:
 - 依存関係分析・実行順序決定
 
 ### 4. Agent Dispatch
-- coding agent の選択 (Codex デフォルト / Claude Code フォールバック)
+- coding agent の選択 (Claude Code デフォルト / Codex レビュー・フォールバック)
 - タスクの agent への dispatch
 - 並行実行管理 (worktree 分離)
 - リトライ制御 (最大 3 回)

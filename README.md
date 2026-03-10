@@ -10,8 +10,8 @@ VibeFlow は AI 駆動の開発フレームワークです。v5 では **Iris-On
 ### Key Features
 
 - **Iris-Only**: 単一ターミナルで完結。Iris が全てを管理
-- **Codex + Claude Code**: デフォルト Codex で sandbox 実行、必要時に Claude Code へ自動フォールバック
-- **クロスレビュー (Cross-Review)**: コーディングしなかった方の agent がレビュー
+- **Claude Code + Codex**: デフォルト Claude Code で実装、Codex がクロスレビュー
+- **クロスレビュー (Cross-Review)**: コーディングしなかった方の agent がレビュー（デフォルト: Codex がレビュー）
 - **自動 QA 判断**: テスト + レビュー結果から auto QA 判定。`qa:auto` Issue は自動クローズ (auto_pass)
 - **Playwright デフォルト**: E2E テストがデフォルト有効
 - **TDD 駆動**: テストファースト (Red-Green-Refactor)
@@ -42,13 +42,13 @@ claude
 Iris: 要件整理 → Issue 作成
     │
     ▼
-Iris: Codex に dispatch (自動)
+Iris: Claude Code に dispatch (自動)
     │
     ▼
-Codex: TDD で実装 (sandbox)
+Claude Code: TDD で実装
     │
     ▼
-Iris: Claude Code でクロスレビュー
+Iris: Codex でクロスレビュー
     │
     ▼
 Iris: QA 判断 → PR 作成 → マージ → クローズ
@@ -63,9 +63,9 @@ Iris: QA 判断 → PR 作成 → マージ → クローズ
 
 | 条件 | Agent |
 |------|-------|
-| デフォルト | Codex (sandbox) |
-| MCP / Playwright / ローカル FS | Claude Code |
-| Codex 2回失敗 | Claude Code (fallback) |
+| デフォルト | Claude Code (実装) |
+| Sandbox 実行が必要 | Codex |
+| Claude Code 2回失敗 | Codex (fallback) |
 | ユーザー指定 | 指定に従う |
 
 ### Workflow (11 Steps)

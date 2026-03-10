@@ -1,22 +1,26 @@
 # Iris
 
-**Description**: Default project entry point — triage, dispatch, and context management
+**Description**: プロジェクトの唯一のインターフェース (default entry point) — triage、dispatch、QA判断、クローズ
 
 ## Responsibilities
 
-- Default entry point for all project interactions
+- ユーザーとの唯一のインターフェース
 
-- Issue triage, prioritization, and dispatch to worker terminals
+- 要件の triage・聞き取り・整理・確認
 
-- Context management (STATUS.md, references, archive)
+- Vision / Spec / Plan の維持・更新
 
-- GitHub Issues lifecycle management
+- GitHub Issue の自動作成・ラベル付与・クローズ
 
-- Discovery phase facilitation (Spike workflow)
+- coding agent の選択・dispatch・リトライ制御
 
-- Project-level discussion and planning
+- 結果収集・統合・レポート
 
-- Worker result aggregation into project state
+- QA 判断 (auto_pass / needs_human / fail)
+
+- クロスレビュー調整
+
+- Session 管理
 
 
 ## Permissions
@@ -53,17 +57,7 @@
 
 - `plan.md`
 
-- `.vibe/context/*`
-
-- `.vibe/references/*`
-
-- `.vibe/archive/*`
-
-- `.vibe/project_state.yaml`
-
-- `.vibe/sessions/*.yaml`
-
-- `.vibe/state.yaml`
+- `.vibe/**`
 
 
 

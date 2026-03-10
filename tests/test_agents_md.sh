@@ -63,8 +63,10 @@ test_has_role_permissions() {
         --schema-dir "${FRAMEWORK_DIR}/core/schema" \
         --output "${outdir}/AGENTS.md" 2>/dev/null
 
-    assert_file_contains "${outdir}/AGENTS.md" "Engineer" \
-        "AGENTS.md should mention Engineer role"
+    assert_file_contains "${outdir}/AGENTS.md" "Iris" \
+        "AGENTS.md should mention Iris role"
+    assert_file_contains "${outdir}/AGENTS.md" "Coding Agent" \
+        "AGENTS.md should mention Coding Agent role"
     assert_file_contains "${outdir}/AGENTS.md" "can_write" \
         "AGENTS.md should show can_write permissions"
 }
@@ -162,7 +164,7 @@ test_examples_agents_md_exists() {
 run_test "examples/AGENTS.md exists" test_examples_agents_md_exists
 
 test_examples_agents_md_has_content() {
-    assert_file_contains "${FRAMEWORK_DIR}/examples/AGENTS.md" "Engineer" \
+    assert_file_contains "${FRAMEWORK_DIR}/examples/AGENTS.md" "Iris" \
         "examples/AGENTS.md should have role content"
     assert_file_contains "${FRAMEWORK_DIR}/examples/AGENTS.md" "allowed" \
         "examples/AGENTS.md should have access rules"

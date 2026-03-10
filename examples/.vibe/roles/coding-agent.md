@@ -1,16 +1,16 @@
-# Engineer
+# Coding Agent (Claude Code / Codex)
 
-**Description**: Implementation, testing, and refactoring
+**Description**: コーディング、テスト、リファクタリング
 
 ## Responsibilities
 
-- Branch creation and management
+- TDD: テスト先行、実装、リファクタリング
 
-- TDD: test writing, implementation, refactoring
+- ブランチ作成・管理
 
-- Pull request creation
+- Pull Request 作成
 
-- Code merge and deployment
+- コードレビュー (クロスレビュー時)
 
 
 ## Permissions
@@ -20,6 +20,8 @@
 - `spec.md`
 
 - `src/**`
+
+- `tests/**`
 
 - `.vibe/project_state.yaml`
 

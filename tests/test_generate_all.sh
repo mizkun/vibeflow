@@ -66,8 +66,8 @@ test_generate_all_produces_policy() {
         "Should generate policy.yaml"
     assert_file_contains "${outdir}/.vibe/policy.yaml" "enforcement" \
         "policy.yaml should contain enforcement"
-    assert_file_contains "${outdir}/.vibe/policy.yaml" "human" \
-        "policy.yaml should contain human role"
+    assert_file_contains "${outdir}/.vibe/policy.yaml" "coding_agent" \
+        "policy.yaml should contain coding_agent role"
 }
 run_test "Full generation produces policy.yaml" test_generate_all_produces_policy
 
@@ -82,8 +82,8 @@ test_generate_all_produces_role_docs() {
 
     assert_file_exists "${outdir}/.vibe/roles/iris.md" \
         "Should generate iris.md role doc"
-    assert_file_exists "${outdir}/.vibe/roles/engineer.md" \
-        "Should generate engineer.md role doc"
+    assert_file_exists "${outdir}/.vibe/roles/coding-agent.md" \
+        "Should generate coding-agent.md role doc"
 }
 run_test "Full generation produces role docs" test_generate_all_produces_role_docs
 

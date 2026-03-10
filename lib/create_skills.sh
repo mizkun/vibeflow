@@ -20,6 +20,7 @@ ALL_SKILLS=(
     "vibeflow-healthcheck"
     "vibeflow-ui-smoke"
     "vibeflow-ui-explore"
+    "vibeflow-kickoff"
 )
 
 # Function to create all skills

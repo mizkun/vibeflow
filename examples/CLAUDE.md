@@ -13,27 +13,27 @@ Iris が Issue 作成 → coding agent 選択 → dispatch → 結果収集 → 
 
 <!-- VF:BEGIN roles -->
 ### Iris
-**Description**: プロジェクトの唯一のインターフェース — 計画、dispatch、QA判断、クローズ
+**Description**: プロジェクトの唯一のインターフェース (default entry point) — triage、dispatch、QA判断、クローズ
 **Enforcement**: hard
-**Can Write**: `vision.md`, `spec.md`, `plan.md`, `.vibe/**`, GitHub Issues
+**Can Write**: `vision.md`, `spec.md`, `plan.md`, `.vibe/**`
 
-### Coding Agent (Codex / Claude Code)
+### Coding Agent (Claude Code / Codex)
 **Description**: コーディング、テスト、リファクタリング
 **Enforcement**: hard
-**Can Write**: `src/*`, `tests/*`, `**/*.test.*`, `**/__tests__/*`
+**Can Write**: `src/*`, `tests/*`, `**/*.test.*`, `**/__tests__/*`, `.vibe/project_state.yaml`, `.vibe/sessions/*.yaml`, `.vibe/state.yaml`, `.vibe/test-results.log`
 
 <!-- VF:END roles -->
 
 ## Architecture
 
 ```
-ユーザー ── Iris (単一ターミナル) ──┬── Codex (default)
-                                    └── Claude Code (fallback)
+ユーザー ── Iris (単一ターミナル) ──┬── Claude Code (default: 実装)
+                                    └── Codex (default: レビュー)
 ```
 
 ### Agent Selection
-- **Default**: Codex (sandbox 実行、非同期)
-- **Claude Code**: MCP 連携、Playwright、ローカル FS アクセス、Codex 2回失敗時
+- **Default**: Claude Code (実装)、Codex (クロスレビュー)
+- **Codex**: sandbox 実行が必要な場合、Claude Code 2回失敗時のフォールバック
 
 ### Cross-Review
 コーディングしなかった方の agent がレビューする。
@@ -41,34 +41,49 @@ Iris が Issue 作成 → coding agent 選択 → dispatch → 結果収集 → 
 ## Workflow
 
 <!-- VF:BEGIN workflow -->
-### Standard Workflow (11 Steps)
-Iris が自動進行。詳細は `rules/workflow-standard.md`。
+### Standard Workflow
+Standard development workflow — Iris dispatches to Coding Agent, reviews results
 
-| Step | Description | Who |
-|------|------------|-----|
-| 1-2 | Issue Review + Task Breakdown | Iris |
-| 3-6 | Branch + TDD (Test→Impl→Refactor) | Coding Agent |
-| 7-7a | Acceptance Test + Human Checkpoint | Iris / Human |
-| 8 | PR Creation | Coding Agent |
-| 9 | Cross-Review | Other Agent |
-| 10-11 | Merge + Close | Iris |
+| Step | Role | Mode |
+|------|------|------|
+| 1_issue_review | iris | solo |
+| 2_task_breakdown | iris | solo |
+| 3_branch_creation | coding_agent | solo |
+| 4_test_writing | coding_agent | solo |
+| 5_implementation | coding_agent | solo |
+| 6_refactoring | coding_agent | solo |
+| 7_acceptance_test | iris | solo |
+| 8_pr_creation | coding_agent | solo |
+| 9_code_review | iris | solo |
+| 10_merge | coding_agent | solo |
 
-### Patch Workflow (4 Steps)
-詳細は `rules/workflow-patch.md`。
+### Patch Workflow
+Lightweight patch loop for scoped fixes from QA/review feedback
 
-| Step | Description |
-|------|------------|
-| 1 | Scope Review |
-| 2 | Fix Implementation |
-| 3 | Targeted Test |
-| 4 | Commit |
+| Step | Role | Mode |
+|------|------|------|
+| 1_scope_review | iris | solo |
+| 2_fix_implementation | coding_agent | solo |
+| 3_targeted_test | coding_agent | solo |
+| 4_commit | coding_agent | solo |
 
 ### Spike Workflow
-| Step | Description |
-|------|------------|
-| 1 | Question Framing |
-| 2 | Exploration |
-| 3 | Decision Summary |
+Exploration and discovery — produces decisions, not production code
+
+| Step | Role | Mode |
+|------|------|------|
+| 1_question_framing | iris | solo |
+| 2_exploration | coding_agent | solo |
+| 3_decision_summary | iris | solo |
+
+### Ops Workflow
+Non-development project tasks (release, docs, backlog grooming)
+
+| Step | Role | Mode |
+|------|------|------|
+| 1_task_review | iris | solo |
+| 2_execution | iris | solo |
+| 3_completion | iris | solo |
 
 <!-- VF:END workflow -->
 
@@ -121,11 +136,15 @@ Iris が自動進行。詳細は `rules/workflow-standard.md`。
 ## Hooks
 
 <!-- VF:BEGIN hook_list -->
-- **PreToolUse** (`validate_access.py`): ロールベースのアクセス制御
-- **PreToolUse** (`validate_write.sh`): plans/ ディレクトリ書き込みブロック
-- **PreToolUse** (`validate_step7a.py`): QA checkpoint ガード
-- **PostToolUse** (`task_complete.sh`): 完了通知
-- **Stop** (`waiting_input.sh`): 入力待ち通知
+The framework uses Claude Code hooks for automatic safety and notification:
+
+- **PreToolUse** (`validate_access.py`): Access control that blocks unauthorized file edits based on current role. Exit code 2 blocks the tool call.
+- **PreToolUse** (`validate_write.sh`): Write guard that blocks writes to `plans/` directory.
+- **PreToolUse** (`validate_step7a.py`): Step 7a guard that blocks `gh pr create` until QA checkpoint is approved.
+- **PostToolUse** (`task_complete.sh`): Plays notification sound on Edit/Write/MultiEdit/TodoWrite completion.
+- **Stop** (`waiting_input.sh`): Plays notification sound when waiting for user input.
+
+Configuration: `.claude/settings.json`
 <!-- VF:END hook_list -->
 
 ## Skills

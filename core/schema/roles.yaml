@@ -1,58 +1,28 @@
-# VibeFlow Roles Schema — Single Source of Truth
+# VibeFlow Roles Schema — Single Source of Truth (v5 Iris-Only)
 # Defines role metadata: description and responsibilities.
 # Permissions are defined in policy.yaml (separate concern).
 
 roles:
   iris:
     name: "Iris"
-    description: "Default project entry point — triage, dispatch, and context management"
+    default: true
+    description: "プロジェクトの唯一のインターフェース (default entry point) — triage、dispatch、QA判断、クローズ"
     responsibilities:
-      - "Default entry point for all project interactions"
-      - "Issue triage, prioritization, and dispatch to worker terminals"
-      - "Context management (STATUS.md, references, archive)"
-      - "GitHub Issues lifecycle management"
-      - "Discovery phase facilitation (Spike workflow)"
-      - "Project-level discussion and planning"
-      - "Worker result aggregation into project state"
+      - "ユーザーとの唯一のインターフェース"
+      - "要件の triage・聞き取り・整理・確認"
+      - "Vision / Spec / Plan の維持・更新"
+      - "GitHub Issue の自動作成・ラベル付与・クローズ"
+      - "coding agent の選択・dispatch・リトライ制御"
+      - "結果収集・統合・レポート"
+      - "QA 判断 (auto_pass / needs_human / fail)"
+      - "クロスレビュー調整"
+      - "Session 管理"
 
-  product_manager:
-    name: "Product Manager"
-    description: "Vision alignment, planning, and issue management"
+  coding_agent:
+    name: "Coding Agent (Claude Code / Codex)"
+    description: "コーディング、テスト、リファクタリング"
     responsibilities:
-      - "Issue review and requirements validation"
-      - "Task breakdown into implementable units"
-      - "Plan updates and progress tracking"
-      - "Acceptance criteria definition"
-
-  engineer:
-    name: "Engineer"
-    description: "Implementation, testing, and refactoring"
-    responsibilities:
-      - "Branch creation and management"
-      - "TDD: test writing, implementation, refactoring"
-      - "Pull request creation"
-      - "Code merge and deployment"
-
-  qa_engineer:
-    name: "QA Engineer"
-    description: "Acceptance testing, quality verification, and review"
-    responsibilities:
-      - "Acceptance test execution"
-      - "Code review (security, performance, coverage)"
-      - "QA report generation"
-      - "Human checkpoint management"
-
-  infra_manager:
-    name: "Infrastructure Manager"
-    description: "Hook and guardrail management"
-    responsibilities:
-      - "Hook permission setup per issue"
-      - "Hook rollback after implementation"
-      - "Security configuration management"
-
-  human:
-    name: "Human"
-    description: "Human checkpoint for manual verification"
-    responsibilities:
-      - "UI/UX manual verification"
-      - "Acceptance approval"
+      - "TDD: テスト先行、実装、リファクタリング"
+      - "ブランチ作成・管理"
+      - "Pull Request 作成"
+      - "コードレビュー (クロスレビュー時)"

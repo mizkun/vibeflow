@@ -1,7 +1,7 @@
 """Agent Selection Logic for VibeFlow v5 Iris-Only Architecture.
 
-Determines whether to use Codex or Claude Code for a given task.
-Default: Codex. Fallback: Claude Code when specific conditions are met.
+Determines whether to use Claude Code or Codex for a given task.
+Default: Claude Code. Codex is used for review (cross-review model).
 """
 
 from typing import Any, Dict, Optional
@@ -10,17 +10,15 @@ from typing import Any, Dict, Optional
 def select_agent(
     issue: Dict[str, Any],
     user_preference: Optional[str] = None,
-    codex_failures: int = 0,
+    claude_code_failures: int = 0,
 ) -> Dict[str, str]:
     """Select the appropriate coding agent for an issue.
 
     Args:
         issue: Issue dict with title, labels, and optional flags:
-            - requires_mcp: bool
-            - requires_playwright: bool
-            - requires_local_fs: bool
+            - requires_sandbox: bool (prefer Codex sandbox)
         user_preference: User-specified agent ('codex' or 'claude_code').
-        codex_failures: Number of times Codex has failed for this task.
+        claude_code_failures: Number of times Claude Code has failed for this task.
 
     Returns:
         Dict with 'agent' ('codex' or 'claude_code') and 'reason' (str).
@@ -32,36 +30,22 @@ def select_agent(
             "reason": f"User specified {user_preference}",
         }
 
-    # Fallback after repeated Codex failures
-    if codex_failures >= 2:
+    # Fallback after repeated Claude Code failures
+    if claude_code_failures >= 2:
         return {
-            "agent": "claude_code",
-            "reason": f"Codex failed {codex_failures} times, falling back to Claude Code",
+            "agent": "codex",
+            "reason": f"Claude Code failed {claude_code_failures} times, falling back to Codex",
         }
 
-    # Claude Code required for MCP
-    if issue.get("requires_mcp"):
+    # Codex preferred for sandbox-only tasks
+    if issue.get("requires_sandbox"):
         return {
-            "agent": "claude_code",
-            "reason": "Task requires MCP server integration",
+            "agent": "codex",
+            "reason": "Task prefers Codex sandbox execution",
         }
 
-    # Claude Code required for Playwright
-    if issue.get("requires_playwright"):
-        return {
-            "agent": "claude_code",
-            "reason": "Task requires Playwright (local browser)",
-        }
-
-    # Claude Code required for local filesystem access
-    if issue.get("requires_local_fs"):
-        return {
-            "agent": "claude_code",
-            "reason": "Task requires local filesystem access",
-        }
-
-    # Default: Codex
+    # Default: Claude Code
     return {
-        "agent": "codex",
-        "reason": "Default agent (sandbox execution)",
+        "agent": "claude_code",
+        "reason": "Default agent (local execution with full capabilities)",
     }

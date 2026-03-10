@@ -5,6 +5,74 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [5.0.0] - 2026-03-10
+
+Iris-Only Architecture: 単一ターミナルで完結する AI 駆動開発フレームワーク v5。
+
+### Added
+
+#### Iris-Only Architecture (Issue #52)
+- 設計書 `docs/architecture-v5.md` を追加
+- ユーザーは Iris とだけ会話、Iris が全てを自動管理
+
+#### Agent Wrappers (Issue #53, #54)
+- `lib/wrappers/codex.sh`: Codex CLI ラッパー (dispatch/poll/collect/cancel)
+- `lib/wrappers/claude_code.sh`: Claude Code CLI ラッパー (同インターフェース)
+- `core/runtime/codex_wrapper.py`: Python Codex ラッパー
+- `core/runtime/claude_code_wrapper.py`: Python Claude Code ラッパー
+
+#### Playwright Default (Issue #55)
+- E2E テストがデフォルト有効 (`WITH_E2E=true`)
+
+#### Agent Selection (Issue #56)
+- `core/runtime/agent_selector.py`: Claude Code デフォルト、Codex レビュー/フォールバック
+
+#### Result Collection (Issue #57)
+- `core/runtime/result_collector.py`: agent 出力の収集・レポート生成
+
+#### Vision/Spec/Plan Kickoff (Issue #58)
+- `vibeflow-kickoff` skill: プロジェクト初期化
+
+#### Issue Auto-Generation (Issue #59)
+- `core/runtime/issue_generator.py`: plan.md から Issue 自動生成
+
+#### QA Judgment (Issue #60)
+- `core/runtime/qa_judge.py`: auto_pass / needs_human / fail 自動判定
+
+#### Dependency Analysis (Issue #61)
+- `core/runtime/dependency_analyzer.py`: トポロジカルバッチ実行
+
+#### Auto Dispatch (Issue #62)
+- `core/runtime/dispatcher.py`: session 自動 dispatch
+
+#### Cross-Review (Issue #63)
+- `core/runtime/cross_review.py`: 別 agent による自動レビュー
+
+#### Auto-Close (Issue #64)
+- `core/runtime/auto_close.py`: qa:auto Issue の自動クローズ
+
+#### Rules Restructure (Issue #65)
+- `.claude/rules/`: iris-core, workflow-standard, workflow-patch, safety, playwright
+- CLAUDE.md を ~150 行にスリム化
+
+### Changed
+
+#### /discuss Deprecation (Issue #66)
+- `/discuss` を deprecated に変更 (Iris は常にアクティブ)
+
+#### Multi-Terminal Removal (Issue #67)
+- マルチターミナル構成を廃止
+- dev.sh / Patch Terminal を削除
+- 単一ターミナル (Iris) モデルに移行
+
+#### README v5 Sync (Issue #68)
+- README.md を v5 Iris-Only Architecture に更新
+
+### Migration
+- `migrations/v4.1.0_to_v5.0.0.sh`: v4.1.0 からの自動マイグレーション
+
+---
+
 ## [4.1.0] - 2026-03-09
 
 Skills 化、Playwright MCP テンプレート、Plugin-compatible 構造、v4.0→v4.1 マイグレーションを追加。

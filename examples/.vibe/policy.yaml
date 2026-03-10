@@ -18,34 +18,14 @@ roles:
     - vision.md
     - spec.md
     - plan.md
-    - .vibe/context/*
-    - .vibe/references/*
-    - .vibe/archive/*
-    - .vibe/project_state.yaml
-    - .vibe/sessions/*.yaml
-    - .vibe/state.yaml
+    - .vibe/**
     enforcement: hard
-  product_manager:
-    display_name: Product Manager
-    can_read:
-    - vision.md
-    - spec.md
-    - plan.md
-    - .vibe/project_state.yaml
-    - .vibe/sessions/*.yaml
-    - .vibe/state.yaml
-    - .vibe/qa-reports/**
-    can_write:
-    - plan.md
-    - .vibe/project_state.yaml
-    - .vibe/sessions/*.yaml
-    - .vibe/state.yaml
-    enforcement: hard
-  engineer:
-    display_name: Engineer
+  coding_agent:
+    display_name: Coding Agent (Claude Code / Codex)
     can_read:
     - spec.md
     - src/**
+    - tests/**
     - .vibe/project_state.yaml
     - .vibe/sessions/*.yaml
     - .vibe/state.yaml
@@ -58,46 +38,6 @@ roles:
     - .vibe/sessions/*.yaml
     - .vibe/state.yaml
     - .vibe/test-results.log
-    enforcement: hard
-  qa_engineer:
-    display_name: QA Engineer
-    can_read:
-    - spec.md
-    - src/**
-    - .vibe/project_state.yaml
-    - .vibe/sessions/*.yaml
-    - .vibe/state.yaml
-    - .vibe/qa-reports/**
-    can_write:
-    - .vibe/qa-reports/*
-    - .vibe/test-results.log
-    - .vibe/project_state.yaml
-    - .vibe/sessions/*.yaml
-    - .vibe/state.yaml
-    enforcement: hard
-  infra_manager:
-    display_name: Infrastructure Manager
-    can_read:
-    - .vibe/hooks/**
-    - .vibe/project_state.yaml
-    - .vibe/sessions/*.yaml
-    - .vibe/state.yaml
-    - .claude/settings.json
-    can_write:
-    - .vibe/hooks/*
-    - validate-write*
-    - validate_write*
-    - .vibe/project_state.yaml
-    - .vibe/sessions/*.yaml
-    - .vibe/state.yaml
-    enforcement: hard
-  human:
-    display_name: Human
-    can_read: []
-    can_write:
-    - .vibe/project_state.yaml
-    - .vibe/sessions/*.yaml
-    - .vibe/state.yaml
     enforcement: hard
 always_allow:
 - .vibe/project_state.yaml

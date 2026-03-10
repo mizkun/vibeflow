@@ -18,8 +18,8 @@
 ### 目標モデル (v5.0.0): Iris-only, user-talks
 
 ```
-ユーザー ── Iris (単一ターミナル) ──┬── Codex (デフォルト coding agent)
-                                    └── Claude Code (fallback coding agent)
+ユーザー ── Iris (単一ターミナル) ──┬── Claude Code (デフォルト coding agent)
+                                    └── Codex (レビュー / fallback)
 ```
 
 - ユーザーは **Iris とだけ** 会話する
@@ -33,7 +33,7 @@
 |------|--------|--------|
 | ターミナル数 | 3 (Iris + Dev + Patch) | 1 (Iris のみ) |
 | dispatch | ユーザーが手動起動 | Iris が自動 dispatch |
-| coding agent | Claude Code のみ | Codex (デフォルト) + Claude Code |
+| coding agent | Claude Code のみ | Claude Code (デフォルト) + Codex (レビュー) |
 | レビュー | code-reviewer subagent | クロスレビュー (別 agent が実施) |
 | QA 判断 | qa-acceptance subagent + 人間 | Iris が自動判断 + 必要時のみ人間 |
 | ステップ遷移 | `/next` でユーザー主導 | Iris が自動進行 |
@@ -52,13 +52,13 @@
 Iris: 要件を整理、Issue を作成
     │
     ▼
-Iris: coding agent を選択 (Codex or Claude Code)
+Iris: coding agent を選択 (Claude Code or Codex)
     │
-    ├─── Codex に dispatch ──────────┐
-    │    (非同期、sandbox 実行)       │
+    ├─── Claude Code に dispatch ────┐
+    │    (デフォルト、ローカル実行)    │
     │                                 │
-    └─── Claude Code に dispatch ────┐│
-         (同期、ローカル実行)         ││
+    └─── Codex に dispatch ──────────┐│
+         (sandbox、フォールバック)     ││
                                       ▼▼
 Iris: 結果を収集・統合
     │
@@ -86,20 +86,20 @@ Iris: 承知しました。要件を整理します。
       - データソース: /api/stats/daily
 
       Issue #70 を作成しました。
-      Codex に dispatch します。
+      Claude Code に dispatch します。
 
       ... (自動実行中) ...
 
-Iris: Codex が実装を完了しました。
+Iris: Claude Code が実装を完了しました。
       - src/components/DailyChart.tsx (新規)
       - src/pages/Dashboard.tsx (変更)
       - tests/components/DailyChart.test.tsx (新規)
 
-      Claude Code によるクロスレビュー結果:
+      Codex によるクロスレビュー結果:
       - ✅ ロジック正常
       - ⚠️ レスポンシブ対応が未実装
 
-      修正を Codex に再 dispatch します。
+      修正を Claude Code に再 dispatch します。
 
       ... (修正完了) ...
 
@@ -164,32 +164,30 @@ Iris: マージしました。Issue #70 をクローズします。
 
 ## 4. Coding Agent 選択ロジック
 
-### デフォルト: Codex
+### デフォルト: Claude Code
 
-Codex を第一選択とする理由:
-- sandbox 環境で安全に実行
-- 非同期実行が可能 (ユーザーを待たせない)
-- 長時間タスクに適している
+Claude Code を第一選択とする理由:
+- ローカル実行で全機能にアクセス可能
+- MCP サーバー連携に対応
+- Playwright でのブラウザ操作が可能
+- プロジェクトのコンテキストを直接参照可能
 
-### Claude Code を使うケース
+### Codex を使うケース
 
 | 条件 | 理由 |
 |------|------|
-| ローカルファイルシステムへのアクセスが必要 | Codex sandbox では不可 |
-| MCP サーバー連携が必要 | Claude Code のみ MCP 対応 |
-| Playwright 操作が必要 | ローカルブラウザが必要 |
-| Codex が 2 回失敗した | フォールバック |
+| sandbox 実行が必要 | 安全な隔離環境での実行 |
+| Claude Code が 2 回失敗した | フォールバック |
 | ユーザーが明示的に指定 | ユーザー優先 |
+| クロスレビュー | デフォルトで Codex がレビュー担当 |
 
 ### 選択フロー
 
 ```
-task_requires_local_fs?     → Claude Code
-task_requires_mcp?          → Claude Code
-task_requires_playwright?   → Claude Code
-user_specified_agent?       → ユーザー指定に従う
-codex_failed_twice?         → Claude Code (fallback)
-else                        → Codex (default)
+user_specified_agent?           → ユーザー指定に従う
+claude_code_failed_twice?       → Codex (fallback)
+task_requires_sandbox?          → Codex
+else                            → Claude Code (default)
 ```
 
 ### Agent ラッパー
@@ -220,8 +218,8 @@ AgentWrapper:
 ### フロー
 
 ```
-1. Codex が実装 → Claude Code がレビュー
-2. Claude Code が実装 → Codex がレビュー
+1. Claude Code が実装 (デフォルト) → Codex がレビュー
+2. Codex が実装 (フォールバック時) → Claude Code がレビュー
 ```
 
 ### レビュー観点

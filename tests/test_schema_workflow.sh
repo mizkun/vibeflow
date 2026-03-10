@@ -82,9 +82,9 @@ with open('${FRAMEWORK_DIR}/core/schema/workflow.yaml') as f:
     data = yaml.safe_load(f)
 print(len(data['workflows']['standard']['steps']))
 " 2>&1)
-    # 11 steps + 2.5 + 6.5 + 7a = 14 entries
-    if [ "$count" -lt 11 ]; then
-        fail "Standard workflow should have at least 11 steps, got ${count}"
+    # v5: 10 steps (no sub-steps like 2.5, 6.5, 7a in schema)
+    if [ "$count" -lt 10 ]; then
+        fail "Standard workflow should have at least 10 steps, got ${count}"
         return 1
     fi
 }

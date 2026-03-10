@@ -105,11 +105,11 @@ describe "Consistency — patch.md and CLAUDE.md alignment"
 test_patch_workflow_steps_in_claude_md() {
     # CLAUDE.md Patch Loop section should have the 4 steps
     assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" \
-        "Scope Review" "CLAUDE.md should mention Scope Review step"
+        "scope_review" "CLAUDE.md should mention scope_review step"
     assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" \
-        "Fix Implementation" "CLAUDE.md should mention Fix Implementation step"
+        "fix_implementation" "CLAUDE.md should mention fix_implementation step"
     assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" \
-        "Targeted Test" "CLAUDE.md should mention Targeted Test step"
+        "targeted_test" "CLAUDE.md should mention targeted_test step"
 }
 run_test "CLAUDE.md has Patch Loop workflow steps" test_patch_workflow_steps_in_claude_md
 

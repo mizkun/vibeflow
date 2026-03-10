@@ -35,7 +35,7 @@ describe "Policy schema — required roles"
 test_policy_has_all_required_roles() {
     local policy="${FRAMEWORK_DIR}/core/schema/policy.yaml"
     local missing=""
-    for role in iris product_manager engineer qa_engineer infra_manager human; do
+    for role in iris coding_agent; do
         if ! grep -q "^  ${role}:" "$policy"; then
             missing="${missing} ${role}"
         fi
@@ -142,32 +142,12 @@ YAML
 }
 run_test "schema_validate.py fails when required roles missing" test_schema_validate_fails_missing_roles
 
-test_schema_validate_fails_missing_human_role() {
-    # Create policy with all roles except human
-    cat > "${TEST_DIR}/no_human_policy.yaml" << 'YAML'
+test_schema_validate_fails_missing_coding_agent_role() {
+    # Create policy with iris but missing coding_agent
+    cat > "${TEST_DIR}/no_coding_agent_policy.yaml" << 'YAML'
 roles:
   iris:
     display_name: "Iris"
-    can_read: []
-    can_write: []
-    enforcement: hard
-  product_manager:
-    display_name: "Product Manager"
-    can_read: []
-    can_write: []
-    enforcement: hard
-  engineer:
-    display_name: "Engineer"
-    can_read: []
-    can_write: []
-    enforcement: hard
-  qa_engineer:
-    display_name: "QA Engineer"
-    can_read: []
-    can_write: []
-    enforcement: hard
-  infra_manager:
-    display_name: "Infrastructure Manager"
     can_read: []
     can_write: []
     enforcement: hard
@@ -175,12 +155,12 @@ always_allow: []
 YAML
 
     if python3 "${FRAMEWORK_DIR}/core/validators/schema_validate.py" \
-        "${TEST_DIR}/no_human_policy.yaml" 2>/dev/null; then
-        fail "schema_validate.py should fail when human role is missing"
+        "${TEST_DIR}/no_coding_agent_policy.yaml" 2>/dev/null; then
+        fail "schema_validate.py should fail when coding_agent role is missing"
         return 1
     fi
 }
-run_test "schema_validate.py fails when human role missing" test_schema_validate_fails_missing_human_role
+run_test "schema_validate.py fails when coding_agent role missing" test_schema_validate_fails_missing_coding_agent_role
 
 # ──────────────────────────────────────────────
 print_summary

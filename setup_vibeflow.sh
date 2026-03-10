@@ -82,14 +82,14 @@ Options:
     --without-e2e       Disable Playwright E2E testing setup
 
 Features (included by default):
+    - Iris-Only Architecture: Single terminal, Iris manages everything
     - GitHub Issues integration: Task management via gh CLI
-    - Iris: Strategic partner for planning and context management
-    - Multi-Terminal: Iris (permanent) + Dev terminal(s) (per-issue)
+    - Agent Dispatch: Claude Code (default) + Codex (review/fallback)
+    - Cross-Review: Automatic code review by alternate agent
     - 3-Tier Context: context/ + references/ + archive/
     - Safety Rules: UI/CSS atomic mode, destructive op guard, write guard
     - Hooks: Access control (validate_access.py), Write guard (validate_write.sh)
-    - Skills: vibeflow-issue-template, vibeflow-tdd
-    - Subagents: qa-acceptance, code-reviewer, test-runner
+    - Playwright E2E: Default enabled
 
 Examples:
     $0                  Normal installation with confirmations
@@ -313,7 +313,18 @@ run_installation() {
         warning "Skillsモジュールが見つかりません"
     fi
     
-    # Step 7b: Deploy Playwright MCP template and scripts
+    # Step 7b: Deploy rules (v5)
+    if [ -d "${SCRIPT_DIR}/examples/.claude/rules" ]; then
+        info ".claude/rules/ を配置中..."
+        mkdir -p ".claude/rules"
+        for rule_file in "${SCRIPT_DIR}/examples/.claude/rules/"*.md; do
+            [ -f "$rule_file" ] || continue
+            cp "$rule_file" ".claude/rules/$(basename "$rule_file")"
+        done
+        success ".claude/rules/ を配置しました"
+    fi
+
+    # Step 7c: Deploy Playwright MCP template and scripts
     if type create_playwright_mcp &>/dev/null; then
         if ! create_playwright_mcp; then
             warning "Playwright MCP テンプレートの配置に失敗しましたが、インストールは続行します"
@@ -523,16 +534,15 @@ show_completion() {
     echo ""
     echo "3. Claude Code でこのディレクトリを開いてください"
     echo ""
-    echo "4. マルチターミナルで開発を開始："
-    echo "   Terminal 1 (Iris): /discuss"
-    echo "   Terminal 2 (Development):     Issue 単位で実装"
+    echo "4. Iris と会話を開始："
+    echo "   claude コマンドで Iris に話しかけるだけ！"
     echo ""
     echo "利用可能なコマンド:"
-    echo "   /discuss     - Iris セッション開始"
+    echo "   (自然言語)   - Iris に直接話しかける（メイン）"
     echo "   /conclude    - セッション終了・STATUS.md 更新"
     echo "   /progress    - 現在の進捗確認（GitHub Issues 統合）"
     echo "   /healthcheck - 整合性チェック"
-    echo "   /run-e2e     - E2Eテスト実行（Playwright導入時）"
+    echo "   /run-e2e     - E2Eテスト実行（Playwright）"
     echo ""
     print_color "$PURPLE" "🎉 Happy Vibe Coding!"
 }

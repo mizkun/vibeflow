@@ -34,37 +34,13 @@ ROLE_EDIT_ALLOW = {
 
         "plan.md",
 
-        ".vibe/context/*",
-
-        ".vibe/references/*",
-
-        ".vibe/archive/*",
-
-        ".vibe/project_state.yaml",
-
-        ".vibe/sessions/*.yaml",
-
-        ".vibe/state.yaml",
+        ".vibe/**",
 
     ],
 
-    # Product Manager
+    # Coding Agent (Claude Code / Codex)
 
-    "Product Manager": [
-
-        "plan.md",
-
-        ".vibe/project_state.yaml",
-
-        ".vibe/sessions/*.yaml",
-
-        ".vibe/state.yaml",
-
-    ],
-
-    # Engineer
-
-    "Engineer": [
+    "Coding Agent (Claude Code / Codex)": [
 
         "src/*",
 
@@ -81,52 +57,6 @@ ROLE_EDIT_ALLOW = {
         ".vibe/state.yaml",
 
         ".vibe/test-results.log",
-
-    ],
-
-    # QA Engineer
-
-    "QA Engineer": [
-
-        ".vibe/qa-reports/*",
-
-        ".vibe/test-results.log",
-
-        ".vibe/project_state.yaml",
-
-        ".vibe/sessions/*.yaml",
-
-        ".vibe/state.yaml",
-
-    ],
-
-    # Infrastructure Manager
-
-    "Infrastructure Manager": [
-
-        ".vibe/hooks/*",
-
-        "validate-write*",
-
-        "validate_write*",
-
-        ".vibe/project_state.yaml",
-
-        ".vibe/sessions/*.yaml",
-
-        ".vibe/state.yaml",
-
-    ],
-
-    # Human
-
-    "Human": [
-
-        ".vibe/project_state.yaml",
-
-        ".vibe/sessions/*.yaml",
-
-        ".vibe/state.yaml",
 
     ],
 
