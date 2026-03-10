@@ -91,11 +91,11 @@ describe "Rules — CLAUDE.md is concise"
 test_claude_md_concise() {
     local line_count
     line_count=$(wc -l < "${FRAMEWORK_DIR}/examples/CLAUDE.md")
-    # Should be 200 lines or less after restructure
-    [ "$line_count" -le 250 ]
-    assert_equals "0" "$?" "CLAUDE.md should be ≤250 lines (got $line_count)"
+    # Compressed to ~50 lines in Issue #69
+    [ "$line_count" -le 60 ]
+    assert_equals "0" "$?" "CLAUDE.md should be ≤60 lines (got $line_count)"
 }
-run_test "CLAUDE.md is concise (≤250 lines)" test_claude_md_concise
+run_test "CLAUDE.md is concise (≤60 lines)" test_claude_md_concise
 
 # ──────────────────────────────────────────────
 print_summary

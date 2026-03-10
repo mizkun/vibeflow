@@ -103,13 +103,14 @@ run_test "Patch workflow rules mention parent Issue (v5)" test_claude_md_patch_p
 describe "Consistency — patch.md and CLAUDE.md alignment"
 
 test_patch_workflow_steps_in_claude_md() {
-    # CLAUDE.md Patch Loop section should have the 4 steps
-    assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" \
-        "scope_review" "CLAUDE.md should mention scope_review step"
-    assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" \
-        "fix_implementation" "CLAUDE.md should mention fix_implementation step"
-    assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" \
-        "targeted_test" "CLAUDE.md should mention targeted_test step"
+    # Patch Loop steps moved to rules/workflow-patch.md in Issue #69
+    # CLAUDE.md just references /patch command; details in rules/
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/rules/workflow-patch.md" \
+        "Scope Review" "workflow-patch.md should mention Scope Review step"
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/rules/workflow-patch.md" \
+        "Fix Implementation" "workflow-patch.md should mention Fix Implementation step"
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/rules/workflow-patch.md" \
+        "Targeted Test" "workflow-patch.md should mention Targeted Test step"
 }
 run_test "CLAUDE.md has Patch Loop workflow steps" test_patch_workflow_steps_in_claude_md
 

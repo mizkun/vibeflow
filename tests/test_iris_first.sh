@@ -64,10 +64,12 @@ test_no_old_labels_in_operations() {
 run_test "No priority:/status: labels in CLAUDE.md" test_no_old_labels_in_operations
 
 test_operations_use_rev4_labels() {
-    assert_file_contains "$CLAUDE_MD" "type:dev" \
-        "CLAUDE.md should use type:dev label (v5 label taxonomy)"
-    assert_file_contains "$CLAUDE_MD" "risk:medium" \
-        "CLAUDE.md should use risk:medium label"
+    # Labels moved to rules/project-structure.md in Issue #69
+    local ps_md="${FRAMEWORK_DIR}/examples/.claude/rules/project-structure.md"
+    assert_file_contains "$ps_md" "type:dev" \
+        "project-structure.md should use type:dev label (v5 label taxonomy)"
+    assert_file_contains "$ps_md" "risk:medium" \
+        "project-structure.md should use risk:medium label"
 }
 run_test "Operations use v5 label taxonomy" test_operations_use_rev4_labels
 

@@ -186,7 +186,7 @@ fi
 log_info "6/8: Hooks + settings.json 更新"
 
 # Update hooks
-for hook in validate_access.py validate_write.sh validate_step7a.py task_complete.sh waiting_input.sh; do
+for hook in validate_access.py validate_write.sh validate_step7a.py task_complete.sh waiting_input.sh postwrite_lint.sh stop_test_gate.sh; do
     src="${FRAMEWORK}/examples/.vibe/hooks/${hook}"
     dst=".vibe/hooks/${hook}"
     if [ -f "$src" ]; then

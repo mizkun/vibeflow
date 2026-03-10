@@ -73,6 +73,30 @@ ALWAYS_ALLOW = [
 
 ]
 
+# Linter/formatter config files — protected from Coding Agent edits
+# Agents may try to disable lint rules instead of fixing code
+LINTER_CONFIG_PROTECTED = [
+    ".eslintrc*",
+    "eslint.config.*",
+    "biome.json",
+    "biome.jsonc",
+    ".prettierrc*",
+    "prettier.config.*",
+    "tsconfig.json",
+    "tsconfig.*.json",
+    "pyproject.toml",
+    ".flake8",
+    "setup.cfg",
+    "Cargo.toml",
+    ".golangci.yml",
+    ".golangci.yaml",
+    "golangci.yml",
+    ".rubocop.yml",
+    ".stylelintrc*",
+    "deno.json",
+    "deno.jsonc",
+]
+
 
 def project_root() -> str:
     """Get project root from CLAUDE_PROJECT_DIR or current directory."""
@@ -174,6 +198,8 @@ def main() -> None:
 
     targets = get_target_paths(tool_name, tool_input)
 
+    is_coding_agent = "coding agent" in role.lower()
+
     for t in targets:
         # Skip if path couldn't be extracted (edge cases)
         if not t:
@@ -181,6 +207,16 @@ def main() -> None:
 
         if match_any(t, ALWAYS_ALLOW):
             continue
+
+        # LintGuard: block Coding Agent from editing linter config files
+        if is_coding_agent and match_any(t, LINTER_CONFIG_PROTECTED):
+            basename = os.path.basename(t)
+            block(
+                f"[VibeFlow LintGuard]\n"
+                f"Coding Agent はリンター設定ファイル '{basename}' を編集できません。\n"
+                f"リンターエラーはコードを修正して解決してください。"
+                f"設定の変更が必要な場合は Iris に相談してください。\n"
+            )
 
         if not match_any(t, allow):
             block(

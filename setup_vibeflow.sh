@@ -444,6 +444,18 @@ verify_installation() {
         warning ".claude/settings.json: Missing (Hooks無効)"
     fi
     
+    # Verify PostWrite Lint Hook
+    if [ -f ".vibe/hooks/postwrite_lint.sh" ]; then
+        success ".vibe/hooks/postwrite_lint.sh: OK"
+        if [ -x ".vibe/hooks/postwrite_lint.sh" ]; then
+            success ".vibe/hooks/postwrite_lint.sh 実行権限: OK"
+        else
+            warning ".vibe/hooks/postwrite_lint.sh 実行権限: Missing"
+        fi
+    else
+        warning ".vibe/hooks/postwrite_lint.sh: Missing (PostWrite Lint無効)"
+    fi
+
     # Verify Write Guard Hook
     if [ -f ".vibe/hooks/validate_write.sh" ]; then
         success ".vibe/hooks/validate_write.sh: OK"

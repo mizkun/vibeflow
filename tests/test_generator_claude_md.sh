@@ -202,10 +202,8 @@ describe "examples/CLAUDE.md regeneration"
 test_examples_claude_md_has_markers() {
     assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" "VF:BEGIN roles" \
         "examples/CLAUDE.md should have VF:BEGIN roles marker"
-    assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" "VF:BEGIN workflow" \
-        "examples/CLAUDE.md should have VF:BEGIN workflow marker"
-    assert_file_contains "${FRAMEWORK_DIR}/examples/CLAUDE.md" "VF:BEGIN hook_list" \
-        "examples/CLAUDE.md should have VF:BEGIN hook_list marker"
+    # workflow and hook_list markers removed in Issue #69 (compressed CLAUDE.md)
+    # These sections now live in rules/ files
 }
 run_test "examples/CLAUDE.md has VF markers" test_examples_claude_md_has_markers
 
@@ -226,10 +224,9 @@ test_examples_claude_md_regeneratable() {
         "Regenerated file should preserve VF:BEGIN roles marker"
     assert_file_contains "${outdir}/CLAUDE.md" "VF:END roles" \
         "Regenerated file should preserve VF:END roles marker"
-    assert_file_contains "${outdir}/CLAUDE.md" "VF:BEGIN workflow" \
-        "Regenerated file should preserve VF:BEGIN workflow marker"
-    assert_file_contains "${outdir}/CLAUDE.md" "Safety Rules" \
-        "Regenerated file should preserve hand-written Safety Rules section"
+    # workflow markers removed in Issue #69 (compressed CLAUDE.md)
+    assert_file_contains "${outdir}/CLAUDE.md" "Critical Rules" \
+        "Regenerated file should preserve hand-written Critical Rules section"
 }
 run_test "examples/CLAUDE.md regeneration preserves structure" test_examples_claude_md_regeneratable
 
@@ -244,8 +241,6 @@ test_examples_claude_md_preserves_handwritten() {
         --output "${outdir}/CLAUDE.md" 2>/dev/null
 
     # Hand-written sections must be preserved
-    assert_file_contains "${outdir}/CLAUDE.md" "Safety Rules" \
-        "Hand-written Safety Rules section should be preserved"
     assert_file_contains "${outdir}/CLAUDE.md" "Critical Rules" \
         "Hand-written Critical Rules section should be preserved"
 }

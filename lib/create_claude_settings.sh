@@ -62,9 +62,28 @@ create_claude_settings() {
             "timeout": 2
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.vibe/hooks/postwrite_lint.sh",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.vibe/hooks/stop_test_gate.sh",
+            "timeout": 120
+          }
+        ]
+      },
       {
         "hooks": [
           {
@@ -127,6 +146,16 @@ create_notification_hooks() {
     local checkpoint_alert=".vibe/hooks/checkpoint_alert.sh"
     cp "${examples_dir}/.vibe/hooks/checkpoint_alert.sh" "$checkpoint_alert"
     chmod +x "$checkpoint_alert"
+
+    # Copy postwrite_lint.sh
+    local postwrite_lint=".vibe/hooks/postwrite_lint.sh"
+    cp "${examples_dir}/.vibe/hooks/postwrite_lint.sh" "$postwrite_lint"
+    chmod +x "$postwrite_lint"
+
+    # Copy stop_test_gate.sh
+    local stop_test_gate=".vibe/hooks/stop_test_gate.sh"
+    cp "${examples_dir}/.vibe/hooks/stop_test_gate.sh" "$stop_test_gate"
+    chmod +x "$stop_test_gate"
 
     success "通知フックスクリプトを作成しました"
     return 0
