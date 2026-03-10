@@ -59,16 +59,17 @@ EXT="${FILE_PATH##*.}"
 run_js_lint() {
     local file="$1"
     if command -v npx &>/dev/null; then
-        if npx oxlint --version &>/dev/null 2>&1; then
-            npx oxlint "$file" 2>&1 || true
+        # Use --no-install to avoid downloading packages on every edit
+        if npx --no-install oxlint --version &>/dev/null 2>&1; then
+            npx --no-install oxlint "$file" 2>&1 || true
             return
         fi
-        if npx biome --version &>/dev/null 2>&1; then
-            npx biome check "$file" 2>&1 || true
+        if npx --no-install biome --version &>/dev/null 2>&1; then
+            npx --no-install biome check "$file" 2>&1 || true
             return
         fi
-        if npx eslint --version &>/dev/null 2>&1; then
-            npx eslint "$file" 2>&1 || true
+        if npx --no-install eslint --version &>/dev/null 2>&1; then
+            npx --no-install eslint "$file" 2>&1 || true
             return
         fi
     fi

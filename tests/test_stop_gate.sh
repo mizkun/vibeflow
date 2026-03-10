@@ -28,11 +28,18 @@ YAML
 # ──────────────────────────────────────────────
 # Helper: run the stop gate hook
 # ──────────────────────────────────────────────
+flag_file_for() {
+    local project_dir="${1:-$TEST_DIR}"
+    local hash
+    hash=$(echo "$project_dir" | (md5sum 2>/dev/null || md5 2>/dev/null) | cut -c1-8)
+    echo "/tmp/vibeflow_stop_gate_${hash}"
+}
+
 run_gate() {
     local project_dir="${1:-$TEST_DIR}"
     local rc=0
     # Clean up any leftover flag file
-    rm -f /tmp/vibeflow_stop_gate_active
+    rm -f "$(flag_file_for "$project_dir")"
     CLAUDE_PROJECT_DIR="$project_dir" bash "$HOOK_SCRIPT" 2>/dev/null || rc=$?
     return $rc
 }
@@ -149,22 +156,26 @@ test_flag_file_prevents_reentry() {
 { "scripts": { "test": "echo fail && exit 1" } }
 JSON
     # Pre-create the flag file to simulate reentry
-    touch /tmp/vibeflow_stop_gate_active
+    local flag
+    flag="$(flag_file_for "$TEST_DIR")"
+    touch "$flag"
     CLAUDE_PROJECT_DIR="$TEST_DIR" bash "$HOOK_SCRIPT" 2>/dev/null
     local rc=$?
-    rm -f /tmp/vibeflow_stop_gate_active
+    rm -f "$flag"
     assert_equals "0" "$rc" "Should exit 0 when flag file exists (reentry prevention)"
 }
 run_test "exits 0 when reentry flag exists" test_flag_file_prevents_reentry
 
 test_flag_file_cleaned_up() {
     create_state "Iris" "1_issue_review"
-    rm -f /tmp/vibeflow_stop_gate_active
+    local flag
+    flag="$(flag_file_for "$TEST_DIR")"
+    rm -f "$flag"
     run_gate "$TEST_DIR"
     # After the hook exits, the flag should be cleaned up
-    if [ -f /tmp/vibeflow_stop_gate_active ]; then
+    if [ -f "$flag" ]; then
         fail "Flag file should be cleaned up after hook exits"
-        rm -f /tmp/vibeflow_stop_gate_active
+        rm -f "$flag"
         return 1
     fi
     return 0

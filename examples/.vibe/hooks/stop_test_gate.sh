@@ -10,7 +10,9 @@ set -uo pipefail
 # ──────────────────────────────────────────────
 # 1. Infinite loop prevention
 # ──────────────────────────────────────────────
-FLAG_FILE="/tmp/vibeflow_stop_gate_active"
+# Scope flag to project dir to avoid cross-project interference
+PROJECT_HASH=$(echo "${CLAUDE_PROJECT_DIR:-.}" | (md5sum 2>/dev/null || md5 2>/dev/null) | cut -c1-8)
+FLAG_FILE="/tmp/vibeflow_stop_gate_${PROJECT_HASH}"
 
 if [ -f "$FLAG_FILE" ]; then
     exit 0
@@ -20,9 +22,23 @@ touch "$FLAG_FILE"
 trap 'rm -f "$FLAG_FILE"' EXIT
 
 # ──────────────────────────────────────────────
-# 2. Read state
+# 2. Read state (session-based first, legacy fallback)
 # ──────────────────────────────────────────────
-STATE_FILE="${CLAUDE_PROJECT_DIR:-.}/.vibe/state.yaml"
+PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-.}"
+STATE_FILE=""
+
+# v5 session-based state (authoritative)
+if [ -n "${VIBEFLOW_SESSION:-}" ]; then
+    SESSION_FILE="${PROJECT_ROOT}/.vibe/sessions/${VIBEFLOW_SESSION}.yaml"
+    if [ -f "$SESSION_FILE" ]; then
+        STATE_FILE="$SESSION_FILE"
+    fi
+fi
+
+# Legacy fallback: .vibe/state.yaml
+if [ -z "$STATE_FILE" ]; then
+    STATE_FILE="${PROJECT_ROOT}/.vibe/state.yaml"
+fi
 
 if [ ! -f "$STATE_FILE" ]; then
     exit 0
