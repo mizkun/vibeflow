@@ -1,0 +1,345 @@
+{
+  "version": "4.1.0",
+  "description": "Baseline hashes for v4.1.0 stock files (pre-v5 migration)",
+  "files": {
+    ".claude/agents/code-reviewer.md": {
+      "sha256": "7994d6d3918bdcd478f80381616c5962c2d46fb6b414ae27ad3896fb56b600c3",
+      "source": "examples/.claude/agents/code-reviewer.md",
+      "type": "full"
+    },
+    ".claude/agents/qa-acceptance.md": {
+      "sha256": "5a9f2760f17148315788bef21b20117e1c6b6272025aeab077a0deb716364c93",
+      "source": "examples/.claude/agents/qa-acceptance.md",
+      "type": "full"
+    },
+    ".claude/agents/test-runner.md": {
+      "sha256": "c33ea918c10dfeb26109bfaf35e5edab48e172472314daae09b05980fdceb159",
+      "source": "examples/.claude/agents/test-runner.md",
+      "type": "full"
+    },
+    ".claude/commands/conclude.md": {
+      "sha256": "1694266f12c9f99797148b1317b8142a5291269078acb2b055e5d0dbc85124bb",
+      "source": "examples/.claude/commands/conclude.md",
+      "type": "full"
+    },
+    ".claude/commands/discuss.md": {
+      "sha256": "1b6f82bb5f4fd586640af49f51fbe191085010f567852938015034823e2d4330",
+      "source": "examples/.claude/commands/discuss.md",
+      "type": "full"
+    },
+    ".claude/commands/healthcheck.md": {
+      "sha256": "4811a816d3c472775a6044e7e8d4829c2cbac651a51e1af73bdbfb8b2e93c3b9",
+      "source": "examples/.claude/commands/healthcheck.md",
+      "type": "full"
+    },
+    ".claude/commands/progress.md": {
+      "sha256": "1002a672de3454c268e3fff0042ea13ad513a10994e76642978657ab1c9d3d3a",
+      "source": "examples/.claude/commands/progress.md",
+      "type": "full"
+    },
+    ".claude/commands/quickfix.md": {
+      "sha256": "152e65b14c8fde406bc7582e8e54368e9357a31ce238530eba4d51acaa05f6b5",
+      "source": "examples/.claude/commands/quickfix.md",
+      "type": "full"
+    },
+    ".claude/commands/run-e2e.md": {
+      "sha256": "50d15e10e545657d1da2bb7cbfaf2e300ea16cbab16987920b0e15bd3a38c15b",
+      "source": "examples/.claude/commands/run-e2e.md",
+      "type": "full"
+    },
+    ".claude/rules/iris-core.md": {
+      "sha256": "8362ea77eb8d26395a73eb65101a9a9621d33330522bbe475aa0595eb52fa0b4",
+      "source": "examples/.claude/rules/iris-core.md",
+      "type": "full"
+    },
+    ".claude/rules/playwright.md": {
+      "sha256": "cb088f62111486ec67296bd901e03188e1f5e38bc08f56e8675d4bf3e35883f6",
+      "source": "examples/.claude/rules/playwright.md",
+      "type": "full"
+    },
+    ".claude/rules/safety.md": {
+      "sha256": "097b08449197a0681c2b3ffe5be7d6ece0ed685cfe039ec4df10d4faab86201d",
+      "source": "examples/.claude/rules/safety.md",
+      "type": "full"
+    },
+    ".claude/rules/workflow-patch.md": {
+      "sha256": "6f708e1034710033cc1a66bbb8099ae8c080bdcb097bb60748139f0e545ae324",
+      "source": "examples/.claude/rules/workflow-patch.md",
+      "type": "full"
+    },
+    ".claude/rules/workflow-standard.md": {
+      "sha256": "ae9944ffdc77d37adf1946d167a283fd4c35c11515c4b2f90338acb31f290a27",
+      "source": "examples/.claude/rules/workflow-standard.md",
+      "type": "full"
+    },
+    ".claude/settings.json": {
+      "source": "examples/.claude/settings.json",
+      "type": "generated"
+    },
+    ".claude/skills/vibeflow-conclude/SKILL.md": {
+      "sha256": "75fc45cd5ea67b94aad2b8aeafbd5fb610650c7858f7c4628a5b6cf055a70331",
+      "source": "examples/.claude/skills/vibeflow-conclude/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-discuss/SKILL.md": {
+      "sha256": "5906662828ed5448a3d27694c440103de072aa97ee80d607c12f723a3f5fb7c6",
+      "source": "examples/.claude/skills/vibeflow-discuss/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-execute-all/SKILL.md": {
+      "sha256": "a3ef9e12fbf1794f2c158bf73d2cbd648ac710f82b716f61a8d1a854a9b00e29",
+      "source": "examples/.claude/skills/vibeflow-execute-all/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-execute-issue/SKILL.md": {
+      "sha256": "9035d08dbc541f5711a962a7eef70fa57cd61340d966cd48202567aec9b4def4",
+      "source": "examples/.claude/skills/vibeflow-execute-issue/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-healthcheck/SKILL.md": {
+      "sha256": "5d8bfa2a911e77171184e5d7ab850d0bd61d6d8d86b8e34ce682abcd905a4e82",
+      "source": "examples/.claude/skills/vibeflow-healthcheck/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-issue-template/SKILL.md": {
+      "sha256": "c7f601c881bcc8321d7e3072f54530aacf8fa67f611686a87143f55f95649b07",
+      "source": "examples/.claude/skills/vibeflow-issue-template/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-kickoff/SKILL.md": {
+      "sha256": "9b2c5fc9931db3d1ca753a68baf5969f647aea3aac71baccac7df897e9396939",
+      "source": "examples/.claude/skills/vibeflow-kickoff/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-progress/SKILL.md": {
+      "sha256": "5e8dbdd63a930504a00dfd31c6a441a2d8bd8789357253640893df6874f14deb",
+      "source": "examples/.claude/skills/vibeflow-progress/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-tdd/SKILL.md": {
+      "sha256": "dda33c19652758cbbeb3678a981a37f6a8a0b2a2598a744b34781961205b19f4",
+      "source": "examples/.claude/skills/vibeflow-tdd/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-ui-explore/SKILL.md": {
+      "sha256": "4d097dd0b51c951a3359b8783988b4a64402910f500a68b07136c49707f2d4b8",
+      "source": "examples/.claude/skills/vibeflow-ui-explore/SKILL.md",
+      "type": "full"
+    },
+    ".claude/skills/vibeflow-ui-smoke/SKILL.md": {
+      "sha256": "40e380a9e333f6b0ca146b1426265a961cf1171036f8ec2d49dd39d138781cc2",
+      "source": "examples/.claude/skills/vibeflow-ui-smoke/SKILL.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/config.yml": {
+      "sha256": "e71bea835ed1158881306294d96968f125b0b0c5eff66cd94df559336bd0b210",
+      "source": "examples/.github/ISSUE_TEMPLATE/config.yml",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/dev.md": {
+      "sha256": "230aaa06436e2b97fa399274dc22cdde6bf683705f1844c6d45e164c67438a6c",
+      "source": "examples/.github/ISSUE_TEMPLATE/dev.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/discussion.md": {
+      "sha256": "c02420f7414b18f7353e6d2175f713ad4916b5a596e5827b2541f7571cfc3d0d",
+      "source": "examples/.github/ISSUE_TEMPLATE/discussion.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/human.md": {
+      "sha256": "02d0c84bb9a8b78c3a5d4a80aad36bc10bada68917b5d585384e12882ee25021",
+      "source": "examples/.github/ISSUE_TEMPLATE/human.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/ops.md": {
+      "sha256": "3eef32f3cd20c0e154fec609ba7710ec853cc708564d0f8ea2860d2bab56c9ca",
+      "source": "examples/.github/ISSUE_TEMPLATE/ops.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/patch.md": {
+      "sha256": "b562dfd9ea163640585c6a2eff69692433c350e3db9f8e0340585cebeec6b5bc",
+      "source": "examples/.github/ISSUE_TEMPLATE/patch.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/spike.md": {
+      "sha256": "4da50645457a61402b6061904b821fdffcf36fb7294dbec5b51e77ee62cbe3a5",
+      "source": "examples/.github/ISSUE_TEMPLATE/spike.md",
+      "type": "full"
+    },
+    ".github/ISSUE_TEMPLATE/standard.md": {
+      "sha256": "2b98fe472f813f1740497922237d09d2a43532d18a61be73ab57c3fa504014b2",
+      "source": "examples/.github/ISSUE_TEMPLATE/standard.md",
+      "type": "full"
+    },
+    ".gitignore": {
+      "sha256": "f07e102f872769183adf012f1ad32231dd96f834827e85b61be39d5a6ce19d43",
+      "source": "examples/.gitignore",
+      "type": "full"
+    },
+    ".mcp.json.example": {
+      "sha256": "685bc0c310b937e0380e3a66e6ca288f1b43c6424ef65760e26842338f9cdbf5",
+      "source": "examples/.mcp.json.example",
+      "type": "full"
+    },
+    ".vibe/discussions/.gitkeep": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "examples/.vibe/discussions/.gitkeep",
+      "type": "full"
+    },
+    ".vibe/framework_version.yaml": {
+      "sha256": "3e27c63e6068bcef4cccb8d54f82666e1975b78ecbc6a874638a32bb0561ab2d",
+      "source": "examples/.vibe/framework_version.yaml",
+      "type": "full"
+    },
+    ".vibe/generated-manifest.json": {
+      "sha256": "320e41089e651743fa5370c86cbe352f99dcdbbf0c0c8dd9a1ee3ed0ad779dec",
+      "source": "examples/.vibe/generated-manifest.json",
+      "type": "full"
+    },
+    ".vibe/hooks/checkpoint_alert.sh": {
+      "sha256": "9e5728a688a1fdeb44900206f24035ccca45779033f999e0c8ad160d49c14f24",
+      "source": "examples/.vibe/hooks/checkpoint_alert.sh",
+      "type": "full"
+    },
+    ".vibe/hooks/task_complete.sh": {
+      "sha256": "313a408cd08e6b04a70f92140cfd2301e4e2c47c4173353332aa86c517778850",
+      "source": "examples/.vibe/hooks/task_complete.sh",
+      "type": "full"
+    },
+    ".vibe/hooks/validate_access.py": {
+      "sha256": "c307b7c5ac407bde03a13ae8a9a2015328a81974aa2b3dab42fee0e86e19271c",
+      "source": "examples/.vibe/hooks/validate_access.py",
+      "type": "full"
+    },
+    ".vibe/hooks/validate_step7a.py": {
+      "sha256": "b605535325a2eb5c3fce5190d02d0e4b37a04caf50ae7b1d99f9cc32a384fce9",
+      "source": "examples/.vibe/hooks/validate_step7a.py",
+      "type": "full"
+    },
+    ".vibe/hooks/validate_write.sh": {
+      "sha256": "579b91113e841832a72497410278549fc0ff8c1a7c8a13c4bd317b66ca4f9694",
+      "source": "examples/.vibe/hooks/validate_write.sh",
+      "type": "full"
+    },
+    ".vibe/hooks/waiting_input.sh": {
+      "sha256": "97d7dccd4f3bbb0daf2d13e4a99a84640ce25ce798f642d300666c96ae63bbde",
+      "source": "examples/.vibe/hooks/waiting_input.sh",
+      "type": "full"
+    },
+    ".vibe/policy.yaml": {
+      "sha256": "105aa23945bbbe61438acdabc0eb80c2b1d63ee9e3c6dd4571786f94e4cdf04e",
+      "source": "examples/.vibe/policy.yaml",
+      "type": "full"
+    },
+    ".vibe/project_state.yaml": {
+      "sha256": "e0b0950dfb68e64c8d2f132dd279a5403477478d9d5cd6e4eb47e55da9b9cd9d",
+      "source": "examples/.vibe/project_state.yaml",
+      "type": "full"
+    },
+    ".vibe/roles/coding-agent.md": {
+      "sha256": "2c0816d2e469c03dd13cea058dd795ff880dc7a2986d6117f90b83abbcfcdf53",
+      "source": "examples/.vibe/roles/coding-agent.md",
+      "type": "full"
+    },
+    ".vibe/roles/iris.md": {
+      "sha256": "2a0f324800e722f942fb88b9b3d5e81a30e5e213ef18f72714e4238cb86eeae2",
+      "source": "examples/.vibe/roles/iris.md",
+      "type": "full"
+    },
+    ".vibe/sessions/iris-main.yaml": {
+      "sha256": "c265e2735dc583a447e3b2f73e6f071f526bfce83dde6e9839507abafafc8209",
+      "source": "examples/.vibe/sessions/iris-main.yaml",
+      "type": "full"
+    },
+    ".vibe/state.yaml": {
+      "sha256": "b2d09ebabc22e0680a065ff7e8f20ea76c578dae3d07d4e0faa401b9b43d2e7b",
+      "source": "examples/.vibe/state.yaml",
+      "type": "full"
+    },
+    ".vibe/templates/discussion-template.md": {
+      "sha256": "af52b9cd18c8131a06fe7235aceaf4c25c18d177dda1f7c44b29b49c39bb0e71",
+      "source": "examples/.vibe/templates/discussion-template.md",
+      "type": "full"
+    },
+    ".vibe/templates/issue-templates.md": {
+      "sha256": "3c6bf7542a6aa4d32b8ef9baff97092a5a4a4b82c7a7330d2559e48831d8541e",
+      "source": "examples/.vibe/templates/issue-templates.md",
+      "type": "full"
+    },
+    ".vibe/templates/settings.local.json": {
+      "sha256": "08bd6850ef5e7cf59eb72cae0283226255a15d8a7d62744c1b09f0dfc6717b9f",
+      "source": "examples/.vibe/templates/settings.local.json",
+      "type": "full"
+    },
+    ".vibe/version": {
+      "sha256": "c28fcca53637bc88e124af1725df13cb98c69dedefd62fb3cdbe1cdb6b760624",
+      "source": "examples/.vibe/version",
+      "type": "full"
+    },
+    "AGENTS.md": {
+      "sha256": "b24df6a8afe9f1c42553219b71843f798b631e1cb0300c47004f21b47da7f5f9",
+      "source": "examples/AGENTS.md",
+      "type": "full"
+    },
+    "CLAUDE.md": {
+      "sha256": "946c87ec2479365e939de439adfe4201388a3245a100f1e1fa5f95d93065183f",
+      "source": "examples/CLAUDE.md",
+      "type": "full"
+    },
+    "plan.md": {
+      "sha256": "b83dae651063247b53bc2b328cefb27cfe589c042867e2781d7acd06371bf7db",
+      "source": "examples/plan.md",
+      "type": "full"
+    },
+    "playwright.config.js": {
+      "sha256": "25d2319617d0af2cbeeb961eda5770bb8dac1dd75f29c986f1cc56afef74740b",
+      "source": "examples/playwright.config.js",
+      "type": "full"
+    },
+    "scripts/playwright_open_report.sh": {
+      "sha256": "ac181be3f56d812bbc0a505d1177da212c10cf8d1950d555bd1c3671887f30b4",
+      "source": "examples/scripts/playwright_open_report.sh",
+      "type": "full"
+    },
+    "scripts/playwright_smoke.sh": {
+      "sha256": "5f388861f2b5c21b53694e7b407e5325e9d47ed1b7379cc78ac82772d2d6aea5",
+      "source": "examples/scripts/playwright_smoke.sh",
+      "type": "full"
+    },
+    "scripts/playwright_trace_pack.sh": {
+      "sha256": "283a2b762761e21a5406f7c9282ea5de1aa002478166d25243240e7138edfc59",
+      "source": "examples/scripts/playwright_trace_pack.sh",
+      "type": "full"
+    },
+    "spec.md": {
+      "sha256": "0289ef8eaf7719dfd409a732d4491ae048360c2db4413a7f7718927d1cf52f60",
+      "source": "examples/spec.md",
+      "type": "full"
+    },
+    "tests/e2e/README.md": {
+      "sha256": "26496e05a92bd515c4e4cecf6bb59ec0feeb5af174951eca98868cd6fdde76cb",
+      "source": "examples/tests/e2e/README.md",
+      "type": "full"
+    },
+    "tests/e2e/auth/login.spec.js": {
+      "sha256": "d2bfb427543e11190bb96a682b60ba85f325e78a49e8a80f9a02d233faec6d94",
+      "source": "examples/tests/e2e/auth/login.spec.js",
+      "type": "full"
+    },
+    "tests/e2e/pageobjects/login.page.js": {
+      "sha256": "dd6739f3eeff96f4283a42793668179bbed0c17e57ac3f79679e8ac70416db23",
+      "source": "examples/tests/e2e/pageobjects/login.page.js",
+      "type": "full"
+    },
+    "tests/e2e/utils/test-helpers.js": {
+      "sha256": "c52ef6d632de273753bb7453478f1b11a46b70b2234621575ecbce70631db4eb",
+      "source": "examples/tests/e2e/utils/test-helpers.js",
+      "type": "full"
+    },
+    "vision.md": {
+      "sha256": "2b3fbed89b11bd16b89d4a5dd99359a95480870a5d17e1da069a7812e75a6c13",
+      "source": "examples/vision.md",
+      "type": "full"
+    }
+  }
+}
