@@ -12,6 +12,8 @@ import uuid
 from typing import Any, Dict, Optional
 
 from core.runtime.agent_selector import select_agent
+from core.runtime.claude_code_wrapper import ClaudeCodeWrapper
+from core.runtime.codex_wrapper import CodexWrapper
 
 # Keywords that indicate UI task
 _UI_KEYWORDS = [
@@ -110,7 +112,7 @@ def dispatch_issue(
     project_dir: str = ".",
     context: Optional[Dict[str, Any]] = None,
     user_preference: Optional[str] = None,
-    codex_failures: int = 0,
+    claude_code_failures: int = 0,
     dry_run: bool = False,
 ) -> Dict[str, Any]:
     """Dispatch an issue to the appropriate coding agent.
@@ -120,14 +122,14 @@ def dispatch_issue(
         project_dir: Project root directory.
         context: Optional project context.
         user_preference: Optional user-specified agent.
-        codex_failures: Number of previous Codex failures.
+        claude_code_failures: Number of previous Claude Code failures.
         dry_run: If True, don't actually execute.
 
     Returns:
         Handle dict with task_id, agent, status, prompt.
     """
     # Select agent
-    selection = select_agent(issue, user_preference, codex_failures)
+    selection = select_agent(issue, user_preference, claude_code_failures)
     agent = selection["agent"]
 
     # Generate prompt
@@ -155,5 +157,23 @@ def dispatch_issue(
         session_file = os.path.join(session_dir, f"{task_id}.json")
         with open(session_file, "w") as f:
             json.dump(handle, f, indent=2)
+
+        # Actually dispatch to the selected agent
+        if agent == "codex":
+            wrapper = CodexWrapper()
+            agent_handle = wrapper.dispatch(
+                task_prompt=prompt,
+                work_dir=project_dir,
+                session_dir=session_dir,
+            )
+        else:
+            wrapper = ClaudeCodeWrapper()
+            agent_handle = wrapper.dispatch(
+                task_prompt=prompt,
+                work_dir=project_dir,
+                session_dir=session_dir,
+            )
+        handle["agent_handle"] = agent_handle
+        handle["process_task_id"] = agent_handle.get("task_id")
 
     return handle

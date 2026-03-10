@@ -95,6 +95,16 @@ cat > "$SESSION_FILE" <<SESS
 }
 SESS
 
+# Write YAML state file for hooks (validate_access.py, stop_test_gate.sh)
+YAML_STATE_FILE="${SESSION_DIR}/${TASK_ID}.yaml"
+cat > "$YAML_STATE_FILE" <<YAMLSTATE
+session_id: "${TASK_ID}"
+current_role: "Coding Agent"
+current_step: "5_implementation"
+agent: "codex"
+status: "running"
+YAMLSTATE
+
 # Execute Codex in full-auto mode with json output
 echo "Dispatching to Codex (full-auto, json)..."
 set +e
@@ -120,6 +130,15 @@ session['exit_code'] = ${EXIT_CODE}
 with open('${SESSION_FILE}', 'w') as f:
     json.dump(session, f, indent=2)
 " 2>/dev/null || true
+
+# Update YAML state file
+cat > "$YAML_STATE_FILE" <<YAMLSTATE
+session_id: "${TASK_ID}"
+current_role: "Coding Agent"
+current_step: "5_implementation"
+agent: "codex"
+status: "${STATUS}"
+YAMLSTATE
 
 # Cleanup worktree if requested
 if [ -n "$WORKTREE_BRANCH" ] && [ "$STATUS" = "completed" ]; then

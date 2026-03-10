@@ -90,6 +90,28 @@ class ClaudeCodeWrapper:
             with open(session_file, "w") as f:
                 json.dump(handle, f, indent=2)
 
+        # Launch claude CLI subprocess
+        cmd = [
+            self.claude_cmd,
+            "--dangerously-skip-permissions",
+            "--print",
+            "--output-format", "json",
+            task_prompt,
+        ]
+        try:
+            proc = subprocess.Popen(
+                cmd,
+                cwd=work_dir,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            self._processes[task_id] = proc
+            handle["status"] = "running"
+        except FileNotFoundError:
+            handle["status"] = "failed"
+            handle["error"] = f"Command not found: {self.claude_cmd}"
+
         return handle
 
     def poll(self, handle: Dict[str, Any]) -> Dict[str, Any]:
