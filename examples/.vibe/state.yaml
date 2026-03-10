@@ -1,4 +1,4 @@
-# VibeFlow v3 State
+# VibeFlow State (backward-compatible fallback; primary state is project_state.yaml + sessions/)
 current_issue: null
 current_role: "Iris"
 current_step: null  # 1-11 (null = not in dev cycle)
@@ -26,7 +26,7 @@ safety:
   max_fix_attempts: 3
   failed_approach_log: []
 
-# Infrastructure Manager audit log
+# Audit log
 infra_log:
   hook_changes: []
   rollback_pending: false

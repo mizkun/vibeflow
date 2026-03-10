@@ -137,7 +137,7 @@ def create_dev_session(project_dir: str, issue_number: int) -> str:
     data = {
         "session_id": sid,
         "kind": "worker",
-        "current_role": "Product Manager",
+        "current_role": "Iris",
         "current_step": "1_issue_review",
         "attached_issue": issue_number,
         "worktree": None,

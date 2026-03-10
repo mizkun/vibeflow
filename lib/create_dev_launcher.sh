@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Vibe Coding Framework - Dev Launcher Creation
-# This script creates .vibe/scripts/dev.sh for launching development terminals
+# [DEPRECATED] v5 — Dev Launcher は廃止されました。Iris が coding agent を自動 dispatch します。
+# This file is kept for backward compatibility but is no longer called by setup.
+# Vibe Coding Framework - Dev Launcher Creation (v4 legacy)
 
 # Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

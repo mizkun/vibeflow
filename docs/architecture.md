@@ -19,8 +19,9 @@ setup_vibeflow.sh
 ├── create_access_guard()     → .vibe/hooks/validate_*.{py,sh}
 ├── create_claude_settings()  → .claude/settings.json + notification hooks
 ├── create_playwright_mcp()   → .mcp.json.example + scripts/playwright_*.sh
-├── create_dev_launcher()     → .vibe/scripts/dev.sh
+├── deploy rules/             → .claude/rules/*.md (v5)
 └── create_github_labels()    → GitHub labels (optional)
+# Note: create_dev_launcher() は v5 で廃止 (Iris auto-dispatch)
 ```
 
 **特徴**:

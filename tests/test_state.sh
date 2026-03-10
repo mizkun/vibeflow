@@ -416,16 +416,7 @@ test_claude_md_roles_have_new_state() {
 run_test "CLAUDE.md roles include state directory reference" test_claude_md_roles_have_new_state
 
 # ──────────────────────────────────────────────
-describe "dev.sh — session file creation"
-
-test_dev_sh_has_session_creation() {
-    assert_file_contains "${FRAMEWORK_DIR}/examples/.vibe/scripts/dev.sh" \
-        "sessions" "dev.sh should reference sessions directory"
-    assert_file_contains "${FRAMEWORK_DIR}/examples/.vibe/scripts/dev.sh" \
-        "VIBEFLOW_SESSION" "dev.sh should set VIBEFLOW_SESSION"
-}
-run_test "dev.sh creates session and sets VIBEFLOW_SESSION" test_dev_sh_has_session_creation
-
+# dev.sh tests removed in v5 (dev.sh is deprecated — Iris auto-dispatches)
 # ──────────────────────────────────────────────
 describe "Generate — state templates"
 

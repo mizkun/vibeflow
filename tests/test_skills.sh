@@ -158,17 +158,13 @@ run_test "lib/commands/conclude.md unchanged" test_lib_conclude_unchanged
 # ──────────────────────────────────────────────
 describe "Skills — new state model (project_state + sessions)"
 
-test_discuss_refs_project_state() {
-    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-discuss/SKILL.md" \
-        "project_state.yaml" "vibeflow-discuss should reference project_state.yaml"
-}
-run_test "discuss references project_state.yaml" test_discuss_refs_project_state
+# vibeflow-discuss is deprecated in v5 — no longer requires project_state/sessions references
 
-test_discuss_refs_sessions() {
+test_discuss_is_deprecated() {
     assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-discuss/SKILL.md" \
-        "sessions/" "vibeflow-discuss should reference sessions/"
+        "DEPRECATED\|deprecated" "vibeflow-discuss should be marked as deprecated"
 }
-run_test "discuss references sessions/" test_discuss_refs_sessions
+run_test "discuss is deprecated" test_discuss_is_deprecated
 
 test_conclude_refs_project_state() {
     assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-conclude/SKILL.md" \

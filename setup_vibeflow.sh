@@ -347,12 +347,8 @@ run_installation() {
         fi
     fi
 
-    # Step 8c: Create Dev Launcher
-    if type create_dev_launcher &>/dev/null; then
-        if ! create_dev_launcher; then
-            warning "開発ランチャーの作成に失敗しましたが、インストールは続行します"
-        fi
-    fi
+    # Step 8c: Dev Launcher — removed in v5 (Iris auto-dispatches)
+    # create_dev_launcher is no longer called
 
     # Step 9: Create GitHub Labels from issue_labels.yaml
     if type create_github_labels &>/dev/null; then
