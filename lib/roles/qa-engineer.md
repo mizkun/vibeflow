@@ -1,4 +1,5 @@
-# QA Engineer Role
+# [DEPRECATED v5] QA Engineer Role
+> v5 では Iris (QA 判断) + Coding Agent (テスト) に統合されました。このファイルは v4 互換用です。
 
 ## Responsibility
 Acceptance testing, quality verification, and code review

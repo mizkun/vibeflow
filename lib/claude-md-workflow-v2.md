@@ -1,4 +1,8 @@
-## Development Workflow
+## [DEPRECATED v5] Development Workflow (v4 Legacy)
+
+> v5 では Iris が自動的にワークフローを進行します。v5 のワークフローは `examples/.claude/rules/workflow-standard.md` を参照してください。
+
+## Development Workflow (v4)
 
 ### Phase Structure
 

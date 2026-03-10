@@ -43,7 +43,7 @@ create_templates() {
 create_initial_state() {
     info "初期state.yamlを作成中..."
     
-    local state_content='# VibeFlow v3 State
+    local state_content='# VibeFlow State (backward-compatible fallback; primary state is project_state.yaml + sessions/)
 current_issue: null
 current_role: "Iris"
 current_step: null  # 1-11 (null = not in dev cycle)
@@ -71,7 +71,7 @@ safety:
   max_fix_attempts: 3
   failed_approach_log: []
 
-# Infrastructure Manager audit log
+# Audit log
 infra_log:
   hook_changes: []
   rollback_pending: false'
@@ -554,28 +554,39 @@ User Action → Component → API → Database → Response
     create_file_with_backup ".vibe/templates/issue-templates.md" "$issue_templates"
 }
 
-# Create role documentation (copy from lib/roles/)
+# Create role documentation (v5: Iris + Coding Agent only)
 create_role_documents() {
     info "ロール別ドキュメントを作成中..."
 
     local roles_dir="${SCRIPT_DIR}/roles"
     local role_files=(
         "iris.md"
-        "product-manager.md"
-        "engineer.md"
-        "qa-engineer.md"
-        "infra-manager.md"
     )
 
-    for role_file in "${role_files[@]}"; do
-        local src="${roles_dir}/${role_file}"
-        local dst=".vibe/roles/${role_file}"
-        if [ -f "$src" ]; then
-            create_file_with_backup "$dst" "$(cat "$src")"
-        else
-            warning "ロールファイルが見つかりません: $src"
-        fi
-    done
+    # v5: Also deploy from examples/ if available (schema-generated roles)
+    local framework_root
+    framework_root="$(cd "${SCRIPT_DIR}/.." && pwd)"
+    local examples_roles="${framework_root}/examples/.vibe/roles"
+
+    if [ -d "$examples_roles" ]; then
+        # Use schema-generated role docs from examples/
+        for role_file in "$examples_roles"/*.md; do
+            [ -f "$role_file" ] || continue
+            local dst=".vibe/roles/$(basename "$role_file")"
+            create_file_with_backup "$dst" "$(cat "$role_file")"
+        done
+    else
+        # Fallback: deploy from lib/roles/
+        for role_file in "${role_files[@]}"; do
+            local src="${roles_dir}/${role_file}"
+            local dst=".vibe/roles/${role_file}"
+            if [ -f "$src" ]; then
+                create_file_with_backup "$dst" "$(cat "$src")"
+            else
+                warning "ロールファイルが見つかりません: $src"
+            fi
+        done
+    fi
 
     success "ロール別ドキュメントの作成が完了しました"
 }

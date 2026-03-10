@@ -1,4 +1,5 @@
-# Engineer Role
+# [DEPRECATED v5] Engineer Role
+> v5 では Coding Agent (Claude Code / Codex) に統合されました。このファイルは v4 互換用です。
 
 ## Responsibility
 Implementation, testing, and refactoring based on GitHub Issues

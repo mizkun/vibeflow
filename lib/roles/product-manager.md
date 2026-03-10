@@ -1,4 +1,5 @@
-# Product Manager Role
+# [DEPRECATED v5] Product Manager Role
+> v5 では Iris に統合されました。このファイルは v4 互換用です。
 
 ## Responsibility
 Vision alignment, planning, and issue detailing via GitHub Issues

@@ -1,4 +1,6 @@
-# 次のステップへ進む
+# [DEPRECATED v5] 次のステップへ進む
+
+> **⚠️ v5 で廃止**: Iris が自動的にワークフローを進行します。`/next` は不要です。
 
 Execute the next workflow step following the VibeFlow role-based development system. This command should ALWAYS run in the main context, never as a subagent.
 

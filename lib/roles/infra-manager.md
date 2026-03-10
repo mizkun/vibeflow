@@ -1,4 +1,5 @@
-# Infrastructure Manager Role
+# [DEPRECATED v5] Infrastructure Manager Role
+> v5 では廃止されました。Hooks は Iris が管理します。このファイルは v4 互換用です。
 
 ## Responsibility
 Hook/ガードレールの管理、セキュリティ設定の変更
