@@ -127,7 +127,7 @@ cmd_generate() {
     --schema-dir "$SCHEMA_DIR" \
     --project-dir "$PROJECT_DIR" \
     --framework-dir "$FRAMEWORK_DIR" \
-    "${GEN_ARGS[@]}"
+    ${GEN_ARGS[@]+"${GEN_ARGS[@]}"}
 }
 
 cmd_setup() {
@@ -135,10 +135,24 @@ cmd_setup() {
 }
 
 cmd_upgrade() {
+  local DRY_RUN=false
+  for arg in "$@"; do
+    if [[ "$arg" == "--dry-run" ]]; then
+      DRY_RUN=true
+    fi
+  done
+
   python3 "${FRAMEWORK_DIR}/core/upgrade.py" \
     --project-dir "$(pwd)" \
     --framework-dir "${FRAMEWORK_DIR}" \
     "$@"
+
+  # Regenerate manifest after upgrade (skip for dry-run)
+  if [[ "$DRY_RUN" == false ]]; then
+    echo ""
+    echo "Regenerating manifest..."
+    cmd_generate
+  fi
 }
 
 # --- Main routing ---

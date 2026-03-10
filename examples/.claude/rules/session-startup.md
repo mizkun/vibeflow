@@ -4,11 +4,12 @@
 
 ## 起動チェックリスト
 
-1. **Git 状態確認**: `git status` で未コミットの変更を確認
-2. **直近の作業把握**: `git log --oneline -10` で直近のコミットを確認
-3. **中断状態の検出**: `.vibe/state.yaml` を読み、`current_step` が `idle` でない場合は前セッションが中断している
-4. **テスト疎通**: テストを 1 回実行して壊れていないか確認
-5. **STATUS.md 読み込み**: `.vibe/context/STATUS.md` でプロジェクトの現状を把握
+1. **VibeFlow 整合性チェック**: `vibeflow doctor` を実行し、マニフェスト・スキーマの整合性を確認。warn/error があれば報告
+2. **Git 状態確認**: `git status` で未コミットの変更を確認
+3. **直近の作業把握**: `git log --oneline -10` で直近のコミットを確認
+4. **中断状態の検出**: `.vibe/state.yaml` を読み、`current_step` が `idle` でない場合は前セッションが中断している
+5. **テスト疎通**: テストを 1 回実行して壊れていないか確認
+6. **STATUS.md 読み込み**: `.vibe/context/STATUS.md` でプロジェクトの現状を把握
 
 ## 中断検出時のリカバリ
 
