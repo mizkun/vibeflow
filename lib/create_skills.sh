@@ -21,6 +21,8 @@ ALL_SKILLS=(
     "vibeflow-ui-smoke"
     "vibeflow-ui-explore"
     "vibeflow-kickoff"
+    "vibeflow-execute-issue"
+    "vibeflow-execute-all"
 )
 
 # Function to create all skills
