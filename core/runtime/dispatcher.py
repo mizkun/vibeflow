@@ -13,6 +13,22 @@ from typing import Any, Dict, Optional
 
 from core.runtime.agent_selector import select_agent
 
+# Keywords that indicate UI task
+_UI_KEYWORDS = [
+    "ui", "page", "screen", "component", "layout", "design",
+    "css", "style", "button", "form", "modal", "dialog",
+    "animation", "responsive", "dashboard",
+    "画面", "表示", "デザイン", "ダッシュボード", "コンポーネント",
+]
+
+
+def _is_ui_task(issue: Dict[str, Any]) -> bool:
+    """Detect if an issue involves UI changes."""
+    title = issue.get("title", "").lower()
+    body = issue.get("body", "").lower()
+    text = f"{title} {body}"
+    return any(kw in text for kw in _UI_KEYWORDS)
+
 
 def generate_prompt(
     issue: Dict[str, Any],
@@ -63,6 +79,9 @@ def generate_prompt(
         lines.append(ctx["plan"][:1000])
         lines.append("")
 
+    # Detect UI task
+    ui_task = _is_ui_task(issue)
+
     # Add workflow instructions
     lines.extend([
         "## Workflow Instructions",
@@ -72,6 +91,16 @@ def generate_prompt(
         "4. Ensure all tests pass",
         "5. Create a commit with a descriptive message",
     ])
+
+    if ui_task:
+        lines.extend([
+            "",
+            "## Playwright Required (UI Task)",
+            "This is a UI task. The following are **mandatory**:",
+            "- Write Playwright E2E tests in `tests/e2e/`",
+            "- Run `bash scripts/playwright_smoke.sh` and ensure all tests pass",
+            "- Produce at least one artifact: Playwright test, trace, screenshot, or exploratory log",
+        ])
 
     return "\n".join(lines)
 

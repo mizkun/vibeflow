@@ -67,8 +67,11 @@ result = judge({
     'files_changed': 3,
     'lines_changed': 50,
     'has_ui_changes': True,
+    'playwright_passed': True,
+    'has_playwright_artifact': True,
 })
 assert result['needs_human'] == True, f'UI changes should need human: {result}'
+assert result['is_ui_task'] == True, f'Should detect UI task: {result}'
 print('OK')
 " 2>/dev/null)
     assert_equals "OK" "$result" "UI changes should require human check"
@@ -195,6 +198,98 @@ print('OK')
     assert_equals "OK" "$result" "Should include a reason"
 }
 run_test "provides judgment reason" test_provides_reason
+
+# ──────────────────────────────────────────────
+describe "QA Judge — Playwright mandatory for UI tasks"
+
+test_ui_fail_without_playwright() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.qa_judge import judge
+
+result = judge({
+    'labels': ['type:dev', 'risk:low'],
+    'tests_passed': True,
+    'review_verdict': 'pass',
+    'files_changed': 2,
+    'lines_changed': 30,
+    'has_ui_changes': True,
+    'playwright_passed': None,
+})
+assert result['verdict'] == 'fail', f'UI without Playwright should fail: {result}'
+assert 'Playwright' in result['reason'], f'Reason should mention Playwright: {result}'
+print('OK')
+" 2>/dev/null)
+    assert_equals "OK" "$result" "UI task should fail if Playwright not run"
+}
+run_test "UI task fails without Playwright" test_ui_fail_without_playwright
+
+test_ui_fail_playwright_failed() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.qa_judge import judge
+
+result = judge({
+    'labels': ['type:dev', 'risk:low'],
+    'tests_passed': True,
+    'review_verdict': 'pass',
+    'files_changed': 2,
+    'lines_changed': 30,
+    'has_ui_changes': True,
+    'playwright_passed': False,
+})
+assert result['verdict'] == 'fail', f'UI with failed Playwright should fail: {result}'
+print('OK')
+" 2>/dev/null)
+    assert_equals "OK" "$result" "UI task should fail if Playwright fails"
+}
+run_test "UI task fails when Playwright fails" test_ui_fail_playwright_failed
+
+test_ui_fail_no_artifact() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.qa_judge import judge
+
+result = judge({
+    'labels': ['type:dev', 'risk:low'],
+    'tests_passed': True,
+    'review_verdict': 'pass',
+    'files_changed': 2,
+    'lines_changed': 30,
+    'has_ui_changes': True,
+    'playwright_passed': True,
+    'has_playwright_artifact': False,
+})
+assert result['verdict'] == 'fail', f'UI without artifact should fail: {result}'
+assert 'artifact' in result['reason'], f'Reason should mention artifact: {result}'
+print('OK')
+" 2>/dev/null)
+    assert_equals "OK" "$result" "UI task should fail without Playwright artifact"
+}
+run_test "UI task fails without artifact" test_ui_fail_no_artifact
+
+test_ui_detect_by_files() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.qa_judge import is_ui_task
+
+assert is_ui_task({'changed_files': ['src/App.tsx', 'src/main.ts']}) == True
+assert is_ui_task({'changed_files': ['src/utils.ts', 'src/api.ts']}) == False
+assert is_ui_task({'issue_title': 'ダッシュボード画面を追加'}) == True
+assert is_ui_task({'issue_title': 'APIリファクタリング'}) == False
+print('OK')
+" 2>/dev/null)
+    assert_equals "OK" "$result" "is_ui_task should detect UI tasks by files and keywords"
+}
+run_test "is_ui_task detection" test_ui_detect_by_files
 
 # ──────────────────────────────────────────────
 print_summary

@@ -76,4 +76,42 @@ test_setup_calls_playwright_by_default() {
 run_test "setup mentions Playwright in help" test_setup_calls_playwright_by_default
 
 # ──────────────────────────────────────────────
+describe "Playwright Default — mandatory in rules"
+
+test_playwright_mandatory_in_workflow() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/rules/workflow-standard.md" \
+        "Playwright 必須\|Playwright.*必須\|playwright.*mandatory" \
+        "Standard workflow should mandate Playwright for UI tasks"
+}
+run_test "Standard workflow mandates Playwright for UI" test_playwright_mandatory_in_workflow
+
+test_playwright_mandatory_in_patch() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/rules/workflow-patch.md" \
+        "Playwright\|playwright" \
+        "Patch workflow should mention Playwright for UI changes"
+}
+run_test "Patch workflow mentions Playwright" test_playwright_mandatory_in_patch
+
+test_playwright_artifact_requirement() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/rules/playwright.md" \
+        "artifact" \
+        "Playwright rules should require artifacts"
+}
+run_test "Playwright rules require artifacts" test_playwright_artifact_requirement
+
+test_playwright_ui_detection() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/rules/playwright.md" \
+        "UI task" \
+        "Playwright rules should define UI task detection"
+}
+run_test "Playwright rules define UI task detection" test_playwright_ui_detection
+
+test_iris_core_ui_judgment() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/rules/iris-core.md" \
+        "UI task\|UI 関連\|qa:manual.*Playwright\|Playwright.*必須" \
+        "Iris core should mention UI task judgment with Playwright"
+}
+run_test "Iris core mentions UI task + Playwright" test_iris_core_ui_judgment
+
+# ──────────────────────────────────────────────
 print_summary

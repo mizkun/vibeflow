@@ -46,8 +46,10 @@ Iris は起動時に自動で状態を読み込みます:
 
 ### 6. QA 判断
 - テスト + レビュー結果の自動判定
+- **UI task 判定**: UI 関連の Issue を検出し `qa:manual` + Playwright 必須化
+- UI task は Playwright artifact (test / trace / screenshot / log) を必須とする
+- UI task は原則 `needs_human` → スクリーンショットをユーザーに提示
 - 人間チェック要否の判断
-- Playwright E2E テストの管理
 
 ### 7. クロスレビュー
 - コーディングしなかった agent にレビューを dispatch
