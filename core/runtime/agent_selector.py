@@ -1,5 +1,5 @@
 """Agent Selection Logic for VibeFlow v5 Iris-Only Architecture.
-
+from __future__ import annotations
 Determines whether to use Claude Code or Codex for a given task.
 Default: Claude Code. Codex is used for review (cross-review model).
 """

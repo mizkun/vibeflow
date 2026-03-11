@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow CLAUDE.md Partial Generator
 Updates only VF:BEGIN/VF:END managed sections, preserving hand-written content.

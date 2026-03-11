@@ -1,5 +1,5 @@
 """Codex CLI Wrapper for VibeFlow v5 Iris-Only Architecture.
-
+from __future__ import annotations
 Provides a unified interface to dispatch tasks to Codex,
 poll for status, collect results, and cancel execution.
 """

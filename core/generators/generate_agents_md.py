@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow AGENTS.md Generator
 Generates Codex instruction layer from schema files.

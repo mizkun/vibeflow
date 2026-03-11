@@ -1,5 +1,5 @@
 """QA Judgment Automation for VibeFlow v5 Iris-Only Architecture.
-
+from __future__ import annotations
 Determines whether an issue can be auto-closed or needs human review.
 UI tasks require Playwright artifacts and are routed to needs_human.
 """

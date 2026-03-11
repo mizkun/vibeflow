@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Settings Generator
 Generates .claude/settings.json from schema — reads policy.yaml to determine

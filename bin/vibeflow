@@ -116,6 +116,10 @@ cmd_generate() {
         GEN_ARGS+=("--diff")
         shift
         ;;
+      --check)
+        GEN_ARGS+=("--check")
+        shift
+        ;;
       *)
         echo "Unknown generate option: $1"
         exit 1

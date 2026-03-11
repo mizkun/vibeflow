@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Codex Implementation Runtime
 Handles packet loading, diff validation, and validation command execution.

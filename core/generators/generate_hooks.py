@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Hook Generator
 Generates hook files from core/schema/policy.yaml:

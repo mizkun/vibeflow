@@ -1,5 +1,5 @@
 """Dependency Analysis for VibeFlow v5 Iris-Only Architecture.
-
+from __future__ import annotations
 Analyzes issue dependencies and determines execution order.
 Supports parallel batch detection and cycle detection.
 """

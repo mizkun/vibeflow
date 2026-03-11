@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Generate All — Orchestrator for all generators.
 Runs generators in correct order, records results in manifest.
@@ -181,6 +182,38 @@ def run_diff(schema_dir: str, project_dir: str, framework_dir: str,
             print("  (no changes)")
 
 
+def run_check(schema_dir: str, project_dir: str, framework_dir: str,
+              targets: list) -> list:
+    """Check if generated files are fresh. Returns list of stale file paths."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_project = Path(tmpdir)
+        project = Path(project_dir)
+
+        if (project / "CLAUDE.md").exists():
+            shutil.copy2(project / "CLAUDE.md", tmp_project / "CLAUDE.md")
+
+        manifest = Manifest(tmpdir)
+        generated_files = []
+
+        for target in targets:
+            if target == "manifest":
+                continue
+            run_target(target, schema_dir, tmpdir, framework_dir, manifest, generated_files)
+
+        stale = []
+        for rel_path, _ in generated_files:
+            tmp_file = tmp_project / rel_path
+            project_file = project / rel_path
+            if not tmp_file.exists():
+                continue
+            if not project_file.exists():
+                stale.append(rel_path)
+            elif tmp_file.read_bytes() != project_file.read_bytes():
+                stale.append(rel_path)
+
+        return stale
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate all VibeFlow project files from schema")
     parser.add_argument("--schema-dir", required=True, help="Path to schema directory")
@@ -190,6 +223,8 @@ def main() -> None:
                         help="Generate only a specific target")
     parser.add_argument("--diff", action="store_true",
                         help="Show what would be generated without writing")
+    parser.add_argument("--check", action="store_true",
+                        help="Check if generated files are fresh (exit 1 if stale)")
     args = parser.parse_args()
 
     # Determine which targets to run
@@ -200,6 +235,18 @@ def main() -> None:
 
     if args.diff:
         run_diff(args.schema_dir, args.project_dir, args.framework_dir, targets)
+        return
+
+    if args.check:
+        stale = run_check(args.schema_dir, args.project_dir, args.framework_dir, targets)
+        if stale:
+            print(f"\n{len(stale)} file(s) are stale:", file=sys.stderr)
+            for f in stale:
+                print(f"  ~ {f}", file=sys.stderr)
+            print("\nRun 'vibeflow generate' to update.", file=sys.stderr)
+            sys.exit(1)
+        else:
+            print("All generated files are fresh.")
         return
 
     # Validate schema dir

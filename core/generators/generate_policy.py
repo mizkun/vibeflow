@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Policy Generator
 Generates project-side .vibe/policy.yaml from core/schema/policy.yaml.

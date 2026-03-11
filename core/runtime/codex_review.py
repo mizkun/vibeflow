@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Codex Review Runtime
 Parses and saves structured review output from Codex.
