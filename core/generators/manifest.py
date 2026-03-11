@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Generated Manifest
 Tracks generated files with SHA256 hashes for upgrade safety.

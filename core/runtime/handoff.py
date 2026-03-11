@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Worker Handoff Packet Runtime
 Generates, saves, and loads handoff packets for worker terminals.

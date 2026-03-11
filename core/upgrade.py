@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Manifest-aware Upgrade
 Safely upgrades project files using manifest or baseline hash classification.

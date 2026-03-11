@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Definition of Ready (DoR) Gate
 Validates that a GitHub Issue meets minimum requirements before starting work.

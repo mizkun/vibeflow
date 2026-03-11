@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Label Command Generator
 Reads issue_labels.yaml and outputs `gh label create` commands.
