@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Patch Loop Runtime
 Lightweight fix workflow for scoped changes tied to a parent Issue/PR.

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow State Management Runtime
 Provides read/write API for project_state.yaml and session state files.

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Baseline Loader
 Classifies project files against known baseline hashes.

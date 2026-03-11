@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 VibeFlow Doctor — Manifest-aware integrity checker.
 Verifies generated files, cross-schema consistency, and version drift.
