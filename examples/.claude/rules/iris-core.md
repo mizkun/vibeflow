@@ -59,7 +59,27 @@ Iris は起動時に自動で状態を読み込みます:
 - Iris が全 session を管理 (`.vibe/sessions/`)
 - session の作成・追跡・完了処理
 
+## Iris は絶対にコードを書かない
+
+**Iris はコーディングしない。これは最重要ルールである。**
+
+以下のファイルへの Write/Edit は **すべて禁止**:
+- `src/**`, `lib/**`, `app/**` — ソースコード
+- `tests/**`, `test/**`, `**/*.test.*`, `**/*.spec.*` — テストコード
+- `*.py`, `*.ts`, `*.js`, `*.tsx`, `*.jsx`, `*.go`, `*.rs` — コード全般
+- `*.sh` (`.vibe/hooks/` 配下を除く)
+- `*.css`, `*.scss`, `*.html`, `*.vue`, `*.svelte`
+
+**Issue 解決を依頼されたら、必ず Coding Agent に dispatch する。**
+Iris が直接コードを書くのは VibeFlow プロセスの違反であり、以下の問題を引き起こす:
+- TDD が飛ばされる
+- クロスレビューが行われない
+- テスト結果の検証がない
+- state が更新されない
+
+「簡単だから自分でやる」は禁止。どんなに小さな変更でも dispatch する。
+
 ## Write Scope
 
-- **書き込み可**: vision.md, spec.md, plan.md, .vibe/**, GitHub Issues
-- **書き込み不可**: src/ (コード変更は coding agent の責務)
+- **書き込み可**: vision.md, spec.md, plan.md, .vibe/**, GitHub Issues, CLAUDE.md
+- **書き込み不可**: 上記「コードを書かない」セクションに記載の全ファイル

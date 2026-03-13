@@ -6,15 +6,15 @@
       "sha256": "105aa23945bbbe61438acdabc0eb80c2b1d63ee9e3c6dd4571786f94e4cdf04e",
       "source": "core/schema/policy.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-11T00:36:51.702478+00:00",
+      "generated_at": "2026-03-13T04:07:51.083778+00:00",
       "type": "full",
       "schema_hash": "af67b09468b06f3bccc291025ed542ed2735291dc4251a79951375a30881eea0"
     },
     ".vibe/hooks/validate_access.py": {
-      "sha256": "c307b7c5ac407bde03a13ae8a9a2015328a81974aa2b3dab42fee0e86e19271c",
+      "sha256": "e7a854e2ab3d052c9ff72506a67675b62099487f128c489d11290fa370ac6dea",
       "source": "core/schema/policy.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-11T00:36:51.702624+00:00",
+      "generated_at": "2026-03-13T04:07:51.083976+00:00",
       "type": "full",
       "schema_hash": "af67b09468b06f3bccc291025ed542ed2735291dc4251a79951375a30881eea0"
     },
@@ -22,7 +22,7 @@
       "sha256": "579b91113e841832a72497410278549fc0ff8c1a7c8a13c4bd317b66ca4f9694",
       "source": "core/schema/policy.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-11T00:36:51.702758+00:00",
+      "generated_at": "2026-03-13T04:07:51.084254+00:00",
       "type": "full",
       "schema_hash": "af67b09468b06f3bccc291025ed542ed2735291dc4251a79951375a30881eea0"
     },
@@ -30,7 +30,7 @@
       "sha256": "b605535325a2eb5c3fce5190d02d0e4b37a04caf50ae7b1d99f9cc32a384fce9",
       "source": "core/schema/policy.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-11T00:36:51.702913+00:00",
+      "generated_at": "2026-03-13T04:07:51.084443+00:00",
       "type": "full",
       "schema_hash": "af67b09468b06f3bccc291025ed542ed2735291dc4251a79951375a30881eea0"
     },
@@ -38,7 +38,7 @@
       "sha256": "58675ab42fe67d9d6319b0dd615e4f2cbdb3bbb9e7bdb1051b6c4241983cc116",
       "source": "core/schema/policy.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-11T00:36:51.702951+00:00",
+      "generated_at": "2026-03-13T04:07:51.084480+00:00",
       "type": "full",
       "schema_hash": "af67b09468b06f3bccc291025ed542ed2735291dc4251a79951375a30881eea0"
     },
@@ -70,7 +70,7 @@
       "sha256": "2a0f324800e722f942fb88b9b3d5e81a30e5e213ef18f72714e4238cb86eeae2",
       "source": "core/schema/roles.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-11T00:36:51.703023+00:00",
+      "generated_at": "2026-03-13T04:07:51.084552+00:00",
       "type": "full",
       "schema_hash": "67448a3db524ee5dfb56e47bb7f5a5ec4f42c0a248415adb4124bd4c8310bb4b"
     },
@@ -94,7 +94,7 @@
       "sha256": "144d638b77156df6933d0722e350ac1a60a291b802068cd8983599790d74bf0a",
       "source": "core/schema",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-11T00:36:51.703057+00:00",
+      "generated_at": "2026-03-13T04:07:51.084583+00:00",
       "type": "partial",
       "managed_sections": [
         "roles",
@@ -109,7 +109,7 @@
       "sha256": "e0b0950dfb68e64c8d2f132dd279a5403477478d9d5cd6e4eb47e55da9b9cd9d",
       "source": "core/schema/project_state.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-11T00:36:51.703251+00:00",
+      "generated_at": "2026-03-13T04:07:51.084783+00:00",
       "type": "full",
       "schema_hash": "483ed6fefd64c515160406635b5a591527f536f9eb5675c10f09f91e05d7e194"
     },
@@ -117,7 +117,7 @@
       "sha256": "c265e2735dc583a447e3b2f73e6f071f526bfce83dde6e9839507abafafc8209",
       "source": "core/schema/session_state.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-11T00:36:51.704089+00:00",
+      "generated_at": "2026-03-13T04:07:51.085192+00:00",
       "type": "full",
       "schema_hash": "30484236aa69396334724475e2fb8a94c03f86b07a8e1bb934a4d817ef382465"
     },
@@ -125,14 +125,14 @@
       "sha256": "b24df6a8afe9f1c42553219b71843f798b631e1cb0300c47004f21b47da7f5f9",
       "source": "core/schema",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-11T00:36:51.703111+00:00",
+      "generated_at": "2026-03-13T04:07:51.084638+00:00",
       "type": "full"
     },
     ".vibe/roles/coding-agent.md": {
       "sha256": "2c0816d2e469c03dd13cea058dd795ff880dc7a2986d6117f90b83abbcfcdf53",
       "source": "core/schema/roles.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-11T00:36:51.702987+00:00",
+      "generated_at": "2026-03-13T04:07:51.084517+00:00",
       "type": "full",
       "schema_hash": "67448a3db524ee5dfb56e47bb7f5a5ec4f42c0a248415adb4124bd4c8310bb4b"
     }

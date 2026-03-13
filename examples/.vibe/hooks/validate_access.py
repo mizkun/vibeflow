@@ -170,7 +170,21 @@ def main() -> None:
 
     root = project_root()
     role = resolve_current_role(root)
+
+    # Default to Iris (most restrictive) when role is unknown
+    if not role:
+        role = "Iris"
+
     allow = ROLE_EDIT_ALLOW.get(role, [])
+
+    # Code file patterns — Iris must NEVER write these
+    CODE_PATTERNS = [
+        "src/*", "src/**", "lib/*", "lib/**", "app/*", "app/**",
+        "tests/*", "tests/**", "test/*", "test/**",
+        "**/*.test.*", "**/*.spec.*",
+        "*.py", "*.ts", "*.js", "*.tsx", "*.jsx", "*.go", "*.rs",
+        "*.css", "*.scss", "*.html", "*.vue", "*.svelte",
+    ]
 
     targets = get_target_paths(tool_name, tool_input)
 
@@ -181,6 +195,19 @@ def main() -> None:
 
         if match_any(t, ALWAYS_ALLOW):
             continue
+
+        # Iris-specific: block code file writes with workflow guidance
+        if role == "Iris" and match_any(t, CODE_PATTERNS):
+            block(
+                f"[VibeFlow AccessGuard — ワークフロー違反]\n"
+                f"Iris はコードファイル '{t}' を直接編集できません。\n\n"
+                f"VibeFlow のプロセスに従ってください:\n"
+                f"  1) Issue を作成または確認する\n"
+                f"  2) Coding Agent に dispatch する (Claude Code / Codex)\n"
+                f"  3) TDD でテスト → 実装 → リファクタリング\n"
+                f"  4) Cross-Review (Codex) を実施\n\n"
+                f"「簡単だから自分でやる」は禁止です。"
+            )
 
         if not match_any(t, allow):
             block(

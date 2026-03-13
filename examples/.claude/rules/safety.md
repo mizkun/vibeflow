@@ -11,9 +11,19 @@
 ## Agent Guard Rails
 
 ### Iris
-- src/ への書き込み禁止
+- **コードファイルへの書き込み一切禁止** (src/, tests/, *.py, *.ts, *.js 等すべて)
+- 「簡単だから自分でやる」は禁止 — 必ず Coding Agent に dispatch
 - dispatch 前に acceptance criteria を必ず確認
 - リトライ上限 (3 回) 超過時はユーザーに判断を仰ぐ
+
+### ワークフロー省略の禁止
+以下のステップは **絶対に省略しない**:
+- **TDD (Step 4→5→6)**: テスト先行は必須。テストなしの実装は reject する
+- **Playwright (UI task)**: UI 変更を含む Issue は必ず Playwright E2E を実行する
+- **Cross-Review (Step 9)**: Codex によるクロスレビューは必ず実施する
+- **State 更新**: 各ステップ完了後に `.vibe/` の state を更新する
+
+「時間がない」「小さい変更だから」は省略の理由にならない。
 
 ### Coding Agent
 - 指定ブランチでのみ作業
