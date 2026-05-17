@@ -182,4 +182,94 @@ test_base_absent_falls_back_to_main() {
 run_test "without --base, fallback to main catches the spec change" test_base_absent_falls_back_to_main
 
 # ──────────────────────────────────────────────
+describe "spec gate — robust gh pr create matching (codex High 1)"
+
+test_spec_pr_blocked_extra_whitespace() {
+    make_feature_branch spec
+    create_state_with_issue "#48"
+    create_qa_auto_checkpoint "#48"
+    local rc=0
+    echo '{"tool_name":"Bash","tool_input":{"command":"gh  pr   create --title \"feat\""}}' \
+        | CLAUDE_PROJECT_DIR="$TEST_DIR" python3 "$HOOK_SCRIPT" 2>/dev/null || rc=$?
+    assert_equals "2" "$rc" "spec PR via 'gh  pr   create' (extra spaces) must still be gated"
+}
+run_test "blocks a spec PR even with extra whitespace in gh pr create" test_spec_pr_blocked_extra_whitespace
+
+test_spec_pr_blocked_tab_separated() {
+    make_feature_branch spec
+    create_state_with_issue "#49"
+    create_qa_auto_checkpoint "#49"
+    local rc=0
+    printf '{"tool_name":"Bash","tool_input":{"command":"gh\\tpr\\tcreate --title x"}}' \
+        | CLAUDE_PROJECT_DIR="$TEST_DIR" python3 "$HOOK_SCRIPT" 2>/dev/null || rc=$?
+    assert_equals "2" "$rc" "spec PR via tab-separated gh pr create must still be gated"
+}
+run_test "blocks a spec PR even with tab-separated gh pr create" test_spec_pr_blocked_tab_separated
+
+# ──────────────────────────────────────────────
+describe "spec gate — missing issue state fails closed for spec PRs (codex High 2)"
+
+test_spec_pr_blocked_issue_null() {
+    make_feature_branch spec
+    create_state_with_issue "null"
+    run_hook
+    assert_equals "2" "$?" "spec PR with current_issue null must be blocked (fail-closed)"
+}
+run_test "blocks a spec PR when current_issue is null" test_spec_pr_blocked_issue_null
+
+test_spec_pr_blocked_state_missing() {
+    make_feature_branch spec
+    mkdir -p "${TEST_DIR}/.vibe"   # no state.yaml at all
+    run_hook
+    assert_equals "2" "$?" "spec PR with no state.yaml must be blocked (fail-closed)"
+}
+run_test "blocks a spec PR when state.yaml is missing" test_spec_pr_blocked_state_missing
+
+test_code_pr_still_passes_issue_null() {
+    make_feature_branch code
+    create_state_with_issue "null"
+    run_hook
+    assert_equals "0" "$?" "non-spec PR with null issue keeps passing (no regression)"
+}
+run_test "non-spec PR with null issue still passes" test_code_pr_still_passes_issue_null
+
+# ──────────────────────────────────────────────
+describe "spec gate — quote/escape obfuscation still matched (codex re-review)"
+
+test_spec_pr_blocked_quoted_command() {
+    make_feature_branch spec
+    create_state_with_issue "#50"
+    create_qa_auto_checkpoint "#50"
+    local pf="$TEST_DIR/payload.json"
+    cat > "$pf" << 'JSON'
+{"tool_name":"Bash","tool_input":{"command":"g'h' pr cre'ate' --title x"}}
+JSON
+    local rc=0
+    CLAUDE_PROJECT_DIR="$TEST_DIR" python3 "$HOOK_SCRIPT" < "$pf" 2>/dev/null || rc=$?
+    assert_equals "2" "$rc" "spec PR via quote-obfuscated gh pr create must still be gated"
+}
+run_test "blocks a spec PR even with shell-quote obfuscation" test_spec_pr_blocked_quoted_command
+
+# ──────────────────────────────────────────────
+describe "spec gate — unresolvable base fails closed for spec projects (codex re-review)"
+
+# commits exist on a non-standard branch; no main/master/origin to diff against
+make_branch_no_resolvable_base() {
+    cd "$TEST_DIR"
+    git checkout -q -b trunk   # from unborn HEAD; main/master never created
+    mkdir -p .vibe/spec/stories
+    echo "id: x" > .vibe/spec/stories/x.yaml
+    git add -A && git commit -q -m "spec on trunk"
+}
+
+test_spec_pr_blocked_unresolvable_base() {
+    make_branch_no_resolvable_base
+    create_state_with_issue "#51"
+    create_qa_auto_checkpoint "#51"
+    run_hook
+    assert_equals "2" "$?" "unresolvable base + .vibe/spec present must fail closed"
+}
+run_test "blocks a spec PR when base is unresolvable and .vibe/spec exists" test_spec_pr_blocked_unresolvable_base
+
+# ──────────────────────────────────────────────
 print_summary

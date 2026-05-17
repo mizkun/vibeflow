@@ -136,7 +136,8 @@ contract:
           Python … ドット区切りパス  例: pneuma_core.models.character.Character
           TS     … モジュール#型名    例: src/models/character.ts#Character
         Python と TS で文法が違うのは意図的（host 言語に合わせる）。
-        検証エンジンはこの参照を解決して型の実体に辿り着けること。
+        検証エンジンは best-effort で参照を解決し、解決できなければ warning を
+        出す（hard error にはしない — 非標準レイアウトでの誤検知を避けるため）。
         フィールド単位の影響分析（field X を変えたら誰が壊れるか）は
         schema_ref では行わず、consumers のコード解析で行う。
     producers:

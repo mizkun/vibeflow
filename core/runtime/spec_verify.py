@@ -17,6 +17,7 @@ Running the invariant tests themselves (verified vs failing) is a dynamic concer
 handled by the HealthCheck / PR-gate layer; this engine reports which tests exist.
 """
 
+import ast
 import json
 import sys
 from pathlib import Path
@@ -67,6 +68,33 @@ def _path_exists(repo_root: str, rel: str) -> bool:
 def _source_ref_file(ref: str) -> str:
     """Strip an optional ':symbol' suffix from a source_ref, returning the path."""
     return ref.split(":", 1)[0] if ":" in ref else ref
+
+
+def _symbol_defined(repo_root: str, file: str, symbol: str) -> bool:
+    """Best-effort: True if `symbol` is *defined* in a Python file.
+
+    Only real definitions count — a merely imported name does NOT, since a
+    source_ref must point at where the invariant is actually upheld, not at a
+    file that re-imports it (that would mask symbol drift).
+    Returns True (no false positive) for non-Python or unparseable files."""
+    if not file.endswith(".py"):
+        return True
+    try:
+        tree = ast.parse((Path(repo_root) / file).read_text(encoding="utf-8"))
+    except Exception:
+        return True
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            if node.name == symbol:
+                return True
+        elif isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == symbol:
+                    return True
+        elif isinstance(node, ast.AnnAssign):
+            if isinstance(node.target, ast.Name) and node.target.id == symbol:
+                return True
+    return False
 
 
 def _field_missing(data: dict, field: str) -> bool:
@@ -159,7 +187,13 @@ def verify(spec_dir: str, repo_root: str) -> dict:
                             f"missing required field '{field}'"
                         )
                 test = inv.get("test")
-                if test:
+                if test and not isinstance(test, str):
+                    errors.append(
+                        f"story '{stem}' invariant '{inv.get('id', '?')}': "
+                        f"test must be a string path"
+                    )
+                    inv_pending += 1
+                elif test:
                     if not _path_exists(repo_root, test):
                         errors.append(
                             f"story '{stem}' invariant '{inv.get('id', '?')}': "
@@ -168,18 +202,36 @@ def verify(spec_dir: str, repo_root: str) -> dict:
                 else:
                     inv_pending += 1
                 src_ref = inv.get("source_ref")
-                if src_ref and not _path_exists(repo_root, _source_ref_file(src_ref)):
+                if src_ref and not isinstance(src_ref, str):
                     errors.append(
                         f"story '{stem}' invariant '{inv.get('id', '?')}': "
-                        f"source_ref path not found: {src_ref}"
+                        f"source_ref must be a string path"
                     )
+                elif src_ref:
+                    ref_file = _source_ref_file(src_ref)
+                    if not _path_exists(repo_root, ref_file):
+                        errors.append(
+                            f"story '{stem}' invariant '{inv.get('id', '?')}': "
+                            f"source_ref path not found: {src_ref}"
+                        )
+                    elif ":" in src_ref:
+                        symbol = src_ref.split(":", 1)[1].strip()
+                        if symbol and not _symbol_defined(repo_root, ref_file, symbol):
+                            errors.append(
+                                f"story '{stem}' invariant '{inv.get('id', '?')}': "
+                                f"source_ref symbol '{symbol}' not found in {ref_file}"
+                            )
 
         src_files = data.get("source_files")
         if src_files is not None and not isinstance(src_files, list):
             errors.append(f"story '{stem}': source_files must be a list")
         else:
             for src in src_files or []:
-                if not _path_exists(repo_root, src):
+                if not isinstance(src, str):
+                    errors.append(
+                        f"story '{stem}': source_files entry must be a string path"
+                    )
+                elif not _path_exists(repo_root, src):
                     errors.append(
                         f"story '{stem}': source_files path not found: {src}"
                     )
@@ -189,7 +241,11 @@ def verify(spec_dir: str, repo_root: str) -> dict:
             errors.append(f"story '{stem}': depends_on must be a list")
         else:
             for dep in deps or []:
-                if dep not in stories:
+                if not isinstance(dep, str):
+                    errors.append(
+                        f"story '{stem}': depends_on entry must be a string"
+                    )
+                elif dep not in stories:
                     errors.append(
                         f"story '{stem}': depends_on '{dep}' "
                         f"does not reference an existing story"
@@ -209,7 +265,9 @@ def verify(spec_dir: str, repo_root: str) -> dict:
             )
 
         story_ref = data.get("story")
-        if story_ref is not None and story_ref not in stories:
+        if story_ref is not None and not isinstance(story_ref, str):
+            errors.append(f"contract '{stem}': story must be a string")
+        elif story_ref is not None and story_ref not in stories:
             errors.append(
                 f"contract '{stem}': story '{story_ref}' "
                 f"does not reference an existing story"
@@ -221,7 +279,11 @@ def verify(spec_dir: str, repo_root: str) -> dict:
                 errors.append(f"contract '{stem}': {role} must be a list")
                 continue
             for src in value or []:
-                if not _path_exists(repo_root, src):
+                if not isinstance(src, str):
+                    errors.append(
+                        f"contract '{stem}': {role} entry must be a string path"
+                    )
+                elif not _path_exists(repo_root, src):
                     errors.append(
                         f"contract '{stem}': {role} path not found: {src}"
                     )

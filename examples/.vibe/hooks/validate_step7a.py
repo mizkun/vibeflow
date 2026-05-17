@@ -135,13 +135,14 @@ def spec_changed(root: str, command: str = "") -> bool:
     """True if the current branch's commits change the structured spec
     (.vibe/spec/) relative to the PR base branch.
 
-    Fail-closed: when a base branch IS known but the diff cannot be computed,
-    return True so a possible spec change is never silently auto-passed.
-    When no base branch resolves at all, there is no PR-vs-base diff to gate,
-    so return False."""
+    Fail-closed throughout: when a base branch IS known but the diff cannot
+    be computed, return True. When no base branch resolves at all, the diff
+    cannot be run — if the project uses structured spec (a .vibe/spec/
+    directory exists) we cannot prove the PR is spec-free, so return True
+    (fail closed). A repo with no .vibe/spec/ cannot have a spec change."""
     base = _base_branch(root, command)
     if not base:
-        return False
+        return os.path.isdir(os.path.join(root, ".vibe", "spec"))
     try:
         r = subprocess.run(
             ["git", "-C", root, "diff", "--name-status", f"{base}...HEAD"],
@@ -230,16 +231,35 @@ def main() -> None:
 
     command = tool_input.get("command", "")
 
-    # Only guard gh pr create commands
-    if "gh pr create" not in command:
+    # Only guard gh pr create commands. Normalize away shell quotes, escapes
+    # and whitespace so obfuscated spellings (g'h' pr create, gh\ pr create,
+    # tabs/newlines) still match. This is a guardrail for a cooperative agent,
+    # not an adversarial sandbox — eval / aliases / variables cannot be matched
+    # from the command string and are deliberately out of scope.
+    stripped = re.sub(r"['\"\\]", "", command)
+    if not re.search(r"\bgh\s+pr\s+create\b", stripped):
         sys.exit(0)
 
     root = project_root()
     state_path = os.path.join(root, ".vibe", "state.yaml")
     issue = read_yaml_value(state_path, "current_issue")
 
-    # No current issue - not in a dev cycle, pass through
+    # v6 Spec Gate (keystone): detect spec changes up front, so that missing
+    # or invalid issue state can never let a spec-changing PR slip past.
+    spec = spec_changed(root, command)
+
+    # No current issue. A non-spec PR passes (not in a tracked dev cycle).
+    # A spec-changing PR is blocked — spec changes must be Issue-tracked and
+    # human-approved (fail-closed).
     if not issue or issue == "null":
+        if spec:
+            block(root=root, msg=
+                f"[VibeFlow Step7a Guard — Spec Gate]\n"
+                f"この PR は構造化 spec (.vibe/spec/) を変更していますが、"
+                f"current_issue が未設定です。\n"
+                f"spec 変更は Issue に紐づけ、Human Checkpoint を通す必要があります。\n"
+                f".vibe/state.yaml の current_issue を設定してから進めてください。\n"
+            )
         sys.exit(0)
 
     # Invalid issue format - block (fail-closed)
@@ -250,10 +270,10 @@ def main() -> None:
             f"state.yaml の current_issue は '#数字' または '数字' 形式である必要があります。\n"
         )
 
-    # v6 Spec Gate (keystone): a PR that changes the structured spec must go
-    # through the Human Checkpoint. qa:auto auto-pass cannot bypass it — only
-    # an explicit human "approved" checkpoint lets a spec-changing PR through.
-    if spec_changed(root, command):
+    # v6 Spec Gate: a PR that changes the structured spec must go through the
+    # Human Checkpoint. qa:auto auto-pass cannot bypass it — only an explicit
+    # human "approved" checkpoint lets a spec-changing PR through.
+    if spec:
         if checkpoint_exists(root, issue, human_only=True):
             sys.exit(0)
         block(root=root, msg=

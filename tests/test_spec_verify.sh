@@ -302,6 +302,69 @@ YAML
 run_test "unresolvable schema_ref is a warning (not a hard error)" test_stale_schema_ref_warns
 
 # ──────────────────────────────────────────────
+describe "spec_verify — robustness & symbol drift (codex follow-up)"
+
+test_non_string_list_element() {
+    create_spec_fixture
+    cat > "$TEST_DIR/.vibe/spec/stories/models.yaml" << 'YAML'
+id: models
+one_liner: ドメインモデル
+invariants: []
+source_files:
+  - 123
+YAML
+    local out rc
+    out=$(run_verify) && rc=0 || rc=$?
+    [ "$rc" -ne 0 ] || { fail "expected non-zero on non-string source_files element"; return 1; }
+    echo "$out" | grep -qi "string" || { fail "should flag non-string path element, not crash: $out"; return 1; }
+    return 0
+}
+run_test "non-string list element is a structural error (not a crash)" test_non_string_list_element
+
+test_stale_source_ref_symbol() {
+    create_spec_fixture
+    # recall.py exists and defines recall(); point source_ref at a missing symbol
+    cat > "$TEST_DIR/.vibe/spec/stories/memory.yaml" << 'YAML'
+id: memory
+one_liner: 記憶レイヤー
+invariants:
+  - id: importance-threshold
+    text: importance が閾値未満なら保存されない
+    source_ref: src/pneuma_core/memory/recall.py:nonexistent_func
+source_files:
+  - src/pneuma_core/memory/
+YAML
+    local out rc
+    out=$(run_verify) && rc=0 || rc=$?
+    [ "$rc" -ne 0 ] || { fail "expected non-zero on stale source_ref symbol"; return 1; }
+    echo "$out" | grep -qi "nonexistent_func\|symbol" || { fail "should flag missing symbol: $out"; return 1; }
+    return 0
+}
+run_test "stale invariant source_ref symbol is an error" test_stale_source_ref_symbol
+
+test_source_ref_symbol_only_imported() {
+    create_spec_fixture
+    # a file that only IMPORTS the symbol — does not define it
+    echo "from somewhere import recall" > "$TEST_DIR/src/pneuma_core/memory/proxy.py"
+    cat > "$TEST_DIR/.vibe/spec/stories/memory.yaml" << 'YAML'
+id: memory
+one_liner: 記憶レイヤー
+invariants:
+  - id: importance-threshold
+    text: importance ルール
+    source_ref: src/pneuma_core/memory/proxy.py:recall
+source_files:
+  - src/pneuma_core/memory/
+YAML
+    local out rc
+    out=$(run_verify) && rc=0 || rc=$?
+    [ "$rc" -ne 0 ] || { fail "expected non-zero: source_ref symbol is only imported, not defined"; return 1; }
+    echo "$out" | grep -qi "symbol" || { fail "should flag imported-not-defined symbol: $out"; return 1; }
+    return 0
+}
+run_test "source_ref symbol that is only imported (not defined) is an error" test_source_ref_symbol_only_imported
+
+# ──────────────────────────────────────────────
 describe "spec_verify — vibeflow CLI subcommand"
 
 test_cli_subcommand_passes() {
