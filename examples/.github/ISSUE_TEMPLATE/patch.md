@@ -11,6 +11,12 @@ labels: type:patch, workflow:patch
 ## Problem
 [何を修正する必要があるか]
 
+## バグ改修分類
+詳細は `.claude/rules/spec-loop.md`。1 つ選ぶ。
+- [ ] (i) コード違反 — spec の invariant は正しい。コードだけ直す
+- [ ] (ii) spec 誤り — invariant 自体が誤り。invariant も直す
+- [ ] (iii) spec 欠落 — ルールが記録されていなかった。invariant を追加し test を付ける
+
 ## Scope
 ### 対象ファイル
 - `[path]` - [修正内容]

@@ -1,6 +1,12 @@
 # Workflows
 
-VibeFlow v5 のワークフロー一覧。Iris がワークフローを自動選択・進行します。
+VibeFlow のワークフロー一覧。Iris がワークフローを自動選択・進行します。
+
+## Spec Loop（全ワークフローの土台）
+
+すべての開発は構造化 spec（Story / Contract）の As-Is → To-Be 差分として
+進む。Issue = Spec 差分。バグ改修の 3 分類（特に (iii) spec 欠落 →
+invariant 追加）と検証フローは `spec-loop.md` を参照。
 
 ## Standard Workflow (11 Steps)
 

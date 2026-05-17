@@ -10,6 +10,12 @@ labels: type:dev, workflow:standard
 ## Background
 [このタスクが必要な背景・理由]
 
+## Spec 変更（Issue = Spec 差分）
+- 対象 Story / Contract: [`.vibe/spec/...` / spec 変更なし（コードのみ）]
+- As-Is → To-Be: [今の仕様 → 変更後の仕様の要約]
+- バグ修正の場合の分類: [(i) コード違反 / (ii) spec 誤り / (iii) spec 欠落 → invariant 追加]
+  ※ 詳細は `.claude/rules/spec-loop.md`
+
 ## Acceptance Criteria
 - [ ] 具体的・テスト可能な基準1
 - [ ] 具体的・テスト可能な基準2
