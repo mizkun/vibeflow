@@ -272,4 +272,40 @@ test_spec_pr_blocked_unresolvable_base() {
 run_test "blocks a spec PR when base is unresolvable and .vibe/spec exists" test_spec_pr_blocked_unresolvable_base
 
 # ──────────────────────────────────────────────
+describe "spec gate — --base honors remote-only branches (codex P1)"
+
+# develop holds the spec change and exists ONLY as origin/develop (no local
+# branch). feature/work (from develop) changes code only. A correct
+# --base develop diff must use origin/develop and see no spec change.
+make_branch_remote_only_develop() {
+    cd "$TEST_DIR"
+    echo "readme" > README.md
+    git add -A && git commit -q -m "base"
+    git branch -M main
+    git checkout -q -b develop
+    mkdir -p .vibe/spec/stories
+    echo "id: x" > .vibe/spec/stories/x.yaml
+    git add -A && git commit -q -m "spec on develop"
+    local dev_sha
+    dev_sha=$(git rev-parse develop)
+    git checkout -q -b feature/work
+    mkdir -p src
+    echo "x = 1" > src/app.py
+    git add -A && git commit -q -m "code on feature"
+    git update-ref refs/remotes/origin/develop "$dev_sha"
+    git branch -D develop   # develop now exists only as origin/develop
+}
+
+test_base_honors_remote_only_branch() {
+    make_branch_remote_only_develop
+    create_state_with_issue "#52"
+    create_qa_auto_checkpoint "#52"
+    local rc=0
+    echo '{"tool_name":"Bash","tool_input":{"command":"gh pr create --title \"feat\" --base develop"}}' \
+        | CLAUDE_PROJECT_DIR="$TEST_DIR" python3 "$HOOK_SCRIPT" 2>/dev/null || rc=$?
+    assert_equals "0" "$rc" "--base develop must resolve origin/develop; code-only PR then passes"
+}
+run_test "honors --base when the branch exists only as origin/<branch>" test_base_honors_remote_only_branch
+
+# ──────────────────────────────────────────────
 print_summary

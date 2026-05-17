@@ -110,10 +110,16 @@ def _base_branch(root: str, command: str = "") -> str:
 
     Priority: explicit `--base` in the gh pr create command, then origin/HEAD,
     then common base branches (local and remote)."""
-    # 1. Explicit --base in the gh pr create command
+    # 1. Explicit --base in the gh pr create command. Try the local branch
+    #    first, then the remote-tracking ref — in a fresh clone the PR base
+    #    often exists only as origin/<base>, and the explicit --base must win.
     m = re.search(r"--base[=\s]+([^\s'\"]+)", command or "")
-    if m and _ref_exists(root, m.group(1)):
-        return m.group(1)
+    if m:
+        base = m.group(1)
+        if _ref_exists(root, base):
+            return base
+        if _ref_exists(root, "origin/" + base):
+            return "origin/" + base
     # 2. origin/HEAD symbolic ref (the remote's default branch)
     try:
         r = subprocess.run(
