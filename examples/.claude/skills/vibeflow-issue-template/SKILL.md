@@ -49,7 +49,7 @@ Brief description of the task (1-2 sentences).
 
 ## Instructions
 
-1. **Read context first**: Always read `spec.md` and `plan.md` before creating issues.
+1. **Read context first**: Always read `.vibe/spec/` (構造化 spec) and `plan.md` before creating issues.
 2. **Check state**: Read `.vibe/state.yaml` to understand current phase.
 3. **Create file**: Write to `issues/<issue-name>.md`.
 4. **Verify completeness**: Ensure all required sections are present.

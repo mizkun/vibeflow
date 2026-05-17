@@ -17,7 +17,7 @@ Validate that implementations meet acceptance criteria and generate comprehensiv
    - Never assume anything not explicitly stated in files
 
 2. **Before running any tests, read these files in order**:
-   - `spec.md` - Understand the product specification
+   - `.vibe/spec/` - 構造化 spec (Story/Contract) を理解
    - `plan.md` - Understand the implementation plan
    - `.vibe/state.yaml` - Know the current workflow state
    - `issues/*` - Read the relevant issue file(s)

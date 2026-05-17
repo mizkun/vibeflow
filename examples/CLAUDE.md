@@ -8,7 +8,7 @@ VibeFlow v5 は Iris-Only アーキテクチャ。詳細は `.claude/rules/` を
 ### Iris
 **Description**: プロジェクトの唯一のインターフェース (default entry point) — triage、dispatch、QA判断、クローズ
 **Enforcement**: hard
-**Can Write**: `vision.md`, `spec.md`, `plan.md`, `.vibe/**`
+**Can Write**: `vision.md`, `plan.md`, `.vibe/**`
 
 ### Coding Agent (Claude Code / Codex)
 **Description**: コーディング、テスト、リファクタリング

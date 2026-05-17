@@ -215,7 +215,7 @@ print(json.dumps(packet['must_read']))
 import sys, json
 mr = json.load(sys.stdin)
 assert isinstance(mr, list), 'must_read should be list'
-assert 'spec.md' in mr, f'coding_agent must_read should include spec.md, got {mr}'
+assert '.vibe/spec/**' in mr, f'coding_agent must_read should include .vibe/spec/**, got {mr}'
 print('OK')
 " || { fail "must_read should include policy can_read entries"; return 1; }
 }

@@ -17,7 +17,7 @@ description: Conclude Iris session and update STATUS.md (compatibility — prefe
 ### 2. セッション成果のまとめ
 セッション中の活動を振り返り、以下を整理:
 - 作成・更新した GitHub Issues
-- vision.md / spec.md / plan.md への変更
+- vision.md / .vibe/spec/ / plan.md への変更
 - 重要な意思決定事項
 - references/ に保存した情報
 

@@ -73,8 +73,8 @@ test_generated_has_iris_write_paths() {
     local generated="${outdir}/validate_access.py"
     assert_file_contains "$generated" "vision.md" \
         "Generated Iris write paths should include vision.md"
-    assert_file_contains "$generated" "spec.md" \
-        "Generated Iris write paths should include spec.md"
+    assert_file_contains "$generated" ".vibe/" \
+        "Generated Iris write paths should include .vibe/ (covers structured spec)"
 }
 run_test "Generated Iris role has correct write paths" test_generated_has_iris_write_paths
 

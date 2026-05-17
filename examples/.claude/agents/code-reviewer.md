@@ -23,7 +23,7 @@ Perform thorough code reviews focusing on quality, security, and maintainability
 
 3. **Before reviewing, read these files**:
    - `.vibe/state.yaml` - Current workflow state
-   - `spec.md` - Product specification
+   - `.vibe/spec/` - 構造化 spec (Story/Contract)
    - `issues/*` - Relevant issue file(s)
 
 ## Review Focus Areas

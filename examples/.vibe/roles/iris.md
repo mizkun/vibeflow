@@ -29,7 +29,7 @@
 
 - `vision.md`
 
-- `spec.md`
+- `.vibe/spec/**`
 
 - `plan.md`
 
@@ -52,8 +52,6 @@
 ### Can Write
 
 - `vision.md`
-
-- `spec.md`
 
 - `plan.md`
 

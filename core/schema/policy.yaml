@@ -7,7 +7,7 @@ roles:
     display_name: "Iris"
     can_read:
       - "vision.md"
-      - "spec.md"
+      - ".vibe/spec/**"
       - "plan.md"
       - ".vibe/context/**"
       - ".vibe/references/**"
@@ -18,7 +18,6 @@ roles:
       - "src/**"
     can_write:
       - "vision.md"
-      - "spec.md"
       - "plan.md"
       - ".vibe/**"
     enforcement: hard
@@ -26,7 +25,7 @@ roles:
   coding_agent:
     display_name: "Coding Agent (Claude Code / Codex)"
     can_read:
-      - "spec.md"
+      - ".vibe/spec/**"
       - "src/**"
       - "tests/**"
       - ".vibe/project_state.yaml"

@@ -3,44 +3,44 @@
   "generator_version": "5.0.0",
   "files": {
     ".vibe/policy.yaml": {
-      "sha256": "105aa23945bbbe61438acdabc0eb80c2b1d63ee9e3c6dd4571786f94e4cdf04e",
+      "sha256": "e75338048d2db9475d8569f855686594841121323abc0fd5532e17d184ff7547",
       "source": "core/schema/policy.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-13T04:07:51.083778+00:00",
+      "generated_at": "2026-05-17T13:06:31.406299+00:00",
       "type": "full",
-      "schema_hash": "af67b09468b06f3bccc291025ed542ed2735291dc4251a79951375a30881eea0"
+      "schema_hash": "a27fe630107c6285f671b4945d816ae3f72d4e6b9b75d3a28e4f9115ebfc535d"
     },
     ".vibe/hooks/validate_access.py": {
-      "sha256": "e7a854e2ab3d052c9ff72506a67675b62099487f128c489d11290fa370ac6dea",
+      "sha256": "1de34b94e0864d9ab7fc3f9ff6700e43f5f986d3dedc9542976afdcafbbd3025",
       "source": "core/schema/policy.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-13T04:07:51.083976+00:00",
+      "generated_at": "2026-05-17T13:06:31.406757+00:00",
       "type": "full",
-      "schema_hash": "af67b09468b06f3bccc291025ed542ed2735291dc4251a79951375a30881eea0"
+      "schema_hash": "a27fe630107c6285f671b4945d816ae3f72d4e6b9b75d3a28e4f9115ebfc535d"
     },
     ".vibe/hooks/validate_write.sh": {
       "sha256": "579b91113e841832a72497410278549fc0ff8c1a7c8a13c4bd317b66ca4f9694",
       "source": "core/schema/policy.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-13T04:07:51.084254+00:00",
+      "generated_at": "2026-05-17T13:06:31.406897+00:00",
       "type": "full",
-      "schema_hash": "af67b09468b06f3bccc291025ed542ed2735291dc4251a79951375a30881eea0"
+      "schema_hash": "a27fe630107c6285f671b4945d816ae3f72d4e6b9b75d3a28e4f9115ebfc535d"
     },
     ".vibe/hooks/validate_step7a.py": {
-      "sha256": "b605535325a2eb5c3fce5190d02d0e4b37a04caf50ae7b1d99f9cc32a384fce9",
+      "sha256": "8f6919ca16e9faf6b44ec38f83f110b34b133ae02c0c519a1b222794c2366b01",
       "source": "core/schema/policy.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-13T04:07:51.084443+00:00",
+      "generated_at": "2026-05-17T13:06:31.406996+00:00",
       "type": "full",
-      "schema_hash": "af67b09468b06f3bccc291025ed542ed2735291dc4251a79951375a30881eea0"
+      "schema_hash": "a27fe630107c6285f671b4945d816ae3f72d4e6b9b75d3a28e4f9115ebfc535d"
     },
     ".claude/settings.json": {
       "sha256": "58675ab42fe67d9d6319b0dd615e4f2cbdb3bbb9e7bdb1051b6c4241983cc116",
       "source": "core/schema/policy.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-13T04:07:51.084480+00:00",
+      "generated_at": "2026-05-17T13:06:31.407057+00:00",
       "type": "full",
-      "schema_hash": "af67b09468b06f3bccc291025ed542ed2735291dc4251a79951375a30881eea0"
+      "schema_hash": "a27fe630107c6285f671b4945d816ae3f72d4e6b9b75d3a28e4f9115ebfc535d"
     },
     ".vibe/roles/engineer.md": {
       "sha256": "4b242feffdc8ebe9eb374729f6c20a8ad89f08beb464e2bf5a841192812f0440",
@@ -67,10 +67,10 @@
       "schema_hash": "bd964f41f08901983febc022de38f93cbb1bda54cae2382b28909632a33e0375"
     },
     ".vibe/roles/iris.md": {
-      "sha256": "2a0f324800e722f942fb88b9b3d5e81a30e5e213ef18f72714e4238cb86eeae2",
+      "sha256": "40671e1316ec769c159d61be1f35006a1f943cc5e6c3599bdb467783ee93ecd3",
       "source": "core/schema/roles.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-13T04:07:51.084552+00:00",
+      "generated_at": "2026-05-17T13:06:31.407169+00:00",
       "type": "full",
       "schema_hash": "67448a3db524ee5dfb56e47bb7f5a5ec4f42c0a248415adb4124bd4c8310bb4b"
     },
@@ -91,10 +91,10 @@
       "schema_hash": "bd964f41f08901983febc022de38f93cbb1bda54cae2382b28909632a33e0375"
     },
     "CLAUDE.md": {
-      "sha256": "144d638b77156df6933d0722e350ac1a60a291b802068cd8983599790d74bf0a",
+      "sha256": "166ab551ddedf314e90a499c32b70d8bc535b955ee8d1e7dd6c77b92ee962641",
       "source": "core/schema",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-13T04:07:51.084583+00:00",
+      "generated_at": "2026-05-17T13:06:31.407219+00:00",
       "type": "partial",
       "managed_sections": [
         "roles",
@@ -102,14 +102,14 @@
         "hook_list"
       ],
       "section_hashes": {
-        "roles": "996c06a98f98492a08f1a9682b059b996450ac7af2efff610c5ddcf3ca8379cd"
+        "roles": "e5d6b32b8d64fb217107b468b6f3343f5a7f7b2178b33c6fa5d82a0483b518e7"
       }
     },
     ".vibe/project_state.yaml": {
       "sha256": "e0b0950dfb68e64c8d2f132dd279a5403477478d9d5cd6e4eb47e55da9b9cd9d",
       "source": "core/schema/project_state.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-13T04:07:51.084783+00:00",
+      "generated_at": "2026-05-17T13:06:31.407489+00:00",
       "type": "full",
       "schema_hash": "483ed6fefd64c515160406635b5a591527f536f9eb5675c10f09f91e05d7e194"
     },
@@ -117,22 +117,22 @@
       "sha256": "c265e2735dc583a447e3b2f73e6f071f526bfce83dde6e9839507abafafc8209",
       "source": "core/schema/session_state.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-13T04:07:51.085192+00:00",
+      "generated_at": "2026-05-17T13:06:31.407822+00:00",
       "type": "full",
       "schema_hash": "30484236aa69396334724475e2fb8a94c03f86b07a8e1bb934a4d817ef382465"
     },
     "AGENTS.md": {
-      "sha256": "b24df6a8afe9f1c42553219b71843f798b631e1cb0300c47004f21b47da7f5f9",
+      "sha256": "41e25fb58b6470257d310aefb587c62329a18242292ba180b99039a7b4e09077",
       "source": "core/schema",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-13T04:07:51.084638+00:00",
+      "generated_at": "2026-05-17T13:06:31.407296+00:00",
       "type": "full"
     },
     ".vibe/roles/coding-agent.md": {
-      "sha256": "2c0816d2e469c03dd13cea058dd795ff880dc7a2986d6117f90b83abbcfcdf53",
+      "sha256": "4b90e1717c1dc812c1c3c1a75cc2c9f1ad0bdfaa3addf7a401455e66d4a08089",
       "source": "core/schema/roles.yaml",
       "generator_version": "5.0.0",
-      "generated_at": "2026-03-13T04:07:51.084517+00:00",
+      "generated_at": "2026-05-17T13:06:31.407115+00:00",
       "type": "full",
       "schema_hash": "67448a3db524ee5dfb56e47bb7f5a5ec4f42c0a248415adb4124bd4c8310bb4b"
     }

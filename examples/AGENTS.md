@@ -18,15 +18,15 @@ These are enforced by the VibeFlow hook system and validated post-execution.
 
 #### Iris
 - **Description**: プロジェクトの唯一のインターフェース (default entry point) — triage、dispatch、QA判断、クローズ
-- **can_write**: vision.md, spec.md, plan.md, .vibe/**
-- **can_read**: vision.md, spec.md, plan.md, .vibe/context/**, .vibe/references/**, .vibe/archive/**, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml, src/**
+- **can_write**: vision.md, plan.md, .vibe/**
+- **can_read**: vision.md, .vibe/spec/**, plan.md, .vibe/context/**, .vibe/references/**, .vibe/archive/**, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml, src/**
 - **enforcement**: hard
 
 
 #### Coding Agent (Claude Code / Codex)
 - **Description**: コーディング、テスト、リファクタリング
 - **can_write**: src/*, tests/*, **/*.test.*, **/__tests__/*, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml, .vibe/test-results.log
-- **can_read**: spec.md, src/**, tests/**, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml
+- **can_read**: .vibe/spec/**, src/**, tests/**, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml
 - **enforcement**: hard
 
 
@@ -160,7 +160,7 @@ Workers receive a JSON packet with this structure:
     "forbidden_paths": ["plans/*", ".vibe/hooks/*"],
     "max_files_changed": 20
   },
-  "must_read": ["vision.md", "spec.md"],
+  "must_read": ["vision.md", ".vibe/spec/"],
   "validation": { "required_commands": ["npm test"] },
   "worker_type": "claude | codex | human"
 }

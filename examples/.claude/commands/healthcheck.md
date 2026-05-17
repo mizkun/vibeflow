@@ -18,7 +18,7 @@ VibeFlow プロジェクトの整合性を検証します。
    - .github/ISSUE_TEMPLATE/ が存在するか
 
 2. **必須ファイル**
-   - vision.md, spec.md, plan.md が存在するか
+   - vision.md, plan.md が存在するか / .vibe/spec/ に構造化 spec があるか
    - .vibe/project_state.yaml が有効なYAMLか
    - .vibe/sessions/iris-main.yaml が存在し有効か
    - .vibe/policy.yaml が存在するか

@@ -30,8 +30,6 @@ ROLE_EDIT_ALLOW = {
 
         "vision.md",
 
-        "spec.md",
-
         "plan.md",
 
         ".vibe/**",

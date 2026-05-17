@@ -17,7 +17,7 @@
 
 ### Can Read
 
-- `spec.md`
+- `.vibe/spec/**`
 
 - `src/**`
 

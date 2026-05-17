@@ -396,7 +396,7 @@ verify_installation() {
     fi
     
     # Verify key files
-    local key_files=("CLAUDE.md" "vision.md" "spec.md" "plan.md" ".vibe/state.yaml")
+    local key_files=("CLAUDE.md" "vision.md" "plan.md" ".vibe/state.yaml")
     for file in "${key_files[@]}"; do
         if [ -f "$file" ]; then
             success "$file: OK"
@@ -546,8 +546,8 @@ show_completion() {
 "
     echo "1. 以下のファイルを編集して、プロジェクトの内容を記入してください："
     echo "   • vision.md - プロダクトビジョン"
-    echo "   • spec.md   - 仕様と技術設計"
     echo "   • plan.md   - ロードマップ"
+    echo "   （構造化 spec .vibe/spec/ は kickoff スキルが生成。手書き不要）"
     echo ""
     echo "2. GitHub リポジトリを作成し、gh CLI を認証してください："
     echo "   gh auth login"

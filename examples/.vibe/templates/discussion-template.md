@@ -42,6 +42,6 @@
 [議論の結論]
 
 ## Action Items
-- [ ] [アクション1] → 反映先: vision.md / spec.md / plan.md
-- [ ] [アクション2] → 反映先: vision.md / spec.md / plan.md
+- [ ] [アクション1] → 反映先: vision.md / .vibe/spec/ / plan.md
+- [ ] [アクション2] → 反映先: vision.md / .vibe/spec/ / plan.md
 ```
