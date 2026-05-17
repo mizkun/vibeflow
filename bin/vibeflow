@@ -38,6 +38,7 @@ usage() {
   echo "  generate    スキーマからプロジェクトファイルを生成"
   echo "  version     バージョン情報を表示"
   echo "  doctor      環境の問題を診断"
+  echo "  spec-verify 構造化 spec (Story/Contract) とコードの整合を検証"
   echo "  help        このヘルプを表示"
   echo ""
   echo "Setup options:"
@@ -134,6 +135,12 @@ cmd_generate() {
     ${GEN_ARGS[@]+"${GEN_ARGS[@]}"}
 }
 
+cmd_spec_verify() {
+  # Static verification of the structured spec (Story/Contract) against the repo
+  python3 "${FRAMEWORK_DIR}/core/runtime/spec_verify.py" \
+    "$(pwd)/.vibe/spec" "$(pwd)" "$@"
+}
+
 cmd_setup() {
   bash "${FRAMEWORK_DIR}/setup_vibeflow.sh" "$@"
 }
@@ -170,6 +177,7 @@ case "$COMMAND" in
   generate) cmd_generate "$@" ;;
   version)  cmd_version ;;
   doctor)   cmd_doctor "$@" ;;
+  spec-verify) cmd_spec_verify "$@" ;;
   help|--help|-h)  usage ;;
   *)
     echo "Unknown command: $COMMAND"

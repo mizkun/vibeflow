@@ -57,6 +57,19 @@ VibeFlow プロジェクトの整合性を検証します。
 - .claude/skills/ ディレクトリが存在するか
 - 必須 skills が配置されているか
 
+#### 8. 構造化 spec とコードの整合性（v6 — 日常検証の核）
+- `vibeflow spec-verify` を実行する
+- **ERRORS が 1 件でもあれば failure**。spec がコードから drift している
+  （source_files / producers / consumers / test / source_ref の参照先が消えた、
+  story 参照が壊れた、必須フィールド欠落 等）。修正手順とともに表示する。
+- **pending invariant 数を warning として表示**。テスト未整備の不変条件で、
+  これが多いほど「構造化されているが未検証」のリスクが高い。後続 Issue で
+  test を付けて verified に押し上げる対象。数の推移を毎回見える化する。
+- WARNINGS（schema_ref 未解決など）も表示する。
+
+> spec-verify はコード変更を伴わない静的検証。invariant の test を実際に
+> 走らせて verified を確定するのは PR ゲート側の責務。
+
 ### Output Format
 各チェック項目について pass / warning / failure を表示。
 日本語で表示し、修正手順を含めてください。
