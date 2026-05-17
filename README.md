@@ -111,9 +111,9 @@ your-project/
 │   ├── sessions/                     # Agent セッション記録
 │   ├── context/STATUS.md            # 現在の状況
 │   ├── references/                   # ホット参照情報
-│   └── archive/                     # アーカイブ
+│   ├── archive/                     # アーカイブ
+│   └── spec/                        # 構造化 spec (Story/Contract)
 ├── vision.md                        # プロダクトビジョン
-├── spec.md                          # 仕様
 └── plan.md                          # ロードマップ
 ```
 
