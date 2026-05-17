@@ -165,8 +165,8 @@ for path, status in sorted(results.items()):
 
     echo "$output" > "${TEST_DIR}/classify_output.txt"
 
-    assert_file_contains "${TEST_DIR}/classify_output.txt" "stock-managed: .vibe/hooks/validate_step7a.py" \
-        "validate_step7a.py should be stock-managed"
+    assert_file_contains "${TEST_DIR}/classify_output.txt" "stock-managed: .vibe/hooks/waiting_input.sh" \
+        "waiting_input.sh should be stock-managed"
     assert_file_contains "${TEST_DIR}/classify_output.txt" "customized: .vibe/hooks/validate_write.sh" \
         "Modified validate_write.sh should be customized"
 }
@@ -191,12 +191,12 @@ if actual != recorded:
     print(f'MISMATCH: validate_write.sh actual={actual[:16]} recorded={recorded[:16]}')
     exit(1)
 
-# Check validate_step7a.py (unchanged since v3.5.0)
-with open('${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_step7a.py', 'rb') as f:
+# Check waiting_input.sh (unchanged since v3.5.0)
+with open('${FRAMEWORK_DIR}/examples/.vibe/hooks/waiting_input.sh', 'rb') as f:
     actual = hashlib.sha256(f.read()).hexdigest()
-recorded = baseline['files']['.vibe/hooks/validate_step7a.py']['sha256']
+recorded = baseline['files']['.vibe/hooks/waiting_input.sh']['sha256']
 if actual != recorded:
-    print(f'MISMATCH: validate_step7a.py actual={actual[:16]} recorded={recorded[:16]}')
+    print(f'MISMATCH: waiting_input.sh actual={actual[:16]} recorded={recorded[:16]}')
     exit(1)
 
 print('OK')

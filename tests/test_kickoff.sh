@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# VibeFlow Test: v5 — Vision/Plan/Spec Kickoff Flow (Issue #58)
+# VibeFlow Test: v6 — Structured-Spec Kickoff (Bootstrap + scratch)
 
 set -euo pipefail
 
@@ -74,14 +74,21 @@ test_detects_existing_project() {
 run_test "handles existing project" test_detects_existing_project
 
 # ──────────────────────────────────────────────
-describe "Kickoff — generation order"
+describe "Kickoff — v6 structured-spec modes"
 
-test_generation_order() {
+test_has_bootstrap() {
     assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-kickoff/SKILL.md" \
-        "Vision.*Spec.*Plan\|vision.*spec.*plan\|Vision.*→.*Spec.*→.*Plan" \
-        "Should specify Vision → Spec → Plan order"
+        "Bootstrap" \
+        "v6 kickoff should describe Bootstrap (existing code → As-Is structured spec)"
 }
-run_test "specifies Vision → Spec → Plan order" test_generation_order
+run_test "describes Bootstrap mode" test_has_bootstrap
+
+test_references_structured_spec() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-kickoff/SKILL.md" \
+        "Story\|Contract" \
+        "v6 kickoff should reference Story/Contract structured spec"
+}
+run_test "references Story/Contract structured spec" test_references_structured_spec
 
 # ──────────────────────────────────────────────
 print_summary
