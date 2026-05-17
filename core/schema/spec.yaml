@@ -1,0 +1,168 @@
+# VibeFlow Structured Spec Schema — Story / Contract (v6)
+# =========================================================
+# 構造化 spec の確定版スキーマ定義。VibeFlow v6 で緩い spec.md を置き換える。
+#
+# 【なぜ構造化 spec か】
+#   v5 の spec.md は書式が決まっておらず（[technology] の穴埋めテンプレ）、
+#   改修のたびに実装と乖離して壊れた。これが VibeFlow の保守の弱さの根本原因。
+#   構造化 spec は「再現性が高く、解釈の余地がなく、コードと 1:1 対応し、
+#   検証できる」仕様を目指す。
+#
+# 【spec を構成する 2 つのデータ型】
+#   - Story    … 1 ドメインの説明。不変条件 (invariants) を持つ。
+#   - Contract … モジュール間を渡るデータの形。ホスト言語の型を指す。
+#   Module は独立データ型にしない（コードのディレクトリ構造から導出する）。
+#   「1 ドメイン」= 一貫した責務を持つコードのまとまり。通常はコードの 1
+#   ディレクトリに対応する（例: pneuma_core/memory/, pneuma_core/models/）。
+#
+# 【ループモデル — Issue = Spec 差分】
+#   As-Is  … base ブランチに commit 済みの spec ファイル群（今のコードの仕様）
+#   To-Be  … Issue ブランチ上で編集した spec ファイル群（変更後の仕様）
+#   git diff(As-Is, To-Be) が、そのまま Issue の中身になる。
+#   マージ後、As-Is が To-Be に進む。追加の As-Is/To-Be 機構は持たない。
+#
+#   バグ改修は 3 種類:
+#     (i)   Spec は正しくコードが違反  → To-Be == As-Is、コードだけ直す
+#     (ii)  Spec 自体が誤り            → To-Be != As-Is、Spec(invariant) も直す
+#     (iii) Spec に不変条件が書き漏れていた（誰も記録していなかったルールを
+#           踏み抜いた）→ To-Be = As-Is + 新しい invariant。invariant を追加し
+#           テストを付ける。これが spec を完成へ収束させるエンジン。
+#
+# 【誰が書くか】
+#   Story / Contract は Agent が書く。PO は書かない（PO が書くのは Vision）。
+#   Bootstrap で As-Is をそのまま写す（密結合な repo でも正直に写す。
+#   先に疎結合化しない）。以降は Issue ごとに Agent が差分更新する。
+#
+# 【このスキーマに入れないもの（akasha v2 から意図的に持ち込まない）】
+#   stake 軸 / Decision Card / drift 検出 CI / Iris Session / Atlas /
+#   言語アダプタ (define_contract ランタイム) / Contract の per-consumer subset。
+#   これらは過剰な機械。基本ループが動いてから必要なら上に載せる。
+
+schema_version: 6
+
+# プロジェクト内の配置（インスタンスファイルの置き場所）
+file_layout:
+  stories:   ".vibe/spec/stories/<story-id>.yaml"      # 1 ドメイン 1 ファイル
+  contracts: ".vibe/spec/contracts/<contract-id>.yaml"  # 1 Contract 1 ファイル
+
+# =========================================================
+# Story — 1 ドメインの説明（Agent が書く）
+# =========================================================
+story:
+  description: |
+    1 つのドメインが「何であるか」と「何を必ず守るか (invariants)」を書く。
+    コードで表現できる詳細は書かない。コードから導出できない意図だけ書く。
+  fields:
+    id:
+      required: true
+      type: string
+      notes: "ドメイン ID。kebab-case。ファイル名と一致させる。"
+    one_liner:
+      required: true
+      type: string
+      notes: "このドメインが何かを 1 行で。"
+    invariants:
+      required: true
+      type: "list of invariant"
+      notes: |
+        このドメインの不変条件。空リスト可だが、不変条件のないドメインは稀。
+        各要素のフィールド:
+          id         (required, string)  不変条件 ID。kebab-case。
+          text       (required, string)  不変条件を平易な言葉で 1 文。
+          test       (optional, path)    この不変条件を検証するテストのパス。
+                                         まだテストが無ければ省略する。
+          source_ref (optional, path)    この不変条件を担保するコード位置。
+                                         file または file:symbol 形式。Story の
+                                         source_files より細かく、「この diff は
+                                         invariant X に触れた」を検証可能にする。
+          rationale  (optional, string)  なぜこの不変条件か。
+        verified / pending の状態は保存しない。検証エンジンが計算する:
+          test 省略       → pending（未検証）
+          test 有り・通過 → verified
+          test 有り・失敗 → 違反（PR ゲートが止める）
+        未テストの不変条件も Story に必ず記録する（欠落させない）。Bootstrap は
+        既存コードから invariant を推定して写す。多くは test 省略の pending で
+        構わない。pending を verified に押し上げるのは後続の Issue。
+    source_files:
+      required: true
+      type: "list of path"
+      notes: "このドメインの実装を含むディレクトリ / ファイル。"
+    depends_on:
+      required: false
+      type: "list of story-id"
+      notes: "このドメインが依存する他 Story の id。"
+
+  # ---- 記入例（Pneuma の memory ドメイン）----
+  example:
+    id: memory
+    one_liner: |
+      キャラクターが「思い出す」「学習する」を実現する記憶レイヤー。
+    invariants:
+      - id: personality-biased-recall
+        text: "性格 (Big Five) が違えば、同じ問いから想起される記憶が変わる。"
+        test: tests/memory/test_personality_bias.py
+        source_ref: src/pneuma_core/memory/recall.py:recall
+        rationale: |
+          神経症傾向で重要度重み、開放性で多様性重みが変動する設計の根拠。
+      - id: importance-threshold
+        text: "importance が閾値未満のエピソードは長期記憶に保存されない。"
+        source_ref: src/pneuma_core/memory/store.py:save_episode
+    source_files:
+      - src/pneuma_core/memory/
+    depends_on:
+      - models
+      - protocols
+
+# =========================================================
+# Contract — モジュール間を渡るデータの形（Agent が書く）
+# =========================================================
+contract:
+  description: |
+    モジュール間 / プロダクト境界を渡るデータの形を登録する。
+    型そのものは再宣言しない（二重管理を作らない）。host 言語ネイティブの
+    型（Python は Pydantic/dataclass、TS は zod/型）を schema_ref で指すだけ。
+    Contract ファイルは「既存の型に対する producer/consumer のひも付け宣言」
+    だけを持つ薄い登録層。zod 固定にしない。
+  fields:
+    id:
+      required: true
+      type: string
+      notes: "Contract ID。kebab-case。ファイル名と一致させる。"
+    schema_ref:
+      required: true
+      type: string
+      notes: |
+        host 言語の型への参照（文字列）。型の実体はコード側にある。
+          Python … ドット区切りパス  例: pneuma_core.models.character.Character
+          TS     … モジュール#型名    例: src/models/character.ts#Character
+        Python と TS で文法が違うのは意図的（host 言語に合わせる）。
+        検証エンジンはこの参照を解決して型の実体に辿り着けること。
+        フィールド単位の影響分析（field X を変えたら誰が壊れるか）は
+        schema_ref では行わず、consumers のコード解析で行う。
+    producers:
+      required: true
+      type: "list of path"
+      notes: "この型を生成する側のソースファイル。"
+    consumers:
+      required: true
+      type: "list of path"
+      notes: |
+        この型を消費する側のソースファイル。
+        「どの consumer がどのフィールドを使うか」はコード解析で算出する。
+        per-consumer の subset スキーマは持たない。
+    story:
+      required: true
+      type: "story-id"
+      notes: "この Contract が属する Story の id。"
+
+  # ---- 記入例（Pneuma の character Contract）----
+  example:
+    id: character
+    schema_ref: pneuma_core.models.character.Character
+    producers:
+      - src/pneuma_core/models/character.py
+    consumers:
+      - src/pneuma_core/runtime/engine.py
+      - src/pneuma_core/runtime/prompt_builder.py
+      - src/pneuma_core/storage/sqlite.py
+    story: models
