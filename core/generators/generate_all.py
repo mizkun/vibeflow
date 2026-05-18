@@ -29,10 +29,10 @@ from core.generators.generate_agents_md import generate_agents_md
 from core.generators.manifest import Manifest
 
 # Valid targets for --target
-VALID_TARGETS = ("hooks", "settings", "policy", "docs", "claude_md", "agents_md", "state", "manifest")
+VALID_TARGETS = ("hooks", "settings", "policy", "docs", "claude_md", "agents_md", "state", "spec", "manifest")
 
-# Generation order: policy → hooks → settings → docs → claude_md → agents_md → state → manifest
-GENERATION_ORDER = ["policy", "hooks", "settings", "docs", "claude_md", "agents_md", "state", "manifest"]
+# Generation order: policy → hooks → settings → docs → claude_md → agents_md → state → spec → manifest
+GENERATION_ORDER = ["policy", "hooks", "settings", "docs", "claude_md", "agents_md", "state", "spec", "manifest"]
 
 
 def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: str,
@@ -121,6 +121,17 @@ def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: st
             print(f"Generated: {dest_iris}")
         if dest_iris.exists():
             generated_files.append((".vibe/sessions/iris-main.yaml", "core/schema/session_state.yaml"))
+
+    elif target == "spec":
+        # v6 structured spec home — Story / Contract instances live here.
+        # Empty dirs need .gitkeep so the layout survives a fresh clone.
+        for sub in ("stories", "contracts"):
+            spec_sub = project / ".vibe" / "spec" / sub
+            os.makedirs(spec_sub, exist_ok=True)
+            gitkeep = spec_sub / ".gitkeep"
+            if not gitkeep.exists():
+                gitkeep.write_text("")
+                print(f"Generated: {gitkeep}")
 
     elif target == "manifest":
         # Record all previously generated files in the manifest

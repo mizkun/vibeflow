@@ -124,4 +124,40 @@ test_upgrade_then_doctor_passes() {
 run_test "upgrade then doctor passes with no errors" test_upgrade_then_doctor_passes
 
 # ──────────────────────────────────────────────
+describe "generate/upgrade — v6 structured spec directories"
+
+test_generate_creates_spec_dirs() {
+    local tmpdir="${TEST_DIR}/gen_spec_project"
+    mkdir -p "${tmpdir}/.vibe"
+    cd "$tmpdir"
+
+    bash "${FRAMEWORK_DIR}/bin/vibeflow" generate > /dev/null 2>&1 || true
+
+    assert_file_exists "${tmpdir}/.vibe/spec/stories/.gitkeep" \
+        "generate should create .vibe/spec/stories/.gitkeep"
+    assert_file_exists "${tmpdir}/.vibe/spec/contracts/.gitkeep" \
+        "generate should create .vibe/spec/contracts/.gitkeep"
+}
+run_test "generate creates v6 spec directories" test_generate_creates_spec_dirs
+
+test_upgrade_creates_spec_dirs() {
+    local tmpdir="${TEST_DIR}/upgrade_spec_project"
+    mkdir -p "${tmpdir}/.vibe"
+    echo "5.0.0" > "${tmpdir}/.vibe/version"
+    cd "$tmpdir"
+    git init -q
+    git config user.email "test@test.com"
+    git config user.name "Test"
+    touch .gitkeep && git add . && git commit -q -m "init"
+
+    bash "${FRAMEWORK_DIR}/bin/vibeflow" upgrade --allow-dirty > /dev/null 2>&1 || true
+
+    assert_file_exists "${tmpdir}/.vibe/spec/stories/.gitkeep" \
+        "upgrade should create .vibe/spec/stories/.gitkeep"
+    assert_file_exists "${tmpdir}/.vibe/spec/contracts/.gitkeep" \
+        "upgrade should create .vibe/spec/contracts/.gitkeep"
+}
+run_test "upgrade creates v6 spec directories" test_upgrade_creates_spec_dirs
+
+# ──────────────────────────────────────────────
 print_summary
