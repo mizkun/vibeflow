@@ -1,4 +1,4 @@
-# VibeFlow Policy Schema — Single Source of Truth (v5 Iris-Only)
+# VibeFlow Policy Schema — Single Source of Truth (v6 Iris-Only)
 # This file defines role-based access permissions.
 # Generators read this file to produce validate_access.py, settings.json, etc.
 

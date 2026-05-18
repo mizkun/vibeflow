@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [6.0.0] - 2026-05-18
+
+構造化 spec: 緩い `spec.md` を構造化 spec（Story / Contract）に置き換え。v5 の
+Iris-Only / Issue 駆動 / standard 11 step / TDD / Cross-Review / QA はそのまま。
+
+### Added
+
+#### Structured Spec Schema
+- `core/schema/spec.yaml`: Story / Contract の確定版スキーマ定義
+- `.vibe/spec/stories/`, `.vibe/spec/contracts/` に配置。Story は invariants を持つ
+
+#### Spec Verification
+- `core/runtime/spec_verify.py`: spec とコードの drift（参照先消失等）と
+  pending invariant 数を検出
+- `vibeflow spec-verify` CLI、HealthCheck #8 への統合
+
+#### Spec Gate
+- `validate_step7a.py` hook: `.vibe/spec/` を変更した PR は Human Checkpoint
+  必須。`qa:auto` では自動承認不可
+
+#### Spec Loop Rule
+- `.claude/rules/spec-loop.md`: Issue = Spec 差分（As-Is → To-Be）のループモデル、
+  バグ改修の 3 分類（コード違反 / spec 誤り / spec 欠落）
+
+#### Documentation
+- `docs/architecture-v6.md`: v6 設計書（構造化 spec アーキテクチャ）
+
+### Changed
+
+- Issue / Plan テンプレートを構造化 spec 前提に刷新
+- `vibeflow-kickoff` skill を v6 化（既存コードからの Bootstrap / scratch）
+- 緩い `spec.md` への参照をスキーマ・生成物・ドキュメントから全面除去
+
+### Migration
+- `migrations/v5.0.0_to_v6.0.0.sh`: v5.0.0 からの自動マイグレーション
+  （spec-loop ルール / `.vibe/spec/` 構造 / spec_verify ランタイム / Spec Gate 配置）
+
+---
+
 ## [5.0.0] - 2026-03-10
 
 Iris-Only Architecture: 単一ターミナルで完結する AI 駆動開発フレームワーク v5。

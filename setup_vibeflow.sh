@@ -313,7 +313,7 @@ run_installation() {
         warning "Skillsモジュールが見つかりません"
     fi
     
-    # Step 7b: Deploy rules (v5)
+    # Step 7b: Deploy rules (v6)
     if [ -d "${SCRIPT_DIR}/examples/.claude/rules" ]; then
         info ".claude/rules/ を配置中..."
         mkdir -p ".claude/rules"
@@ -324,7 +324,7 @@ run_installation() {
         success ".claude/rules/ を配置しました"
     fi
 
-    # Step 7c: Deploy runtime modules (v5)
+    # Step 7c: Deploy runtime modules (v6)
     if [ -d "${SCRIPT_DIR}/core/runtime" ]; then
         info ".vibe/runtime/ モジュールを配置中..."
         mkdir -p ".vibe/runtime"

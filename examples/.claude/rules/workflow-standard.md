@@ -1,6 +1,6 @@
 # Standard Workflow — 11 Steps
 
-v5 では Iris が自動的にワークフローを進行します。ユーザーは Iris に指示するだけです。
+Iris が自動的にワークフローを進行します。ユーザーは Iris に指示するだけです。
 
 ## Steps
 

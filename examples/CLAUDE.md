@@ -1,8 +1,8 @@
-# VibeFlow v5 — Iris-Only Architecture
+# VibeFlow v6 — Iris-Only Architecture
 
 **Language**: Communicate in Japanese (日本語) for all interactions.
 
-VibeFlow v5 は Iris-Only アーキテクチャ。詳細は `.claude/rules/` を参照。
+VibeFlow v6 は Iris-Only アーキテクチャ + 構造化 spec（Story / Contract）。詳細は `.claude/rules/` を参照。
 
 <!-- VF:BEGIN roles -->
 ### Iris

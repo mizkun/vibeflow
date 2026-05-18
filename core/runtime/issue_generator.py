@@ -1,4 +1,4 @@
-"""Issue Auto-Generation for VibeFlow v5 Iris-Only Architecture.
+"""Issue Auto-Generation for VibeFlow v6 Iris-Only Architecture.
 from __future__ import annotations
 Generates GitHub Issues from Plan/Spec content.
 Auto-assigns labels (type, qa) and formats for user review.

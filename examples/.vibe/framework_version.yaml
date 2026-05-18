@@ -1,36 +1,35 @@
 # Vibe Coding Framework Version Information
 framework:
-  version: "3.4.0"
-  name: "GitHub Issues, Iris, Multi-Terminal, 3-Tier Context, Quick Fix Mode"
-  installed_at: "2026-02-22T00:00:00+09:00"
+  version: "6.0.0"
+  name: "Iris-Only Architecture + Structured Spec (Story/Contract)"
+  installed_at: "2026-05-18T00:00:00+09:00"
 
   # Version compatibility
-  minimum_compatible: "2.0.0"
+  minimum_compatible: "5.0.0"
 
   # Features enabled
   features:
     simplified_state: true
     verification_system: true
-    quick_fix_mode: true
     e2e_testing: true
     notifications: true
     hooks: true
     subagents: true
     skills: true
     access_guard: true
-    # Carried from 2.0.0
-    discovery_phase: true
-    agent_team_mode: true
-    context_fork_mode: true
     safety_rules: true
     write_guard: true
-    # New/Updated in 3.x
-    iris_role: true
-    infra_manager_role: true
-    github_issues_integration: true
-    multi_terminal_operation: true
-    three_tier_context: true
+    # v5 Iris-Only
+    iris_only_architecture: true
+    agent_dispatch: true
+    cross_review: true
+    auto_qa_judgment: true
+    playwright_default: true
     issue_driven_workflow: true
+    # v6 Structured Spec
+    structured_spec: true
+    spec_verify: true
+    spec_gate: true
 
   # Claude Code integration
   claude_code:
@@ -38,11 +37,20 @@ framework:
     hooks:
       - PreToolUse (validate_access.py)
       - PreToolUse (validate_write.sh)
+      - PreToolUse (validate_step7a.py)
       - PostToolUse (task_complete.sh)
       - Stop (waiting_input.sh)
     skills:
+      - vibeflow-kickoff
+      - vibeflow-execute-issue
+      - vibeflow-execute-all
       - vibeflow-issue-template
       - vibeflow-tdd
+      - vibeflow-conclude
+      - vibeflow-progress
+      - vibeflow-healthcheck
+      - vibeflow-ui-smoke
+      - vibeflow-ui-explore
     subagents:
       - qa-acceptance
       - code-reviewer

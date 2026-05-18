@@ -19,9 +19,9 @@ setup_vibeflow.sh
 ├── create_access_guard()     → .vibe/hooks/validate_*.{py,sh}
 ├── create_claude_settings()  → .claude/settings.json + notification hooks
 ├── create_playwright_mcp()   → .mcp.json.example + scripts/playwright_*.sh
-├── deploy rules/             → .claude/rules/*.md (v5)
+├── deploy rules/             → .claude/rules/*.md (v6)
 └── create_github_labels()    → GitHub labels (optional)
-# Note: create_dev_launcher() は v5 で廃止 (Iris auto-dispatch)
+# Note: create_dev_launcher() は v5 で廃止 (Iris auto-dispatch)、v6 でも非対応
 ```
 
 **特徴**:
@@ -170,7 +170,9 @@ vibeflow/
 │   └── schema/
 │
 ├── docs/                     # ドキュメント
-│   ├── architecture.md       # この文書
+│   ├── architecture.md       # この文書（配布モデル）
+│   ├── architecture-v6.md    # v6 設計書（構造化 spec）
+│   ├── architecture-v5.md    # v5 設計書（Iris-Only）
 │   ├── playwright.md
 │   └── codex-cloud-design.md
 │

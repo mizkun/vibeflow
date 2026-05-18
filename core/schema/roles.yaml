@@ -1,4 +1,4 @@
-# VibeFlow Roles Schema — Single Source of Truth (v5 Iris-Only)
+# VibeFlow Roles Schema — Single Source of Truth (v6 Iris-Only)
 # Defines role metadata: description and responsibilities.
 # Permissions are defined in policy.yaml (separate concern).
 

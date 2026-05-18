@@ -27,7 +27,7 @@ trap 'rm -f "$FLAG_FILE"' EXIT
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-.}"
 STATE_FILE=""
 
-# v5 session-based state (authoritative)
+# session-based state (authoritative)
 if [ -n "${VIBEFLOW_SESSION:-}" ]; then
     SESSION_FILE="${PROJECT_ROOT}/.vibe/sessions/${VIBEFLOW_SESSION}.yaml"
     if [ -f "$SESSION_FILE" ]; then

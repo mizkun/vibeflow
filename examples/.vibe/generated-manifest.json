@@ -6,95 +6,63 @@
       "sha256": "e75338048d2db9475d8569f855686594841121323abc0fd5532e17d184ff7547",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-17T14:06:26.745352+00:00",
+      "generated_at": "2026-05-18T08:40:50.136014+00:00",
       "type": "full",
-      "schema_hash": "a27fe630107c6285f671b4945d816ae3f72d4e6b9b75d3a28e4f9115ebfc535d"
+      "schema_hash": "5d74a9333dfc0af637d87771367e8a83a993aeee20942c3970cafd35956b2028"
     },
     ".vibe/hooks/validate_access.py": {
       "sha256": "1de34b94e0864d9ab7fc3f9ff6700e43f5f986d3dedc9542976afdcafbbd3025",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-17T14:06:26.745559+00:00",
+      "generated_at": "2026-05-18T08:40:50.136246+00:00",
       "type": "full",
-      "schema_hash": "a27fe630107c6285f671b4945d816ae3f72d4e6b9b75d3a28e4f9115ebfc535d"
+      "schema_hash": "5d74a9333dfc0af637d87771367e8a83a993aeee20942c3970cafd35956b2028"
     },
     ".vibe/hooks/validate_write.sh": {
       "sha256": "579b91113e841832a72497410278549fc0ff8c1a7c8a13c4bd317b66ca4f9694",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-17T14:06:26.745761+00:00",
+      "generated_at": "2026-05-18T08:40:50.136459+00:00",
       "type": "full",
-      "schema_hash": "a27fe630107c6285f671b4945d816ae3f72d4e6b9b75d3a28e4f9115ebfc535d"
+      "schema_hash": "5d74a9333dfc0af637d87771367e8a83a993aeee20942c3970cafd35956b2028"
     },
     ".vibe/hooks/validate_step7a.py": {
       "sha256": "8f6919ca16e9faf6b44ec38f83f110b34b133ae02c0c519a1b222794c2366b01",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-17T14:06:26.745919+00:00",
+      "generated_at": "2026-05-18T08:40:50.136659+00:00",
       "type": "full",
-      "schema_hash": "a27fe630107c6285f671b4945d816ae3f72d4e6b9b75d3a28e4f9115ebfc535d"
+      "schema_hash": "5d74a9333dfc0af637d87771367e8a83a993aeee20942c3970cafd35956b2028"
     },
     ".claude/settings.json": {
       "sha256": "58675ab42fe67d9d6319b0dd615e4f2cbdb3bbb9e7bdb1051b6c4241983cc116",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-17T14:06:26.745967+00:00",
+      "generated_at": "2026-05-18T08:40:50.136709+00:00",
       "type": "full",
-      "schema_hash": "a27fe630107c6285f671b4945d816ae3f72d4e6b9b75d3a28e4f9115ebfc535d"
+      "schema_hash": "5d74a9333dfc0af637d87771367e8a83a993aeee20942c3970cafd35956b2028"
     },
-    ".vibe/roles/engineer.md": {
-      "sha256": "4b242feffdc8ebe9eb374729f6c20a8ad89f08beb464e2bf5a841192812f0440",
+    ".vibe/roles/coding-agent.md": {
+      "sha256": "4b90e1717c1dc812c1c3c1a75cc2c9f1ad0bdfaa3addf7a401455e66d4a08089",
       "source": "core/schema/roles.yaml",
-      "generator_version": "5.0.0",
-      "generated_at": "2026-03-10T00:07:07.893957+00:00",
+      "generator_version": "6.0.0",
+      "generated_at": "2026-05-18T08:40:50.136758+00:00",
       "type": "full",
-      "schema_hash": "bd964f41f08901983febc022de38f93cbb1bda54cae2382b28909632a33e0375"
-    },
-    ".vibe/roles/human.md": {
-      "sha256": "be9277be00fe937485d53e3baca97d755318bd92ee6c115881fa533355a5d916",
-      "source": "core/schema/roles.yaml",
-      "generator_version": "5.0.0",
-      "generated_at": "2026-03-10T00:07:07.893999+00:00",
-      "type": "full",
-      "schema_hash": "bd964f41f08901983febc022de38f93cbb1bda54cae2382b28909632a33e0375"
-    },
-    ".vibe/roles/infra-manager.md": {
-      "sha256": "2e851daf670c680c08d9321d6614c47721c779518dd538ebf63bf4f103d50cc5",
-      "source": "core/schema/roles.yaml",
-      "generator_version": "5.0.0",
-      "generated_at": "2026-03-10T00:07:07.894041+00:00",
-      "type": "full",
-      "schema_hash": "bd964f41f08901983febc022de38f93cbb1bda54cae2382b28909632a33e0375"
+      "schema_hash": "e61bbf87ec606177ed5450c331465cc36c8bcfafac2999bc70585e1e7defe53e"
     },
     ".vibe/roles/iris.md": {
       "sha256": "40671e1316ec769c159d61be1f35006a1f943cc5e6c3599bdb467783ee93ecd3",
       "source": "core/schema/roles.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-17T14:06:26.746056+00:00",
+      "generated_at": "2026-05-18T08:40:50.136803+00:00",
       "type": "full",
-      "schema_hash": "67448a3db524ee5dfb56e47bb7f5a5ec4f42c0a248415adb4124bd4c8310bb4b"
-    },
-    ".vibe/roles/product-manager.md": {
-      "sha256": "1c1064a8cc220b1951c8fdbe4a195fd0a17b7d493c8733000881726a37515849",
-      "source": "core/schema/roles.yaml",
-      "generator_version": "5.0.0",
-      "generated_at": "2026-03-10T00:07:07.894117+00:00",
-      "type": "full",
-      "schema_hash": "bd964f41f08901983febc022de38f93cbb1bda54cae2382b28909632a33e0375"
-    },
-    ".vibe/roles/qa-engineer.md": {
-      "sha256": "cc01e12f10bd8fa3fa59ce67429a8688bbf8f41c1d006ad208d580eac04f4494",
-      "source": "core/schema/roles.yaml",
-      "generator_version": "5.0.0",
-      "generated_at": "2026-03-10T00:07:07.894158+00:00",
-      "type": "full",
-      "schema_hash": "bd964f41f08901983febc022de38f93cbb1bda54cae2382b28909632a33e0375"
+      "schema_hash": "e61bbf87ec606177ed5450c331465cc36c8bcfafac2999bc70585e1e7defe53e"
     },
     "CLAUDE.md": {
-      "sha256": "166ab551ddedf314e90a499c32b70d8bc535b955ee8d1e7dd6c77b92ee962641",
+      "sha256": "9af29e91cfa72e604b680cd3ff1fcd0dc66e3863d821318ebf839c3b2298bed2",
       "source": "core/schema",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-17T14:06:26.746098+00:00",
+      "generated_at": "2026-05-18T08:40:50.136847+00:00",
       "type": "partial",
       "managed_sections": [
         "roles",
@@ -105,11 +73,18 @@
         "roles": "e5d6b32b8d64fb217107b468b6f3343f5a7f7b2178b33c6fa5d82a0483b518e7"
       }
     },
+    "AGENTS.md": {
+      "sha256": "41e25fb58b6470257d310aefb587c62329a18242292ba180b99039a7b4e09077",
+      "source": "core/schema",
+      "generator_version": "6.0.0",
+      "generated_at": "2026-05-18T08:40:50.136912+00:00",
+      "type": "full"
+    },
     ".vibe/project_state.yaml": {
       "sha256": "e0b0950dfb68e64c8d2f132dd279a5403477478d9d5cd6e4eb47e55da9b9cd9d",
       "source": "core/schema/project_state.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-17T14:06:26.746318+00:00",
+      "generated_at": "2026-05-18T08:40:50.137090+00:00",
       "type": "full",
       "schema_hash": "483ed6fefd64c515160406635b5a591527f536f9eb5675c10f09f91e05d7e194"
     },
@@ -117,24 +92,9 @@
       "sha256": "c265e2735dc583a447e3b2f73e6f071f526bfce83dde6e9839507abafafc8209",
       "source": "core/schema/session_state.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-17T14:06:26.747104+00:00",
+      "generated_at": "2026-05-18T08:40:50.137366+00:00",
       "type": "full",
       "schema_hash": "30484236aa69396334724475e2fb8a94c03f86b07a8e1bb934a4d817ef382465"
-    },
-    "AGENTS.md": {
-      "sha256": "41e25fb58b6470257d310aefb587c62329a18242292ba180b99039a7b4e09077",
-      "source": "core/schema",
-      "generator_version": "6.0.0",
-      "generated_at": "2026-05-17T14:06:26.746162+00:00",
-      "type": "full"
-    },
-    ".vibe/roles/coding-agent.md": {
-      "sha256": "4b90e1717c1dc812c1c3c1a75cc2c9f1ad0bdfaa3addf7a401455e66d4a08089",
-      "source": "core/schema/roles.yaml",
-      "generator_version": "6.0.0",
-      "generated_at": "2026-05-17T14:06:26.746012+00:00",
-      "type": "full",
-      "schema_hash": "67448a3db524ee5dfb56e47bb7f5a5ec4f42c0a248415adb4124bd4c8310bb4b"
     }
   }
 }

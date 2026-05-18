@@ -1,4 +1,4 @@
-"""Issue Auto-Close for VibeFlow v5 Iris-Only Architecture.
+"""Issue Auto-Close for VibeFlow v6 Iris-Only Architecture.
 from __future__ import annotations
 Determines if an issue can be auto-closed and generates closure summaries.
 qa:auto issues close automatically; qa:manual issues wait for human.

@@ -1,4 +1,4 @@
-"""Session Auto-Dispatch for VibeFlow v5 Iris-Only Architecture.
+"""Session Auto-Dispatch for VibeFlow v6 Iris-Only Architecture.
 from __future__ import annotations
 Iris dispatches coding tasks to agents automatically.
 Generates prompts, selects agents, manages worktree isolation,

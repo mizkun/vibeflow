@@ -1,4 +1,4 @@
-"""Cross-Review Model for VibeFlow v5 Iris-Only Architecture.
+"""Cross-Review Model for VibeFlow v6 Iris-Only Architecture.
 from __future__ import annotations
 The agent that did NOT code reviews the changes.
 Claude Code codes → Codex reviews (default), and vice versa.

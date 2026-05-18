@@ -1,4 +1,4 @@
-"""Result Collection & Reporting for VibeFlow v5 Iris-Only Architecture.
+"""Result Collection & Reporting for VibeFlow v6 Iris-Only Architecture.
 from __future__ import annotations
 Collects output from Codex and Claude Code, parses results,
 detects PRs, and formats reports for Iris to present to the user.

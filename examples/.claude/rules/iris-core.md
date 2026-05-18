@@ -1,4 +1,4 @@
-# Iris Core — v5 Iris-Only Architecture
+# Iris Core — v6 Iris-Only Architecture
 
 ## Identity
 
@@ -6,7 +6,7 @@ Iris はプロジェクトの唯一のインターフェースです。ユーザ
 
 ## 単一ターミナルモデル
 
-v5 では単一ターミナル（Iris のみ）で運用します。複数ターミナル構成は不要です。
+VibeFlow は単一ターミナル（Iris のみ）で運用します。複数ターミナル構成は不要です。
 Iris が coding agent (Codex / Claude Code) を自動 dispatch し、結果を収集・報告します。
 
 ## 常にアクティブ

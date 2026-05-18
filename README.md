@@ -1,11 +1,11 @@
-# VibeFlow v5 — Iris-Only Architecture
+# VibeFlow v6 — Iris-Only Architecture
 
 > **Iris と話しかけるだけで開発が進む。**
 > ユーザーは Iris にだけ会話すれば、Iris が計画・実装・レビュー・QA・クローズまで全自動で実行します。
 
 ## What is VibeFlow?
 
-VibeFlow は AI 駆動の開発フレームワークです。v5 では **Iris-Only** アーキテクチャを採用し、ユーザーは Iris（プロジェクトパートナー）に自然言語で話しかけるだけで開発が進みます。
+VibeFlow は AI 駆動の開発フレームワークです。**Iris-Only** アーキテクチャを採用し、ユーザーは Iris（プロジェクトパートナー）に自然言語で話しかけるだけで開発が進みます。v6 では仕様を構造化 spec（Story / Contract）で管理し、コードとの drift を検証で防ぎます。
 
 ### Key Features
 
@@ -93,7 +93,7 @@ Iris が自動進行します。
 your-project/
 ├── CLAUDE.md                          # Iris ロール定義 + プロジェクト概要
 ├── .claude/
-│   ├── rules/                         # ルール定義 (v5)
+│   ├── rules/                         # ルール定義 (v6)
 │   │   ├── iris-core.md              # Iris の振る舞い・責務
 │   │   ├── workflow-standard.md      # 11-step ワークフロー
 │   │   ├── workflow-patch.md         # Patch Loop
@@ -103,7 +103,7 @@ your-project/
 │   ├── agents/                       # サブエージェント
 │   └── settings.json                 # Hook 設定
 ├── .vibe/
-│   ├── runtime/                      # v5 ランタイムモジュール
+│   ├── runtime/                      # v6 ランタイムモジュール
 │   │   ├── qa_judge.py              # QA 自動判定
 │   │   ├── dependency_analyzer.py   # Issue 依存関係分析
 │   │   └── ...                      # その他のランタイム
@@ -145,7 +145,7 @@ vibeflow help
 
 ## Runtime Modules
 
-v5 の core/runtime/ モジュール:
+v6 の core/runtime/ モジュール:
 
 | Module | Description |
 |--------|------------|
@@ -159,6 +159,7 @@ v5 の core/runtime/ モジュール:
 | `qa_judge.py` | QA 判断自動化 |
 | `cross_review.py` | クロスレビュー |
 | `auto_close.py` | Issue 自動クローズ |
+| `spec_verify.py` | 構造化 spec とコードの drift 検証 (v6) |
 
 ## Development
 
