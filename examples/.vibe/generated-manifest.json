@@ -6,7 +6,7 @@
       "sha256": "e75338048d2db9475d8569f855686594841121323abc0fd5532e17d184ff7547",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-18T12:11:16.418089+00:00",
+      "generated_at": "2026-05-18T12:32:38.749333+00:00",
       "type": "full",
       "schema_hash": "5d74a9333dfc0af637d87771367e8a83a993aeee20942c3970cafd35956b2028"
     },
@@ -14,7 +14,7 @@
       "sha256": "4bfea6d900be2a3100212734dff846db67588386c58c6fa9935d872677df593f",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-18T12:11:16.418271+00:00",
+      "generated_at": "2026-05-18T12:32:38.749552+00:00",
       "type": "full",
       "schema_hash": "5d74a9333dfc0af637d87771367e8a83a993aeee20942c3970cafd35956b2028"
     },
@@ -22,7 +22,7 @@
       "sha256": "579b91113e841832a72497410278549fc0ff8c1a7c8a13c4bd317b66ca4f9694",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-18T12:11:16.418329+00:00",
+      "generated_at": "2026-05-18T12:32:38.749614+00:00",
       "type": "full",
       "schema_hash": "5d74a9333dfc0af637d87771367e8a83a993aeee20942c3970cafd35956b2028"
     },
@@ -30,7 +30,7 @@
       "sha256": "f1e6b5baf3a9ea21432a67558bc598157367749ed88b786583fefa62d0ca91a8",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-18T12:11:16.418390+00:00",
+      "generated_at": "2026-05-18T12:32:38.749676+00:00",
       "type": "full",
       "schema_hash": "5d74a9333dfc0af637d87771367e8a83a993aeee20942c3970cafd35956b2028"
     },
@@ -38,7 +38,7 @@
       "sha256": "58675ab42fe67d9d6319b0dd615e4f2cbdb3bbb9e7bdb1051b6c4241983cc116",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-18T12:11:16.418442+00:00",
+      "generated_at": "2026-05-18T12:32:38.749729+00:00",
       "type": "full",
       "schema_hash": "5d74a9333dfc0af637d87771367e8a83a993aeee20942c3970cafd35956b2028"
     },
@@ -46,7 +46,7 @@
       "sha256": "4b90e1717c1dc812c1c3c1a75cc2c9f1ad0bdfaa3addf7a401455e66d4a08089",
       "source": "core/schema/roles.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-18T12:11:16.418494+00:00",
+      "generated_at": "2026-05-18T12:32:38.749780+00:00",
       "type": "full",
       "schema_hash": "e61bbf87ec606177ed5450c331465cc36c8bcfafac2999bc70585e1e7defe53e"
     },
@@ -54,7 +54,7 @@
       "sha256": "40671e1316ec769c159d61be1f35006a1f943cc5e6c3599bdb467783ee93ecd3",
       "source": "core/schema/roles.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-18T12:11:16.418542+00:00",
+      "generated_at": "2026-05-18T12:32:38.749829+00:00",
       "type": "full",
       "schema_hash": "e61bbf87ec606177ed5450c331465cc36c8bcfafac2999bc70585e1e7defe53e"
     },
@@ -62,7 +62,7 @@
       "sha256": "9af29e91cfa72e604b680cd3ff1fcd0dc66e3863d821318ebf839c3b2298bed2",
       "source": "core/schema",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-18T12:11:16.418590+00:00",
+      "generated_at": "2026-05-18T12:32:38.749879+00:00",
       "type": "partial",
       "managed_sections": [
         "roles",
@@ -77,14 +77,14 @@
       "sha256": "41e25fb58b6470257d310aefb587c62329a18242292ba180b99039a7b4e09077",
       "source": "core/schema",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-18T12:11:16.418658+00:00",
+      "generated_at": "2026-05-18T12:32:38.749950+00:00",
       "type": "full"
     },
     ".vibe/project_state.yaml": {
       "sha256": "e0b0950dfb68e64c8d2f132dd279a5403477478d9d5cd6e4eb47e55da9b9cd9d",
       "source": "core/schema/project_state.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-18T12:11:16.418694+00:00",
+      "generated_at": "2026-05-18T12:32:38.749987+00:00",
       "type": "full",
       "schema_hash": "483ed6fefd64c515160406635b5a591527f536f9eb5675c10f09f91e05d7e194"
     },
@@ -92,9 +92,25 @@
       "sha256": "c265e2735dc583a447e3b2f73e6f071f526bfce83dde6e9839507abafafc8209",
       "source": "core/schema/session_state.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-05-18T12:11:16.418895+00:00",
+      "generated_at": "2026-05-18T12:32:38.750208+00:00",
       "type": "full",
       "schema_hash": "30484236aa69396334724475e2fb8a94c03f86b07a8e1bb934a4d817ef382465"
+    },
+    ".vibe/spec/stories/.gitkeep": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "core/schema/spec.yaml",
+      "generator_version": "6.0.0",
+      "generated_at": "2026-05-18T12:32:38.750393+00:00",
+      "type": "full",
+      "schema_hash": "4c5c2e68ec7e25fb6564c59b6557c28347e11efe446ba7ed8fa7f47138cae78c"
+    },
+    ".vibe/spec/contracts/.gitkeep": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "core/schema/spec.yaml",
+      "generator_version": "6.0.0",
+      "generated_at": "2026-05-18T12:32:38.750854+00:00",
+      "type": "full",
+      "schema_hash": "4c5c2e68ec7e25fb6564c59b6557c28347e11efe446ba7ed8fa7f47138cae78c"
     }
   }
 }

@@ -125,6 +125,8 @@ def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: st
     elif target == "spec":
         # v6 structured spec home — Story / Contract instances live here.
         # Empty dirs need .gitkeep so the layout survives a fresh clone.
+        # The .gitkeep files are recorded in generated_files (hence the
+        # manifest) so `generate --check` detects a missing .vibe/spec/ layout.
         for sub in ("stories", "contracts"):
             spec_sub = project / ".vibe" / "spec" / sub
             os.makedirs(spec_sub, exist_ok=True)
@@ -132,6 +134,9 @@ def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: st
             if not gitkeep.exists():
                 gitkeep.write_text("")
                 print(f"Generated: {gitkeep}")
+            generated_files.append(
+                (f".vibe/spec/{sub}/.gitkeep", "core/schema/spec.yaml")
+            )
 
     elif target == "manifest":
         # Record all previously generated files in the manifest

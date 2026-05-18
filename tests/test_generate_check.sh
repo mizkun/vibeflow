@@ -125,6 +125,37 @@ test_check_does_not_modify_files() {
 }
 run_test "generate --check does not modify files" test_check_does_not_modify_files
 
+test_check_fails_when_spec_dir_deleted() {
+    local tmpdir="${TEST_DIR}/check_spec"
+    mkdir -p "${tmpdir}/.vibe"
+    cd "$tmpdir"
+
+    python3 "${FRAMEWORK_DIR}/core/generators/generate_all.py" \
+        --schema-dir "${FRAMEWORK_DIR}/core/schema" \
+        --project-dir "$tmpdir" \
+        --framework-dir "${FRAMEWORK_DIR}" > /dev/null 2>&1
+
+    # Delete the v6 structured spec layout
+    rm -rf "${tmpdir}/.vibe/spec"
+
+    set +e
+    local output
+    output=$(python3 "${FRAMEWORK_DIR}/core/generators/generate_all.py" \
+        --schema-dir "${FRAMEWORK_DIR}/core/schema" \
+        --project-dir "$tmpdir" \
+        --framework-dir "${FRAMEWORK_DIR}" \
+        --check 2>&1)
+    local code=$?
+    set -e
+
+    assert_equals "1" "$code" "--check should exit 1 when .vibe/spec layout is missing"
+    if ! echo "$output" | grep -q "spec"; then
+        fail "--check should report the missing .vibe/spec .gitkeep"
+        return 1
+    fi
+}
+run_test "generate --check fails when .vibe/spec is deleted" test_check_fails_when_spec_dir_deleted
+
 # ──────────────────────────────────────────────
 describe "generate --check — CLI integration"
 
