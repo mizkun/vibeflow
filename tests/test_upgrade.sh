@@ -227,6 +227,41 @@ test_upgrade_produces_report() {
 run_test "Produces upgrade report" test_upgrade_produces_report
 
 # ──────────────────────────────────────────────
+describe "upgrade — v6 rules and runtime deployment"
+
+# Helper: minimal v5 project (only .vibe/version)
+create_minimal_v5_project() {
+    local dir="$1"
+    mkdir -p "${dir}/.vibe"
+    echo "5.0.0" > "${dir}/.vibe/version"
+    cd "$dir" && git add -A && git commit -q -m "minimal v5 project"
+}
+
+test_upgrade_deploys_rules() {
+    create_minimal_v5_project "${TEST_DIR}/rulesproj"
+
+    python3 "${FRAMEWORK_DIR}/core/upgrade.py" \
+        --project-dir "${TEST_DIR}/rulesproj" \
+        --framework-dir "${FRAMEWORK_DIR}" 2>/dev/null || true
+
+    assert_file_exists "${TEST_DIR}/rulesproj/.claude/rules/spec-loop.md" \
+        "upgrade should deploy .claude/rules/ (spec-loop.md is the v6 core rule)"
+}
+run_test "upgrade deploys .claude/rules/" test_upgrade_deploys_rules
+
+test_upgrade_deploys_runtime() {
+    create_minimal_v5_project "${TEST_DIR}/runtimeproj"
+
+    python3 "${FRAMEWORK_DIR}/core/upgrade.py" \
+        --project-dir "${TEST_DIR}/runtimeproj" \
+        --framework-dir "${FRAMEWORK_DIR}" 2>/dev/null || true
+
+    assert_file_exists "${TEST_DIR}/runtimeproj/.vibe/runtime/spec_verify.py" \
+        "upgrade should deploy .vibe/runtime/ (spec_verify.py is the v6 engine)"
+}
+run_test "upgrade deploys .vibe/runtime/" test_upgrade_deploys_runtime
+
+# ──────────────────────────────────────────────
 describe "upgrade — CLI integration"
 
 test_vibeflow_upgrade_help() {

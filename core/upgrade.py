@@ -109,6 +109,20 @@ def build_source_map(framework_dir: str) -> dict[str, str]:
             if f.is_file() and not f.name.startswith("."):
                 source_map[f"scripts/{f.name}"] = str(f)
 
+    # examples/.claude/rules/*.md → .claude/rules/*.md
+    rules_dir = fw / "examples" / ".claude" / "rules"
+    if rules_dir.exists():
+        for f in rules_dir.iterdir():
+            if f.is_file() and f.suffix == ".md":
+                source_map[f".claude/rules/{f.name}"] = str(f)
+
+    # core/runtime/*.py → .vibe/runtime/*.py
+    runtime_dir = fw / "core" / "runtime"
+    if runtime_dir.exists():
+        for f in runtime_dir.iterdir():
+            if f.is_file() and f.suffix == ".py":
+                source_map[f".vibe/runtime/{f.name}"] = str(f)
+
     return source_map
 
 
