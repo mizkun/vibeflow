@@ -184,6 +184,17 @@ def main() -> None:
         "*.css", "*.scss", "*.html", "*.vue", "*.svelte",
     ]
 
+    # Linter / formatter config files — the Coding Agent must NEVER write these.
+    # Making lint pass by weakening its config is forbidden; fix the code instead.
+    LINT_CONFIG_PATTERNS = [
+        ".eslintrc", ".eslintrc.*", "eslint.config.*",
+        ".prettierrc", ".prettierrc.*", "prettier.config.*",
+        "tsconfig.json", "tsconfig.*.json",
+        "pyproject.toml", "setup.cfg", ".flake8",
+        "ruff.toml", ".ruff.toml", ".pylintrc", "mypy.ini",
+        "biome.json", ".stylelintrc", ".stylelintrc.*",
+    ]
+
     targets = get_target_paths(tool_name, tool_input)
 
     for t in targets:
@@ -205,6 +216,17 @@ def main() -> None:
                 f"  3) TDD でテスト → 実装 → リファクタリング\n"
                 f"  4) Cross-Review (Codex) を実施\n\n"
                 f"「簡単だから自分でやる」は禁止です。"
+            )
+
+        # LintGuard: the Coding Agent must not edit linter/formatter configs.
+        # Iris is governed by the role-based check below, not by LintGuard.
+        if role != "Iris" and match_any(t, LINT_CONFIG_PATTERNS):
+            block(
+                f"[VibeFlow LintGuard]\n"
+                f"Coding Agent は linter/formatter 設定ファイル '{t}' を編集できません。\n\n"
+                f"lint や型チェックが通らないときは、設定を緩めるのではなく\n"
+                f"コードそのものを修正してください。\n"
+                f"設定変更が本当に必要なら Iris に相談し、別途 Issue を立ててください。"
             )
 
         if not match_any(t, allow):
