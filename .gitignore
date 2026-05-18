@@ -34,6 +34,9 @@ yarn-error.log*
 # Vibe Coding
 .vibe/test-results.log
 
+# Claude Code worktrees (session-scoped, not committed)
+.claude/worktrees/
+
 # Backup directories
 *_backup_*
 .vibe_backup_*

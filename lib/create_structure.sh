@@ -76,7 +76,10 @@ yarn-error.log*
 .vibe/test-results.log
 
 # Claude Code local settings (not committed)
-.claude/settings.local.json'
+.claude/settings.local.json
+
+# Claude Code worktrees (session-scoped, not committed)
+.claude/worktrees/'
 
     create_file_with_backup ".gitignore" "$gitignore_content"
     
