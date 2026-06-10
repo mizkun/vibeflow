@@ -34,6 +34,14 @@ VALID_TARGETS = ("hooks", "settings", "policy", "docs", "claude_md", "agents_md"
 # Generation order: policy → hooks → settings → docs → claude_md → agents_md → state → spec → manifest
 GENERATION_ORDER = ["policy", "hooks", "settings", "docs", "claude_md", "agents_md", "state", "spec", "manifest"]
 
+# Runtime-mutable state files: generated once as templates, then written
+# by normal operation. Integrity checks (doctor, --check, --diff) verify
+# existence only — content comparison would cry wolf on every session.
+MUTABLE_FILES = frozenset({
+    ".vibe/project_state.yaml",
+    ".vibe/sessions/iris-main.yaml",
+})
+
 
 def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: str,
                manifest: Manifest, generated_files: list) -> None:
@@ -146,6 +154,8 @@ def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: st
                 if rel_path == "CLAUDE.md":
                     manifest.record(rel_path, source, file_type="partial",
                                     managed_sections=["roles", "workflow", "hook_list"])
+                elif rel_path in MUTABLE_FILES:
+                    manifest.record(rel_path, source, file_type="mutable")
                 else:
                     manifest.record(rel_path, source)
         manifest.save()
@@ -185,6 +195,9 @@ def run_diff(schema_dir: str, project_dir: str, framework_dir: str,
             if not project_file.exists():
                 print(f"  + {rel_path} (new)")
                 has_changes = True
+            elif rel_path in MUTABLE_FILES:
+                # runtime state — existence is the whole contract
+                print(f"  = {rel_path} (mutable, existence only)")
             else:
                 tmp_content = tmp_file.read_bytes()
                 proj_content = project_file.read_bytes()
@@ -224,6 +237,9 @@ def run_check(schema_dir: str, project_dir: str, framework_dir: str,
                 continue
             if not project_file.exists():
                 stale.append(rel_path)
+            elif rel_path in MUTABLE_FILES:
+                # runtime state — existence is the whole contract
+                continue
             elif tmp_file.read_bytes() != project_file.read_bytes():
                 stale.append(rel_path)
 

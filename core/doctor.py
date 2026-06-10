@@ -71,14 +71,21 @@ def check_file_integrity(project_dir: Path, manifest: dict) -> list[Check]:
 
     for rel_path, entry in files.items():
         abs_path = project_dir / rel_path
+        file_type = entry.get("type", "full")
+
         if not abs_path.exists():
+            # Mutable runtime state is recoverable — warn, don't error.
+            severity = "warn" if file_type == "mutable" else "error"
             checks.append(Check(
-                "file_missing", "error",
+                "file_missing", severity,
                 f"{rel_path}: tracked in manifest but file is missing"
             ))
             continue
 
-        file_type = entry.get("type", "full")
+        if file_type == "mutable":
+            # Runtime state mutates on every workflow step; content
+            # comparison would cry wolf and bury real integrity errors.
+            continue
 
         if file_type == "partial" and "section_hashes" in entry:
             # For partial files, check managed sections

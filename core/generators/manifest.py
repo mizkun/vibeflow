@@ -135,6 +135,11 @@ class Manifest:
 
         entry = self.entries[rel_path]
 
+        # Mutable runtime state: content changes during normal operation,
+        # so hash drift never means "user customized this".
+        if entry.get("type") == "mutable":
+            return "stock-managed"
+
         # For partial files, check managed section hashes only
         if entry.get("type") == "partial" and "section_hashes" in entry:
             current_sections = self._extract_managed_sections(rel_path)
