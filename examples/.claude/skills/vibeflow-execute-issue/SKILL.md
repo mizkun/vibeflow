@@ -399,11 +399,29 @@ PR: #<PR_NUMBER>
 
 ---
 
-## リトライポリシー
+## リトライポリシー — loop_control が機械的に判定する
 
-- テスト失敗 or レビュー fail → Step 4 に戻る
-- **最大 3 回**まで自動リトライ
-- 3 回失敗したら `needs_human` としてユーザーに相談
+テスト失敗（Step 7）/ レビュー fail（Step 9）の分岐では、散文で「3 回まで」
+と数えるのではなく、**必ず loop_control を実行して結果の action に従う**:
+
+```bash
+# 失敗のたびにまず記録（fingerprint = 失敗テスト名集合のハッシュ等）
+python3 .vibe/runtime/loop_control.py record-attempt <NUMBER> <step> fail "<fingerprint>" 2>/dev/null \
+  || python3 -c "import sys; sys.path.insert(0,'.vibe/runtime'); import loop_control as lc; lc.record_attempt('.', <NUMBER>, '<step>', 'fail', '<fingerprint>')"
+
+# 次の手を機械に決めさせる
+python3 .vibe/runtime/loop_control.py should-retry <NUMBER>
+```
+
+| action | 意味 | 対応 |
+|---|---|---|
+| `retry` | まだ試行回数内 | 同じ agent (claude_code) で Step 4 に戻る |
+| `switch_agent` (codex) | claude_code が 2 回失敗 | agent を Codex に切り替えて再試行 |
+| `escalate` | 3 回失敗 | qa_judge verdict を **needs_human に強制**し、PO に報告して停止。再実装しない |
+
+成功（Step 7 pass）時は `record-attempt <NUMBER> <step> pass` を記録して
+カウンタをリセットする。これにより夜間・長時間ループでも「同じ失敗を無限に
+繰り返す」「失敗 Issue を勝手に成功扱いで先へ進む」が機械的に防がれる。
 
 ## エラーハンドリング
 
