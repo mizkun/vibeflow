@@ -31,9 +31,15 @@ describe "QA Judge — auto pass"
 test_auto_pass() {
     local result
     result=$(python3 -c "
-import sys
+import os, sys
 sys.path.insert(0, '${FRAMEWORK_DIR}')
 from core.runtime.qa_judge import judge
+
+# auto_pass requires real test evidence on disk, not just claims
+log = os.path.join('${TEST_DIR}', 'test.log')
+ex = os.path.join('${TEST_DIR}', 'test.exit')
+open(log, 'w').write('all 12 tests passed')
+open(ex, 'w').write('0')
 
 result = judge({
     'labels': ['type:fix', 'risk:low', 'qa:auto'],
@@ -41,12 +47,13 @@ result = judge({
     'review_verdict': 'pass',
     'files_changed': 3,
     'lines_changed': 50,
+    'evidence': {'test_log': log, 'test_exit': ex},
 })
 assert result['verdict'] == 'auto_pass', f'Should auto pass: {result}'
 assert result['needs_human'] == False, f'Should not need human: {result}'
 print('OK')
-" 2>/dev/null)
-    assert_equals "OK" "$result" "Low-risk fix with tests pass should auto_pass"
+")
+    assert_equals "OK" "$result" "Low-risk fix with tests pass + evidence should auto_pass"
 }
 run_test "auto pass for low-risk fix" test_auto_pass
 
@@ -290,6 +297,171 @@ print('OK')
     assert_equals "OK" "$result" "is_ui_task should detect UI tasks by files and keywords"
 }
 run_test "is_ui_task detection" test_ui_detect_by_files
+
+# ──────────────────────────────────────────────
+describe "QA Judge — review verdict whitelist (fail-closed)"
+
+qa_judge_with_evidence() {
+    # $1 = extra context fields (python dict entries)
+    python3 -c "
+import os, sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.qa_judge import judge
+
+log = os.path.join('${TEST_DIR}', 'test.log')
+ex = os.path.join('${TEST_DIR}', 'test.exit')
+open(log, 'w').write('all tests passed')
+open(ex, 'w').write('0')
+
+ctx = {
+    'labels': ['type:fix', 'risk:low', 'qa:auto'],
+    'tests_passed': True,
+    'files_changed': 2,
+    'lines_changed': 20,
+    'evidence': {'test_log': log, 'test_exit': ex},
+}
+ctx.update({$1})
+result = judge(ctx)
+print(result['verdict'])
+"
+}
+
+test_review_unknown_is_not_auto_pass() {
+    local verdict
+    verdict=$(qa_judge_with_evidence "'review_verdict': 'unknown'")
+    assert_equals "needs_human" "$verdict" "review_verdict=unknown must not auto_pass (review never ran)"
+}
+run_test "review_verdict=unknown → needs_human" test_review_unknown_is_not_auto_pass
+
+test_review_pending_is_not_auto_pass() {
+    local verdict
+    verdict=$(qa_judge_with_evidence "'review_verdict': 'pending'")
+    assert_equals "needs_human" "$verdict" "review_verdict=pending must not auto_pass"
+}
+run_test "review_verdict=pending → needs_human" test_review_pending_is_not_auto_pass
+
+test_review_missing_is_not_auto_pass() {
+    local verdict
+    verdict=$(qa_judge_with_evidence "")
+    assert_equals "needs_human" "$verdict" "missing review_verdict must not auto_pass"
+}
+run_test "review_verdict missing → needs_human" test_review_missing_is_not_auto_pass
+
+test_review_unparsed_is_not_auto_pass() {
+    local verdict
+    verdict=$(qa_judge_with_evidence "'review_verdict': 'unparsed'")
+    assert_equals "needs_human" "$verdict" "review_verdict=unparsed must not auto_pass"
+}
+run_test "review_verdict=unparsed → needs_human" test_review_unparsed_is_not_auto_pass
+
+test_warn_without_responses_is_not_auto_pass() {
+    local verdict
+    verdict=$(qa_judge_with_evidence "'review_verdict': 'warn'")
+    assert_equals "needs_human" "$verdict" "warn without recorded responses must not auto_pass"
+}
+run_test "warn without recorded responses → needs_human" test_warn_without_responses_is_not_auto_pass
+
+test_warn_with_responses_can_auto_pass() {
+    local verdict
+    verdict=$(qa_judge_with_evidence "'review_verdict': 'warn', 'warn_responses_recorded': True")
+    assert_equals "auto_pass" "$verdict" "warn with all responses recorded may auto_pass"
+}
+run_test "warn with recorded responses → auto_pass" test_warn_with_responses_can_auto_pass
+
+# ──────────────────────────────────────────────
+describe "QA Judge — evidence-based judgment"
+
+test_no_evidence_is_not_auto_pass() {
+    local verdict
+    verdict=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.qa_judge import judge
+
+result = judge({
+    'labels': ['type:fix', 'risk:low', 'qa:auto'],
+    'tests_passed': True,
+    'review_verdict': 'pass',
+    'files_changed': 2,
+    'lines_changed': 20,
+})
+print(result['verdict'])
+")
+    assert_equals "needs_human" "$verdict" "claims without test evidence must not auto_pass"
+}
+run_test "no evidence → needs_human (claims are not proof)" test_no_evidence_is_not_auto_pass
+
+test_nonzero_exit_evidence_overrides_claim() {
+    local verdict
+    verdict=$(python3 -c "
+import os, sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.qa_judge import judge
+
+log = os.path.join('${TEST_DIR}', 'test.log')
+ex = os.path.join('${TEST_DIR}', 'test.exit')
+open(log, 'w').write('2 tests failed')
+open(ex, 'w').write('1')
+
+result = judge({
+    'labels': ['type:fix', 'risk:low', 'qa:auto'],
+    'tests_passed': True,
+    'review_verdict': 'pass',
+    'files_changed': 2,
+    'lines_changed': 20,
+    'evidence': {'test_log': log, 'test_exit': ex},
+})
+print(result['verdict'])
+")
+    assert_equals "fail" "$verdict" "exit-code evidence must override the self-reported tests_passed=True"
+}
+run_test "non-zero exit evidence overrides tests_passed claim" test_nonzero_exit_evidence_overrides_claim
+
+test_missing_evidence_files_is_not_auto_pass() {
+    local verdict
+    verdict=$(python3 -c "
+import os, sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.qa_judge import judge
+
+result = judge({
+    'labels': ['type:fix', 'risk:low', 'qa:auto'],
+    'tests_passed': True,
+    'review_verdict': 'pass',
+    'files_changed': 2,
+    'lines_changed': 20,
+    'evidence': {'test_log': os.path.join('${TEST_DIR}', 'nope.log'),
+                 'test_exit': os.path.join('${TEST_DIR}', 'nope.exit')},
+})
+print(result['verdict'])
+")
+    assert_equals "needs_human" "$verdict" "evidence paths that do not exist must not auto_pass"
+}
+run_test "missing evidence files → needs_human" test_missing_evidence_files_is_not_auto_pass
+
+test_artifact_path_must_exist() {
+    local verdict
+    verdict=$(python3 -c "
+import os, sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.qa_judge import judge
+
+result = judge({
+    'labels': ['type:dev', 'risk:low'],
+    'tests_passed': True,
+    'review_verdict': 'pass',
+    'files_changed': 2,
+    'lines_changed': 30,
+    'has_ui_changes': True,
+    'playwright_passed': True,
+    'has_playwright_artifact': True,
+    'playwright_artifact_path': os.path.join('${TEST_DIR}', 'no-such-artifact.png'),
+})
+print(result['verdict'])
+")
+    assert_equals "fail" "$verdict" "a claimed artifact whose path does not exist must fail"
+}
+run_test "nonexistent playwright artifact path → fail" test_artifact_path_must_exist
 
 # ──────────────────────────────────────────────
 print_summary
