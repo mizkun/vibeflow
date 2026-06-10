@@ -27,8 +27,18 @@
 
 ### Coding Agent
 - 指定ブランチでのみ作業
-- main/master への直接 push 禁止
-- 破壊的コマンドは禁止リストで制御
+- main/master への直接 push 禁止（BashGuard が決定論的に強制）
+- 破壊的コマンドは禁止リストで制御（force push / reset --hard / clean -fd 等）
+
+### ロール遷移の監査
+- ロール (current_role) はセッション/state ファイルに記録され、
+  hook がそれを正本として権限を判定する（display_name / 短縮形 / role id の
+  いずれでも正規化されて解決する）
+- ロール文字列を書き換えての自己エスカレーション（Iris → Coding Agent を
+  勝手に切り替えて src を書く）は禁止。遷移は正規のワークフロー Step に従う
+- 注意: `current_role` 行を Write/Edit で変える行為は AccessGuard で可視だが、
+  Bash heredoc 経由の state.yaml 書き換えには無力（ALWAYS_ALLOW のため）。
+  構造的な根治は将来の Coding Agent サブエージェント化（worktree 分離）で行う
 
 ### Permission Modes
 - Codex: `--full-auto` (sandbox 内で安全)

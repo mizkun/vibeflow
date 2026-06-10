@@ -86,14 +86,21 @@ class ClaudeCodeWrapper:
             "started_at": time.time(),
         }
 
-        # Record session
+        # Record session (JSON handle + YAML role file the hooks read)
         if session_dir:
             os.makedirs(session_dir, exist_ok=True)
             session_file = os.path.join(session_dir, f"{task_id}.json")
             with open(session_file, "w") as f:
                 json.dump(handle, f, indent=2)
+            # The role-aware guards key on current_role from this YAML.
+            # Use the policy display_name so the role resolves to coding_agent.
+            with open(os.path.join(session_dir, f"{task_id}.yaml"), "w") as f:
+                f.write(f'session_id: "{task_id}"\n')
+                f.write('current_role: "Coding Agent (Claude Code / Codex)"\n')
+                f.write('current_step: "5_implementation"\n')
 
-        # Launch claude CLI subprocess
+        # Launch claude CLI subprocess. Export VIBEFLOW_SESSION so the
+        # guards resolve the session role (else they fall back to state.yaml).
         cmd = [
             self.claude_cmd,
             "--dangerously-skip-permissions",
@@ -101,6 +108,8 @@ class ClaudeCodeWrapper:
             "--output-format", "json",
             task_prompt,
         ]
+        env = dict(os.environ)
+        env["VIBEFLOW_SESSION"] = task_id
         try:
             proc = subprocess.Popen(
                 cmd,
@@ -108,6 +117,7 @@ class ClaudeCodeWrapper:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
+                env=env,
             )
             self._processes[task_id] = proc
             handle["status"] = "running"

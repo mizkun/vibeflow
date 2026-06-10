@@ -103,23 +103,53 @@ def read_current_role_from_file(path: str) -> str:
     return ""
 
 
+# Canonical roles (id, display_name) from policy.yaml — used to normalize
+# whatever spelling lands in the session/state file to the dict key.
+_ROLES = [
+
+    ("iris", "Iris"),
+
+    ("coding_agent", "Coding Agent (Claude Code / Codex)"),
+
+]
+
+
+def canonical_role(raw: str) -> str:
+    """Normalize a role string to its policy display_name key.
+
+    Accepts the display_name, the role id, or a short form — so a wrapper
+    writing 'Coding Agent', the id 'coding_agent', or the full display
+    name all resolve to the same ROLE_EDIT_ALLOW key. Unknown strings are
+    returned as-is (they fall through to the restrictive default)."""
+    low = (raw or "").strip().lower()
+    if not low:
+        return ""
+    for rid, disp in _ROLES:
+        if low == rid.lower() or low == disp.lower():
+            return disp
+    for rid, disp in _ROLES:
+        head = rid.split("_")[0]
+        if head and head in low:
+            return disp
+    return raw
+
+
 def resolve_current_role(root: str) -> str:
     """Resolve current_role from session state or legacy state.yaml.
 
     Resolution order:
     1. VIBEFLOW_SESSION env var → .vibe/sessions/<session>.yaml
     2. Fallback: .vibe/state.yaml (backward compat with v3)
-    """
+    The result is normalized to a canonical policy display_name."""
     session_id = os.environ.get("VIBEFLOW_SESSION")
     if session_id:
         session_path = os.path.join(root, ".vibe", "sessions", f"{session_id}.yaml")
         role = read_current_role_from_file(session_path)
         if role:
-            return role
+            return canonical_role(role)
 
-    # Fallback to legacy state.yaml
     state_path = os.path.join(root, ".vibe", "state.yaml")
-    return read_current_role_from_file(state_path)
+    return canonical_role(read_current_role_from_file(state_path))
 
 
 def _normalize(s: str) -> str:

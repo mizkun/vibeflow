@@ -141,14 +141,38 @@ def read_current_role_from_file(path: str) -> str:
     return ""
 
 
+_ROLES = [
+
+    ("iris", "Iris"),
+
+    ("coding_agent", "Coding Agent (Claude Code / Codex)"),
+
+]
+
+
+def canonical_role(raw: str) -> str:
+    """Normalize a role string to its policy display_name key."""
+    low = (raw or "").strip().lower()
+    if not low:
+        return ""
+    for rid, disp in _ROLES:
+        if low == rid.lower() or low == disp.lower():
+            return disp
+    for rid, disp in _ROLES:
+        head = rid.split("_")[0]
+        if head and head in low:
+            return disp
+    return raw
+
+
 def resolve_current_role(root: str) -> str:
     session_id = os.environ.get("VIBEFLOW_SESSION")
     if session_id:
         session_path = os.path.join(root, ".vibe", "sessions", f"{session_id}.yaml")
         role = read_current_role_from_file(session_path)
         if role:
-            return role
-    return read_current_role_from_file(os.path.join(root, ".vibe", "state.yaml"))
+            return canonical_role(role)
+    return canonical_role(read_current_role_from_file(os.path.join(root, ".vibe", "state.yaml")))
 
 
 def _normalize_path(s: str) -> str:
