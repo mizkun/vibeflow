@@ -1,0 +1,31 @@
+name: Tests
+
+# No path filter on purpose: the test suite is the harness's own
+# "modifications don't break it" guarantee, and path filters are how the
+# previous 4-file breakage sat unnoticed on main.
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install pyyaml jinja2
+
+      - name: Configure git for test fixtures
+        run: |
+          git config --global user.email "ci@vibeflow.test"
+          git config --global user.name "VibeFlow CI"
+          git config --global init.defaultBranch main
+
+      - name: Run full test suite
+        run: bash tests/run_all.sh
