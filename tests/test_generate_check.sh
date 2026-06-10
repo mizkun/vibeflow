@@ -197,4 +197,61 @@ test_session_startup_doctor_is_first() {
 run_test "vibeflow doctor is step 1 in startup checklist" test_session_startup_doctor_is_first
 
 # ──────────────────────────────────────────────
+describe "generate --check — mutable state files"
+
+test_check_ok_after_state_mutation() {
+    local tmpdir="${TEST_DIR}/check_mutable"
+    mkdir -p "${tmpdir}/.vibe"
+    cd "$tmpdir"
+
+    python3 "${FRAMEWORK_DIR}/core/generators/generate_all.py" \
+        --schema-dir "${FRAMEWORK_DIR}/core/schema" \
+        --project-dir "$tmpdir" \
+        --framework-dir "${FRAMEWORK_DIR}" > /dev/null 2>&1
+
+    # Runtime state changes on every workflow step — --check must only
+    # verify existence for these, not content.
+    echo "current_step: 5_implementation" >> "${tmpdir}/.vibe/project_state.yaml"
+    echo "last_update: now" >> "${tmpdir}/.vibe/sessions/iris-main.yaml"
+
+    set +e
+    python3 "${FRAMEWORK_DIR}/core/generators/generate_all.py" \
+        --schema-dir "${FRAMEWORK_DIR}/core/schema" \
+        --project-dir "$tmpdir" \
+        --framework-dir "${FRAMEWORK_DIR}" \
+        --check > /dev/null 2>&1
+    local code=$?
+    set -e
+
+    assert_equals "0" "$code" "--check should exit 0 after normal state mutation"
+}
+run_test "generate --check passes after state mutation" test_check_ok_after_state_mutation
+
+test_check_fails_when_mutable_missing() {
+    local tmpdir="${TEST_DIR}/check_mutable_missing"
+    mkdir -p "${tmpdir}/.vibe"
+    cd "$tmpdir"
+
+    python3 "${FRAMEWORK_DIR}/core/generators/generate_all.py" \
+        --schema-dir "${FRAMEWORK_DIR}/core/schema" \
+        --project-dir "$tmpdir" \
+        --framework-dir "${FRAMEWORK_DIR}" > /dev/null 2>&1
+
+    rm "${tmpdir}/.vibe/project_state.yaml"
+
+    set +e
+    python3 "${FRAMEWORK_DIR}/core/generators/generate_all.py" \
+        --schema-dir "${FRAMEWORK_DIR}/core/schema" \
+        --project-dir "$tmpdir" \
+        --framework-dir "${FRAMEWORK_DIR}" \
+        --check > /dev/null 2>&1
+    local code=$?
+    set -e
+
+    # Existence is still part of the contract
+    assert_equals "1" "$code" "--check should fail when a mutable state file is missing"
+}
+run_test "generate --check fails when mutable state file is missing" test_check_fails_when_mutable_missing
+
+# ──────────────────────────────────────────────
 print_summary

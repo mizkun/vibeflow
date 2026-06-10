@@ -202,4 +202,58 @@ test_doctor_exit_0_clean() {
 run_test "CLI exit 0 on clean project" test_doctor_exit_0_clean
 
 # ──────────────────────────────────────────────
+describe "Doctor — mutable state files"
+
+test_doctor_ok_after_state_mutation() {
+    local outdir="${TEST_DIR}/project"
+    mkdir -p "$outdir"
+    generate_project "$outdir"
+
+    # Runtime mutates state during normal operation — doctor must not
+    # cry hash_mismatch over it (wolf-cry destroys trust in real errors).
+    echo "current_step: 5_implementation" >> "${outdir}/.vibe/project_state.yaml"
+    echo "last_update: now" >> "${outdir}/.vibe/sessions/iris-main.yaml"
+
+    cd "$outdir"
+    set +e
+    local output
+    output=$("${FRAMEWORK_DIR}/bin/vibeflow" doctor 2>&1)
+    local code=$?
+    set -e
+
+    assert_equals "0" "$code" "doctor should exit 0 after normal state mutation" || return 1
+    if echo "$output" | grep -q "hash_mismatch\|has been modified"; then
+        fail "doctor should not flag mutated state files: $output"
+        return 1
+    fi
+    return 0
+}
+run_test "doctor exits 0 after normal state mutation" test_doctor_ok_after_state_mutation
+
+test_doctor_warns_on_missing_mutable() {
+    local outdir="${TEST_DIR}/project"
+    mkdir -p "$outdir"
+    generate_project "$outdir"
+
+    rm "${outdir}/.vibe/project_state.yaml"
+
+    cd "$outdir"
+    set +e
+    local output
+    output=$("${FRAMEWORK_DIR}/bin/vibeflow" doctor 2>&1)
+    local code=$?
+    set -e
+
+    # Existence is still checked — but a missing state file is a warn
+    # (recoverable runtime state), not an error.
+    assert_equals "0" "$code" "missing mutable state should be warn (exit 0 normal mode)" || return 1
+    echo "$output" | grep -q "project_state.yaml" || {
+        fail "doctor should still mention the missing state file"
+        return 1
+    }
+    return 0
+}
+run_test "doctor warns (not errors) on missing mutable state" test_doctor_warns_on_missing_mutable
+
+# ──────────────────────────────────────────────
 print_summary
