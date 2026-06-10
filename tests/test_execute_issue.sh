@@ -185,5 +185,17 @@ test_checkpoint_shows_spec_diff() {
 }
 run_test "Step 7a presents the spec diff" test_checkpoint_shows_spec_diff
 
+test_checkpoint_packet_generated() {
+    assert_file_contains "$SKILL" "packet.md" \
+        "Step 7a must produce a checkpoint packet file" || return 1
+    assert_file_contains "$SKILL" "AC チェックリスト" \
+        "packet carries the AC checklist with test names" || return 1
+    assert_file_contains "$SKILL" "スコープ外" \
+        "packet lists out-of-scope changes" || return 1
+    assert_file_contains "$SKILL" "invariant 接触" \
+        "packet lists touched invariants (best-effort)" || return 1
+}
+run_test "Step 7a builds a checkpoint packet (PO decides without reading code)" test_checkpoint_packet_generated
+
 # ──────────────────────────────────────────────
 print_summary

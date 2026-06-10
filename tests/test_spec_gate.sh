@@ -62,8 +62,21 @@ create_qa_auto_checkpoint() {
     echo "auto-approved:qa:auto" > "${TEST_DIR}/.vibe/checkpoints/${1}-qa-approved"
 }
 
-# human checkpoint — explicit PO approval
+# human checkpoint — explicit PO approval (with its decision packet)
 create_human_checkpoint() {
+    mkdir -p "${TEST_DIR}/.vibe/checkpoints"
+    echo "approved" > "${TEST_DIR}/.vibe/checkpoints/${1}-qa-approved"
+    create_checkpoint_packet "${1}"
+}
+
+# the packet the PO actually reviewed — required alongside a human approval
+create_checkpoint_packet() {
+    mkdir -p "${TEST_DIR}/.vibe/checkpoints"
+    echo "# Checkpoint Packet" > "${TEST_DIR}/.vibe/checkpoints/${1}-packet.md"
+}
+
+# human checkpoint WITHOUT a packet (rubber-stamp simulation)
+create_bare_human_checkpoint() {
     mkdir -p "${TEST_DIR}/.vibe/checkpoints"
     echo "approved" > "${TEST_DIR}/.vibe/checkpoints/${1}-qa-approved"
 }
@@ -437,6 +450,36 @@ test_gh_failure_blocks_reverse_gate() {
     assert_equals "2" "$?" "gh failure must fail closed (cannot verify the declaration)"
 }
 run_test "gh failure fails closed on the reverse gate" test_gh_failure_blocks_reverse_gate
+
+# ──────────────────────────────────────────────
+describe "checkpoint packet — human approval requires the decision packet"
+
+test_human_checkpoint_without_packet_blocked() {
+    make_feature_branch spec
+    create_state_with_issue "#70"
+    create_bare_human_checkpoint "#70"
+    run_hook
+    assert_equals "2" "$?" "an 'approved' checkpoint with no packet is a rubber stamp — block"
+}
+run_test "human approval without a packet is blocked" test_human_checkpoint_without_packet_blocked
+
+test_human_checkpoint_with_packet_passes() {
+    make_feature_branch spec
+    create_state_with_issue "#71"
+    create_human_checkpoint "#71"
+    run_hook
+    assert_equals "0" "$?" "human approval with its packet must pass"
+}
+run_test "human approval with a packet passes" test_human_checkpoint_with_packet_passes
+
+test_qa_auto_needs_no_packet() {
+    make_feature_branch code
+    create_state_with_issue "#72"
+    create_qa_auto_checkpoint "#72"
+    run_hook
+    assert_equals "0" "$?" "qa:auto auto-approval does not require a packet"
+}
+run_test "qa:auto checkpoint needs no packet" test_qa_auto_needs_no_packet
 
 # ──────────────────────────────────────────────
 print_summary

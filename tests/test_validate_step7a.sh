@@ -44,6 +44,7 @@ create_checkpoint() {
     local issue="$1"
     mkdir -p "${TEST_DIR}/.vibe/checkpoints"
     echo "approved" > "${TEST_DIR}/.vibe/checkpoints/${issue}-qa-approved"
+    echo "# Checkpoint Packet" > "${TEST_DIR}/.vibe/checkpoints/${issue}-packet.md"
 }
 
 # ══════════════════════════════════════════════
