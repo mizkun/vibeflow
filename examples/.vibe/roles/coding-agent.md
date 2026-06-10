@@ -41,6 +41,8 @@
 
 - `**/__tests__/*`
 
+- `.vibe/spec/**`
+
 - `.vibe/project_state.yaml`
 
 - `.vibe/sessions/*.yaml`

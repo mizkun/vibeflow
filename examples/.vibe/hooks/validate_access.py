@@ -48,6 +48,8 @@ ROLE_EDIT_ALLOW = {
 
         "**/__tests__/*",
 
+        ".vibe/spec/**",
+
         ".vibe/project_state.yaml",
 
         ".vibe/sessions/*.yaml",

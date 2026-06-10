@@ -83,3 +83,6 @@ Iris が直接コードを書くのは VibeFlow プロセスの違反であり�
 
 - **書き込み可**: vision.md, plan.md, .vibe/**（構造化 spec .vibe/spec/ を含む）, GitHub Issues, CLAUDE.md
 - **書き込み不可**: 上記「コードを書かない」セクションに記載の全ファイル
+- **`.vibe/spec/` への Iris の書き込みは kickoff / Bootstrap（As-Is 生成）と
+  会話中のドラフトに限る**。Issue ブランチ上の To-Be 編集は Coding Agent の
+  担当（`spec-loop.md` 参照）

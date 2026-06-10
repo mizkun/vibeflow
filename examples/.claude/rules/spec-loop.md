@@ -9,6 +9,9 @@ VibeFlow v6 の中核ルール。プロジェクトの仕様は構造化 spec（
 - `.vibe/spec/contracts/<id>.yaml` — モジュール間を渡るデータの形（host 言語の型を参照）
 - スキーマ定義は VibeFlow framework の `core/schema/spec.yaml`
 - spec は **Agent が書く**。PO は書かない（PO が書くのは Vision）
+  - **Bootstrap / kickoff（As-Is 生成）と会話中のドラフト**: Iris が書く
+  - **Issue ブランチ上の To-Be 編集**: Coding Agent が書く（コードと同じ
+    ブランチ・同じ diff で spec を編集する。ACL も許可済み）
 - **未実装ドメインの Story を作らない**。Story はコードが存在して初めて作る
   （構想は plan.md / Issue へ）。spec-verify が空ディレクトリのプレース
   ホルダを error として検出する

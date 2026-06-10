@@ -99,7 +99,7 @@ SESS
 YAML_STATE_FILE="${SESSION_DIR}/${TASK_ID}.yaml"
 cat > "$YAML_STATE_FILE" <<YAMLSTATE
 session_id: "${TASK_ID}"
-current_role: "Coding Agent"
+current_role: "Coding Agent (Claude Code / Codex)"
 current_step: "5_implementation"
 agent: "claude_code"
 status: "running"
@@ -107,6 +107,10 @@ YAMLSTATE
 
 # Execute Claude Code with --dangerously-skip-permissions --print --output-format json
 echo "Dispatching to Claude Code (dangerously-skip-permissions, print, json)..."
+# Hooks (validate_access.py, stop_test_gate.sh) resolve the role from
+# the session file named by VIBEFLOW_SESSION — without the export they
+# silently fall back to .vibe/state.yaml.
+export VIBEFLOW_SESSION="${TASK_ID}"
 set +e
 timeout "$TIMEOUT" "$CLAUDE_CMD" \
     --dangerously-skip-permissions \
@@ -138,7 +142,7 @@ with open('${SESSION_FILE}', 'w') as f:
 # Update YAML state file
 cat > "$YAML_STATE_FILE" <<YAMLSTATE
 session_id: "${TASK_ID}"
-current_role: "Coding Agent"
+current_role: "Coding Agent (Claude Code / Codex)"
 current_step: "5_implementation"
 agent: "claude_code"
 status: "${STATUS}"
