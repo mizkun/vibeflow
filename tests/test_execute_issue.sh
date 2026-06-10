@@ -106,4 +106,59 @@ test_has_retry() {
 run_test "retry on failure" test_has_retry
 
 # ──────────────────────────────────────────────
+describe "Execute Issue — fail-closed QA chain (no fake pass)"
+
+SKILL="${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-execute-issue/SKILL.md"
+
+test_no_provisional_pass() {
+    # The Step 7 judgment must not feed a fabricated review_verdict
+    # 'pass' before the cross-review has run.
+    assert_file_not_contains "$SKILL" "初回は仮 pass" \
+        "Step 7 must not fabricate review_verdict='pass'" || return 1
+    assert_file_contains "$SKILL" "'pending'" \
+        "Step 7 should pass review_verdict='pending'" || return 1
+}
+run_test "Step 7 uses review_verdict=pending, not a fake pass" test_no_provisional_pass
+
+test_has_step_9_5_final_judgment() {
+    assert_file_contains "$SKILL" "Step 9.5" \
+        "needs a Step 9.5 re-judgment with the real review verdict" || return 1
+    assert_file_contains "$SKILL" "確定判定" \
+        "Step 9.5 should be described as the final judgment" || return 1
+}
+run_test "Step 9.5 re-judges with the real review verdict" test_has_step_9_5_final_judgment
+
+test_test_evidence_is_captured() {
+    assert_file_contains "$SKILL" ".vibe/reports/" \
+        "test output must be captured under .vibe/reports/" || return 1
+    assert_file_contains "$SKILL" "test.exit" \
+        "the test exit code must be saved as evidence" || return 1
+    assert_file_contains "$SKILL" "'evidence'" \
+        "qa_judge context must include the evidence dict" || return 1
+}
+run_test "Step 7 captures test log + exit code as evidence" test_test_evidence_is_captured
+
+test_review_failure_handling() {
+    assert_file_contains "$SKILL" "review.md" \
+        "cross-review result must be persisted (review.md)" || return 1
+    assert_file_contains "$SKILL" "verdict 抽出不能" \
+        "reviewer crash / unparseable verdict handling must be specified" || return 1
+}
+run_test "Step 9 persists review + handles reviewer failure" test_review_failure_handling
+
+test_completion_report_has_evidence() {
+    # the completion report must carry evidence, not bare checkmarks
+    assert_file_contains "$SKILL" "test.log" \
+        "completion report must reference the captured test log" || return 1
+}
+run_test "Step 11 report is evidence-based" test_completion_report_has_evidence
+
+test_workflow_standard_synced() {
+    local wf="${FRAMEWORK_DIR}/examples/.claude/rules/workflow-standard.md"
+    assert_file_contains "$wf" "Step 9.5" \
+        "workflow-standard.md must document the Step 9.5 final judgment" || return 1
+}
+run_test "workflow-standard.md documents Step 9.5" test_workflow_standard_synced
+
+# ──────────────────────────────────────────────
 print_summary
