@@ -20,6 +20,33 @@ run_hook() {
     return $rc
 }
 
+# gh mock: `gh issue view N --json body` prints the given body file;
+# label queries return qa:auto.
+make_gh_mock() {
+    local body_file="$1"
+    mkdir -p "${TEST_DIR}/bin"
+    cat > "${TEST_DIR}/bin/gh" << GHEOF
+#!/bin/bash
+if [[ "\$*" == *"--json body"* ]]; then
+    cat "${body_file}"
+    exit 0
+fi
+if [[ "\$*" == *"--json labels"* ]]; then
+    echo "qa:auto"
+    exit 0
+fi
+exit 0
+GHEOF
+    chmod +x "${TEST_DIR}/bin/gh"
+}
+
+run_hook_with_gh() {
+    local rc=0
+    echo "$PR_CMD" | PATH="${TEST_DIR}/bin:$PATH" CLAUDE_PROJECT_DIR="$TEST_DIR" \
+        python3 "$HOOK_SCRIPT" 2>/dev/null || rc=$?
+    return $rc
+}
+
 create_state_with_issue() {
     mkdir -p "${TEST_DIR}/.vibe"
     cat > "${TEST_DIR}/.vibe/state.yaml" << YAML
@@ -164,9 +191,12 @@ test_base_develop_excludes_spec() {
     make_branch_base_distinguishes
     create_state_with_issue "#46"
     create_qa_auto_checkpoint "#46"
+    # the reverse spec gate needs the issue's declaration for a code-only PR
+    echo "対象 Story / Contract: spec 変更なし（コードのみ）" > "${TEST_DIR}/issue_body.txt"
+    make_gh_mock "${TEST_DIR}/issue_body.txt"
     local rc=0
     echo '{"tool_name":"Bash","tool_input":{"command":"gh pr create --title \"feat\" --base develop"}}' \
-        | CLAUDE_PROJECT_DIR="$TEST_DIR" python3 "$HOOK_SCRIPT" 2>/dev/null || rc=$?
+        | PATH="${TEST_DIR}/bin:$PATH" CLAUDE_PROJECT_DIR="$TEST_DIR" python3 "$HOOK_SCRIPT" 2>/dev/null || rc=$?
     assert_equals "0" "$rc" "with --base develop, feature diff has no spec change → qa:auto passes"
 }
 run_test "honors --base: spec on develop is not counted for a develop-based PR" test_base_develop_excludes_spec
@@ -300,9 +330,11 @@ test_base_honors_remote_only_branch() {
     make_branch_remote_only_develop
     create_state_with_issue "#52"
     create_qa_auto_checkpoint "#52"
+    echo "対象 Story / Contract: spec 変更なし（コードのみ）" > "${TEST_DIR}/issue_body.txt"
+    make_gh_mock "${TEST_DIR}/issue_body.txt"
     local rc=0
     echo '{"tool_name":"Bash","tool_input":{"command":"gh pr create --title \"feat\" --base develop"}}' \
-        | CLAUDE_PROJECT_DIR="$TEST_DIR" python3 "$HOOK_SCRIPT" 2>/dev/null || rc=$?
+        | PATH="${TEST_DIR}/bin:$PATH" CLAUDE_PROJECT_DIR="$TEST_DIR" python3 "$HOOK_SCRIPT" 2>/dev/null || rc=$?
     assert_equals "0" "$rc" "--base develop must resolve origin/develop; code-only PR then passes"
 }
 run_test "honors --base when the branch exists only as origin/<branch>" test_base_honors_remote_only_branch
@@ -310,32 +342,6 @@ run_test "honors --base when the branch exists only as origin/<branch>" test_bas
 # ──────────────────────────────────────────────
 describe "reverse spec gate — code changed but spec untouched"
 
-# gh mock: `gh issue view N --json body` prints the given body file;
-# label queries return qa:auto.
-make_gh_mock() {
-    local body_file="$1"
-    mkdir -p "${TEST_DIR}/bin"
-    cat > "${TEST_DIR}/bin/gh" << GHEOF
-#!/bin/bash
-if [[ "\$*" == *"--json body"* ]]; then
-    cat "${body_file}"
-    exit 0
-fi
-if [[ "\$*" == *"--json labels"* ]]; then
-    echo "qa:auto"
-    exit 0
-fi
-exit 0
-GHEOF
-    chmod +x "${TEST_DIR}/bin/gh"
-}
-
-run_hook_with_gh() {
-    local rc=0
-    echo "$PR_CMD" | PATH="${TEST_DIR}/bin:$PATH" CLAUDE_PROJECT_DIR="$TEST_DIR" \
-        python3 "$HOOK_SCRIPT" 2>/dev/null || rc=$?
-    return $rc
-}
 
 # A spec-using project (has .vibe/spec/ on main) with a code-only branch
 make_code_branch_in_spec_project() {

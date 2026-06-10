@@ -25,6 +25,17 @@ HUMAN_CHECKPOINT_RE = re.compile(r"^approved$", re.MULTILINE)
 # A change under this path forces the Human Checkpoint (qa:auto cannot bypass)
 SPEC_PATH_PREFIX = ".vibe/spec/"
 
+# Reverse Spec Gate: paths that count as "code" — changing them without a
+# spec change requires the Issue to declare "spec 変更なし".
+CODE_PATH_PREFIXES = ("src/", "tests/", "test/", "lib/", "app/")
+
+# A *filled-in* declaration line. The raw Issue-template placeholder
+# (対象 Story / Contract: [`...` / spec 変更なし（コードのみ）]) contains
+# brackets and must NOT count — [^\[\]\n]* rejects any bracket on the line.
+SPEC_NONE_DECL_RE = re.compile(
+    r"対象\s*Story\s*/\s*Contract\s*[:：]\s*[^\[\]\n]*spec\s*変更なし"
+)
+
 
 def project_root() -> str:
     """Get project root from CLAUDE_PROJECT_DIR or current directory."""
@@ -167,6 +178,54 @@ def spec_changed(root: str, command: str = "") -> bool:
     return False
 
 
+def code_changed(root: str, command: str = "") -> bool:
+    """True if the current branch's commits change code paths
+    (src/tests/lib/app) relative to the PR base branch.
+
+    On diff failure this returns False — but spec_changed() already
+    fails closed in those situations, so the stricter spec path
+    dominates."""
+    base = _base_branch(root, command)
+    if not base:
+        return False
+    try:
+        r = subprocess.run(
+            ["git", "-C", root, "diff", "--name-status", f"{base}...HEAD"],
+            capture_output=True, text=True, timeout=5,
+        )
+    except Exception:
+        return False
+    if r.returncode != 0:
+        return False
+    for line in r.stdout.splitlines():
+        for path in line.split("\t")[1:]:
+            p = path.strip()
+            if any(p.startswith(prefix) for prefix in CODE_PATH_PREFIXES):
+                return True
+    return False
+
+
+def issue_declares_no_spec_change(issue: str) -> bool:
+    """True if the Issue body contains a *filled-in* 'spec 変更なし'
+    declaration in its '## Spec 変更' section.
+    Returns False on any failure (fail-closed, like check_qa_auto_label)."""
+    if not is_valid_issue(issue):
+        return False
+    normalized = normalize_issue(issue)
+    if not normalized:
+        return False
+    try:
+        result = subprocess.run(
+            ["gh", "issue", "view", normalized, "--json", "body", "--jq", ".body"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if result.returncode == 0:
+            return bool(SPEC_NONE_DECL_RE.search(result.stdout))
+    except (subprocess.TimeoutExpired, FileNotFoundError, Exception):
+        pass
+    return False
+
+
 def check_qa_auto_label(issue: str) -> bool:
     """Check if the issue has qa:auto label via gh CLI.
     Returns False on any failure (fail-closed)."""
@@ -292,6 +351,30 @@ def main() -> None:
             f"  2) ユーザーが差分を確認・承認\n"
             f"  3) .vibe/checkpoints/{issue}-qa-approved を作成（内容は 'approved'）\n"
             f"  4) その後 gh pr create を実行可能\n"
+        )
+
+    # v6 Reverse Spec Gate: code changed but spec untouched. The most
+    # common drift direction (code moves on, spec rots) needs an explicit
+    # decision: either update the To-Be spec, or fill in the Issue's
+    # 'spec 変更なし' declaration (bug class (i): code violates a correct
+    # spec). A human 'approved' checkpoint also counts — the PO has seen it.
+    # Only active in projects that use the structured spec.
+    if (not spec
+            and os.path.isdir(os.path.join(root, ".vibe", "spec"))
+            and code_changed(root, command)
+            and not checkpoint_exists(root, issue, human_only=True)
+            and not issue_declares_no_spec_change(issue)):
+        block(root=root, msg=
+            f"[VibeFlow Step7a Guard — Reverse Spec Gate]\n"
+            f"この PR はコード（src/tests/lib/app）を変更していますが、"
+            f"構造化 spec (.vibe/spec/) を変更しておらず、\n"
+            f"Issue {issue} に記入済みの「spec 変更なし」宣言も見つかりません。\n\n"
+            f"対応（どちらか）:\n"
+            f"  1) この変更が仕様に触れるなら: .vibe/spec/ の Story/Contract を\n"
+            f"     To-Be に更新してコミットする（Step 3.5）\n"
+            f"  2) 仕様に触れない変更（バグ分類 (i) 等）なら: Issue 本文の\n"
+            f"     「## Spec 変更」欄に『対象 Story / Contract: spec 変更なし'\n"
+            f"     （コードのみ）』と記入する（テンプレートの角括弧は外すこと）\n"
         )
 
     # Check if checkpoint already exists
