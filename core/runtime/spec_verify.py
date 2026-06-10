@@ -28,6 +28,8 @@ except ImportError:
     yaml = None
 
 
+# Canonical definitions live in core/schema/spec.yaml — these constants
+# must mirror it. Sync is enforced by tests/test_spec_schema_consistency.sh.
 STORY_REQUIRED = ["id", "one_liner", "invariants", "source_files"]
 CONTRACT_REQUIRED = ["id", "schema_ref", "producers", "consumers", "story"]
 INVARIANT_REQUIRED = ["id", "text"]

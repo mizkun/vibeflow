@@ -144,6 +144,41 @@ def validate_issue_labels(data: dict) -> list[str]:
     return errors
 
 
+def validate_spec(data: dict) -> list[str]:
+    """Validate spec.yaml structure (v6 structured spec schema).
+
+    The required-field sets must stay in sync with
+    core/runtime/spec_verify.py — enforced by
+    tests/test_spec_schema_consistency.sh.
+    """
+    errors = []
+
+    if "schema_version" not in data:
+        errors.append("Missing 'schema_version'")
+
+    for section in ("story", "contract"):
+        sec = data.get(section)
+        if not isinstance(sec, dict):
+            errors.append(f"Top-level '{section}' must be a mapping")
+            continue
+        fields = sec.get("fields")
+        if not isinstance(fields, dict):
+            errors.append(f"{section}: 'fields' must be a mapping")
+            continue
+        for fname, fdef in fields.items():
+            if not isinstance(fdef, dict):
+                errors.append(f"{section}.{fname}: must be a mapping")
+                continue
+            if "required" not in fdef:
+                errors.append(f"{section}.{fname}: missing 'required'")
+
+    layout = data.get("file_layout")
+    if not isinstance(layout, dict) or "stories" not in layout or "contracts" not in layout:
+        errors.append("'file_layout' must map 'stories' and 'contracts'")
+
+    return errors
+
+
 def detect_schema_type(filepath: str) -> str:
     """Detect schema type from filename."""
     name = Path(filepath).stem
@@ -155,6 +190,8 @@ def detect_schema_type(filepath: str) -> str:
         return "roles"
     elif name == "issue_labels":
         return "issue_labels"
+    elif name == "spec":
+        return "spec"
     return "unknown"
 
 
@@ -238,6 +275,7 @@ def main() -> None:
         "workflow": validate_workflow,
         "roles": validate_roles,
         "issue_labels": validate_issue_labels,
+        "spec": validate_spec,
     }
 
     validator = validators.get(schema_type)

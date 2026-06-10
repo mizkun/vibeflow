@@ -38,6 +38,9 @@
 #   言語アダプタ (define_contract ランタイム) / Contract の per-consumer subset。
 #   これらは過剰な機械。基本ループが動いてから必要なら上に載せる。
 
+# required フィールドを変更したら core/runtime/spec_verify.py の
+# STORY_REQUIRED / CONTRACT_REQUIRED / INVARIANT_REQUIRED も更新すること。
+# 整合は tests/test_spec_schema_consistency.sh が強制する。
 schema_version: 6
 
 # プロジェクト内の配置（インスタンスファイルの置き場所）
