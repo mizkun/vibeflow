@@ -390,4 +390,68 @@ test_cli_subcommand_fails_on_drift() {
 run_test "vibeflow spec-verify exits non-zero on spec drift" test_cli_subcommand_fails_on_drift
 
 # ──────────────────────────────────────────────
+describe "spec_verify — empty directory placeholders"
+
+test_empty_dir_source_files_is_error() {
+    create_spec_fixture
+    # A Story pointing at an empty directory is a placeholder for
+    # unimplemented work — it must not pass as As-Is spec.
+    mkdir -p "$TEST_DIR/apps/aituber"
+    cat > .vibe/spec/stories/aituber.yaml << 'YAML'
+id: aituber
+one_liner: 未実装のプレースホルダ
+invariants: []
+source_files:
+  - apps/aituber/
+YAML
+    local out rc=0
+    out=$(run_verify) || rc=$?
+    [ "$rc" -ne 0 ] || { fail "empty-directory source_files must fail verification"; return 1; }
+    echo "$out" | grep -q "empty directory" || { fail "error should mention empty directory, got: $out"; return 1; }
+    return 0
+}
+run_test "empty directory in source_files is an error" test_empty_dir_source_files_is_error
+
+test_gitkeep_only_dir_is_error() {
+    create_spec_fixture
+    mkdir -p "$TEST_DIR/apps/ghost"
+    touch "$TEST_DIR/apps/ghost/.gitkeep"
+    cat > .vibe/spec/stories/ghost.yaml << 'YAML'
+id: ghost
+one_liner: .gitkeep だけのプレースホルダ
+invariants: []
+source_files:
+  - apps/ghost/
+YAML
+    local rc=0
+    run_verify > /dev/null || rc=$?
+    [ "$rc" -ne 0 ] || { fail ".gitkeep-only directory must fail verification"; return 1; }
+    return 0
+}
+run_test ".gitkeep-only directory is an error" test_gitkeep_only_dir_is_error
+
+test_nested_files_dir_passes() {
+    create_spec_fixture
+    # Files nested in subdirectories must count (no false positives on
+    # parent-directory references)
+    mkdir -p "$TEST_DIR/apps/real/sub"
+    echo "x = 1" > "$TEST_DIR/apps/real/sub/mod.py"
+    cat > .vibe/spec/stories/real.yaml << 'YAML'
+id: real
+one_liner: ネストしたファイルを持つ実装済みドメイン
+invariants: []
+source_files:
+  - apps/real/
+YAML
+    local out rc=0
+    out=$(run_verify) || rc=$?
+    if [ "$rc" -ne 0 ]; then
+        fail "directory with nested files must pass, got: $out"
+        return 1
+    fi
+    return 0
+}
+run_test "directory with only nested files passes" test_nested_files_dir_passes
+
+# ──────────────────────────────────────────────
 print_summary
