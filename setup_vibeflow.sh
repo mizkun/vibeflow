@@ -414,6 +414,9 @@ verify_installation() {
             ".claude/commands/healthcheck.md"
             ".claude/commands/discuss.md"
             ".claude/commands/conclude.md"
+            ".claude/commands/patch.md"
+            ".claude/commands/execute-issue.md"
+            ".claude/commands/execute-all.md"
         )
         for c in "${cmds[@]}"; do
             if [ -f "$c" ]; then

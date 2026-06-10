@@ -18,6 +18,9 @@ create_slash_commands() {
         "progress:進捗確認"
         "healthcheck:整合性チェック"
         "run-e2e:E2Eテスト実行"
+        "patch:Patch Loop 開始"
+        "execute-issue:Issue を 11-Step で自動完遂"
+        "execute-all:Open Issues を依存順に一括実行"
     )
 
     local total=${#commands[@]}

@@ -2,11 +2,7 @@
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": ["@anthropic-ai/mcp-playwright"],
-      "env": {
-        "PLAYWRIGHT_BASE_URL": "http://localhost:3000",
-        "PLAYWRIGHT_HEADLESS": "true"
-      }
+      "args": ["@playwright/mcp@latest", "--headless"]
     }
   }
 }

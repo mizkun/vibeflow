@@ -26,18 +26,15 @@ cp .mcp.json.example .mcp.json
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": ["@anthropic-ai/mcp-playwright"],
-      "env": {
-        "PLAYWRIGHT_BASE_URL": "http://localhost:3000",
-        "PLAYWRIGHT_HEADLESS": "true"
-      }
+      "args": ["@playwright/mcp@latest", "--headless"]
     }
   }
 }
 ```
 
-- `PLAYWRIGHT_BASE_URL`: アプリケーションの URL
-- `PLAYWRIGHT_HEADLESS`: `true` でヘッドレス、`false` でブラウザ表示
+- `--headless`: ヘッドレス実行。ブラウザを表示したい場合は外す
+- 対象 URL はテスト/操作時にエージェントへ伝える（`@playwright/mcp` は
+  環境変数による base URL 設定を読まない）
 
 ### 3. Playwright 設定
 
