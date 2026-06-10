@@ -37,10 +37,21 @@ flag_file_for() {
 
 run_gate() {
     local project_dir="${1:-$TEST_DIR}"
+    local stdin_json="${2:-}"
+    [ -z "$stdin_json" ] && stdin_json='{}'
     local rc=0
-    # Clean up any leftover flag file
+    # Clean up any leftover block-counter file
     rm -f "$(flag_file_for "$project_dir")"
-    CLAUDE_PROJECT_DIR="$project_dir" bash "$HOOK_SCRIPT" 2>/dev/null || rc=$?
+    printf '%s' "$stdin_json" | CLAUDE_PROJECT_DIR="$project_dir" bash "$HOOK_SCRIPT" 2>/dev/null || rc=$?
+    return $rc
+}
+
+# Same as run_gate but keeps the block counter between calls
+# (for consecutive-block escalation tests).
+run_gate_keep_counter() {
+    local project_dir="${1:-$TEST_DIR}"
+    local rc=0
+    printf '%s' '{}' | CLAUDE_PROJECT_DIR="$project_dir" bash "$HOOK_SCRIPT" 2>/dev/null || rc=$?
     return $rc
 }
 
@@ -144,43 +155,96 @@ test_coding_agent_coding_step_no_runner() {
 run_test "exits 0 when no test runner is detected" test_coding_agent_coding_step_no_runner
 
 # ══════════════════════════════════════════════
-# Tests: Infinite loop prevention
+# Tests: Loop prevention & escalation
 # ══════════════════════════════════════════════
 
-describe "stop_test_gate.sh - infinite loop prevention"
+describe "stop_test_gate.sh - loop prevention & escalation"
 
-test_flag_file_prevents_reentry() {
+test_stop_hook_active_passes_through() {
     create_state "Coding Agent" "5_implementation"
-    # Create a package.json with test script (would normally trigger tests)
     cat > "${TEST_DIR}/package.json" << 'JSON'
 { "scripts": { "test": "echo fail && exit 1" } }
 JSON
-    # Pre-create the flag file to simulate reentry
-    local flag
-    flag="$(flag_file_for "$TEST_DIR")"
-    touch "$flag"
-    CLAUDE_PROJECT_DIR="$TEST_DIR" bash "$HOOK_SCRIPT" 2>/dev/null
+    # Claude Code sets stop_hook_active=true when the stop was already
+    # blocked once this turn — the hook must not block again (official
+    # re-entry prevention).
+    run_gate "$TEST_DIR" '{"stop_hook_active": true}'
     local rc=$?
-    rm -f "$flag"
-    assert_equals "0" "$rc" "Should exit 0 when flag file exists (reentry prevention)"
+    assert_equals "0" "$rc" "Should exit 0 when stop_hook_active is true"
 }
-run_test "exits 0 when reentry flag exists" test_flag_file_prevents_reentry
+run_test "exits 0 when stop_hook_active is true" test_stop_hook_active_passes_through
 
-test_flag_file_cleaned_up() {
-    create_state "Iris" "1_issue_review"
+test_three_blocks_then_escalates() {
+    create_state "Coding Agent" "5_implementation"
+    cat > "${TEST_DIR}/package.json" << 'JSON'
+{ "scripts": { "test": "echo fail && exit 1" } }
+JSON
     local flag
     flag="$(flag_file_for "$TEST_DIR")"
     rm -f "$flag"
-    run_gate "$TEST_DIR"
-    # After the hook exits, the flag should be cleaned up
+
+    local rc1=0 rc2=0 rc3=0 rc4=0
+    run_gate_keep_counter "$TEST_DIR" || rc1=$?
+    run_gate_keep_counter "$TEST_DIR" || rc2=$?
+    run_gate_keep_counter "$TEST_DIR" || rc3=$?
+    run_gate_keep_counter "$TEST_DIR" || rc4=$?
+    rm -f "$flag"
+
+    assert_equals "2" "$rc1" "1st consecutive failure should block (exit 2)"
+    assert_equals "2" "$rc2" "2nd consecutive failure should block (exit 2)"
+    assert_equals "2" "$rc3" "3rd consecutive failure should block (exit 2)"
+    assert_equals "0" "$rc4" "4th attempt should pass through (escalate to human)"
+}
+run_test "blocks 3 consecutive failures then escalates" test_three_blocks_then_escalates
+
+test_success_resets_counter() {
+    create_state "Coding Agent" "5_implementation"
+    cat > "${TEST_DIR}/package.json" << 'JSON'
+{ "scripts": { "test": "echo fail && exit 1" } }
+JSON
+    local flag
+    flag="$(flag_file_for "$TEST_DIR")"
+    rm -f "$flag"
+
+    local rc1=0 rc2=0
+    run_gate_keep_counter "$TEST_DIR" || rc1=$?
+    assert_equals "2" "$rc1" "failing test should block"
+
+    # Tests now pass — counter must reset
+    cat > "${TEST_DIR}/package.json" << 'JSON'
+{ "scripts": { "test": "echo ok" } }
+JSON
+    run_gate_keep_counter "$TEST_DIR" || rc2=$?
+    assert_equals "0" "$rc2" "passing test should allow stop"
     if [ -f "$flag" ]; then
-        fail "Flag file should be cleaned up after hook exits"
+        fail "block counter should be removed after a successful test run"
         rm -f "$flag"
         return 1
     fi
     return 0
 }
-run_test "flag file is cleaned up after exit" test_flag_file_cleaned_up
+run_test "successful test run resets the block counter" test_success_resets_counter
+
+test_failure_message_on_stderr() {
+    create_state "Coding Agent" "5_implementation"
+    cat > "${TEST_DIR}/package.json" << 'JSON'
+{ "scripts": { "test": "echo fail && exit 1" } }
+JSON
+    local flag
+    flag="$(flag_file_for "$TEST_DIR")"
+    rm -f "$flag"
+    # exit 2 feeds stderr (not stdout) back to Claude — the failure
+    # message must be on stderr or the agent never sees it.
+    local rc=0 err=""
+    err=$(printf '%s' '{}' | CLAUDE_PROJECT_DIR="$TEST_DIR" bash "$HOOK_SCRIPT" 2>&1 >/dev/null) || rc=$?
+    rm -f "$flag"
+    assert_equals "2" "$rc" "failing test should block"
+    echo "$err" | grep -q "テストが通っていません" || {
+        fail "failure message should be on stderr, got: '$err'"
+        return 1
+    }
+}
+run_test "failure message is sent to stderr" test_failure_message_on_stderr
 
 # ══════════════════════════════════════════════
 # Tests: Test execution
