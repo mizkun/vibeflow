@@ -154,14 +154,19 @@ def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: st
         # Deploy the runtime judgment modules (qa_judge, spec_verify,
         # ui_task, ...) flat into .vibe/runtime/ and manifest-track them
         # — these decide merges, so their drift must be detectable.
+        # The v4 packet-handoff modules are unused by the v6 execution
+        # path; don't ship them (they only confuse 'which module runs').
         import shutil
 
+        DEAD_RUNTIME = {"handoff.py", "worker_adapter.py", "codex_impl.py"}
         fw = Path(framework_dir)
         src_runtime = fw / "core" / "runtime"
         dest_runtime = project / ".vibe" / "runtime"
         if src_runtime.is_dir():
             os.makedirs(dest_runtime, exist_ok=True)
             for src_py in sorted(src_runtime.glob("*.py")):
+                if src_py.name in DEAD_RUNTIME:
+                    continue
                 dest_py = dest_runtime / src_py.name
                 if src_py.resolve() == dest_py.resolve():
                     continue

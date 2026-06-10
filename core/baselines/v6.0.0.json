@@ -189,9 +189,6 @@
     ".vibe/runtime/claude_code_wrapper.py": {
       "sha256": "83ec221a0010a9ce6f5cac1681006d730449da7a288fef64c9ef34e3dae8bd59"
     },
-    ".vibe/runtime/codex_impl.py": {
-      "sha256": "d53390a9101d5967a3fa8990a3b70c87caaee163fbfb4ea94ba65a86cb7b69c7"
-    },
     ".vibe/runtime/codex_review.py": {
       "sha256": "b61f60c6ad41ca74782205a62d53a9ec4d17beaca71a6498d7cc11fbb4586e78"
     },
@@ -209,9 +206,6 @@
     },
     ".vibe/runtime/dor_gate.py": {
       "sha256": "b6c02c34886b4b4e35ffc96ab9497d687e8ec8c8a32aa5a166d022cc433848c3"
-    },
-    ".vibe/runtime/handoff.py": {
-      "sha256": "b32cbd3dd696201981f88d37df692beff14c111c551135c05cb57d21efee220b"
     },
     ".vibe/runtime/issue_generator.py": {
       "sha256": "509cdea664dbcde0f83e1659729bdd4f3de314cb8a651d77d8f75177eac1ceb1"
@@ -239,9 +233,6 @@
     },
     ".vibe/runtime/ui_task.py": {
       "sha256": "47d22f4516b2079f9ac8e113c705d2c14e38ca8f791aac1448972f72a4e80214"
-    },
-    ".vibe/runtime/worker_adapter.py": {
-      "sha256": "51e4f483b214814868ea4394286049b05881e59efd827329d332d80248d3eae4"
     },
     ".vibe/sessions/iris-main.yaml": {
       "sha256": "c265e2735dc583a447e3b2f73e6f071f526bfce83dde6e9839507abafafc8209"
