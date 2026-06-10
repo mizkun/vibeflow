@@ -510,4 +510,61 @@ print(result['verdict'])
 run_test "nonexistent playwright artifact path → fail" test_artifact_path_must_exist
 
 # ──────────────────────────────────────────────
+describe "QA Judge — invariant violations"
+
+test_violated_invariants_fail() {
+    local verdict
+    verdict=$(python3 -c "
+import os, sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.qa_judge import judge
+
+log = os.path.join('${TEST_DIR}', 'test.log')
+ex = os.path.join('${TEST_DIR}', 'test.exit')
+open(log, 'w').write('all tests passed')
+open(ex, 'w').write('0')
+
+result = judge({
+    'labels': ['type:fix', 'risk:low', 'qa:auto'],
+    'tests_passed': True,
+    'review_verdict': 'pass',
+    'files_changed': 2,
+    'lines_changed': 20,
+    'evidence': {'test_log': log, 'test_exit': ex},
+    'invariants_violated': 1,
+})
+print(result['verdict'])
+")
+    assert_equals "fail" "$verdict" "a violated invariant is a broken existing guarantee → fail"
+}
+run_test "invariants_violated > 0 → fail" test_violated_invariants_fail
+
+test_zero_violations_unchanged() {
+    local verdict
+    verdict=$(python3 -c "
+import os, sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.qa_judge import judge
+
+log = os.path.join('${TEST_DIR}', 'test.log')
+ex = os.path.join('${TEST_DIR}', 'test.exit')
+open(log, 'w').write('all tests passed')
+open(ex, 'w').write('0')
+
+result = judge({
+    'labels': ['type:fix', 'risk:low', 'qa:auto'],
+    'tests_passed': True,
+    'review_verdict': 'pass',
+    'files_changed': 2,
+    'lines_changed': 20,
+    'evidence': {'test_log': log, 'test_exit': ex},
+    'invariants_violated': 0,
+})
+print(result['verdict'])
+")
+    assert_equals "auto_pass" "$verdict" "0 violations keeps the normal path"
+}
+run_test "invariants_violated = 0 → unchanged (auto_pass)" test_zero_violations_unchanged
+
+# ──────────────────────────────────────────────
 print_summary

@@ -454,4 +454,78 @@ YAML
 run_test "directory with only nested files passes" test_nested_files_dir_passes
 
 # ──────────────────────────────────────────────
+describe "spec_verify --run-tests — invariant execution layer"
+
+# Fixture with bash-runnable invariant tests (no pytest/node dependency)
+create_runnable_spec_fixture() {
+    cd "$TEST_DIR"
+    mkdir -p .vibe/spec/stories src/core tests
+    echo "x = 1" > src/core/mod.py
+    printf '#!/bin/bash\nexit 0\n' > tests/inv_ok.sh
+    printf '#!/bin/bash\necho broken; exit 1\n' > tests/inv_fail.sh
+    cat > .vibe/spec/stories/core.yaml << 'YAML'
+id: core
+one_liner: コアドメイン
+invariants:
+  - id: holds
+    text: 守られている不変条件
+    test: tests/inv_ok.sh
+  - id: broken
+    text: 破られている不変条件
+    test: tests/inv_fail.sh
+  - id: unproven
+    text: テストのない不変条件
+source_files:
+  - src/core/
+YAML
+}
+
+run_verify_tests_json() {
+    python3 "$SPEC_VERIFY" "$TEST_DIR/.vibe/spec" "$TEST_DIR" --run-tests --json 2>/dev/null
+}
+
+test_run_tests_reports_three_states() {
+    create_runnable_spec_fixture
+    local out rc=0
+    out=$(run_verify_tests_json) || rc=$?
+    [ "$rc" -ne 0 ] || { fail "a violated invariant must make --run-tests exit non-zero"; return 1; }
+    echo "$out" | python3 -c "
+import json, sys
+r = json.load(sys.stdin)
+inv = {i['id']: i['status'] for i in r.get('invariants', [])}
+assert inv.get('holds') == 'verified', f'passing test must be verified: {inv}'
+assert inv.get('broken') == 'violated', f'failing test must be violated: {inv}'
+assert inv.get('unproven') == 'pending', f'untested invariant stays pending: {inv}'
+print('OK')
+" | grep -q OK || { fail "expected verified/violated/pending statuses, got: $out"; return 1; }
+    return 0
+}
+run_test "--run-tests yields verified / violated / pending" test_run_tests_reports_three_states
+
+test_run_tests_all_green_exits_zero() {
+    create_runnable_spec_fixture
+    # make the broken one pass
+    printf '#!/bin/bash\nexit 0\n' > "$TEST_DIR/tests/inv_fail.sh"
+    local rc=0
+    run_verify_tests_json > /dev/null || rc=$?
+    assert_equals "0" "$rc" "all invariant tests green → exit 0"
+}
+run_test "--run-tests exits 0 when all invariant tests pass" test_run_tests_all_green_exits_zero
+
+test_run_tests_without_flag_unchanged() {
+    create_runnable_spec_fixture
+    # without --run-tests the failing test must NOT affect the verdict
+    local rc=0
+    python3 "$SPEC_VERIFY" "$TEST_DIR/.vibe/spec" "$TEST_DIR" > /dev/null 2>&1 || rc=$?
+    assert_equals "0" "$rc" "static mode must not run tests"
+}
+run_test "static mode (no flag) does not execute tests" test_run_tests_without_flag_unchanged
+
+test_healthcheck_uses_run_tests() {
+    assert_file_contains "${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-healthcheck/SKILL.md" \
+        "run-tests" "healthcheck must run the invariant execution layer" || return 1
+}
+run_test "healthcheck SKILL runs spec-verify --run-tests" test_healthcheck_uses_run_tests
+
+# ──────────────────────────────────────────────
 print_summary
