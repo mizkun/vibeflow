@@ -138,6 +138,16 @@ mkdir -p .vibe/reports/<NUMBER>
 echo "${PIPESTATUS[0]}" > .vibe/reports/<NUMBER>/test.exit
 ```
 
+### 7-1b. invariant テスト実行（spec を使うプロジェクト）
+
+```bash
+python3 .vibe/runtime/spec_verify.py .vibe/spec . --run-tests --json \
+  > .vibe/reports/<NUMBER>/invariants.json
+```
+
+`stats.invariants_violated` の値を 7-3 / 9.5 の context に渡す。
+**violated > 0 = 既存の保証が破られている** — qa_judge が hard fail させる。
+
 ### 7-2. UI task の場合: Playwright 実行
 
 ```bash
@@ -168,6 +178,7 @@ context = {
         'test_log': '.vibe/reports/<NUMBER>/test.log',
         'test_exit': '.vibe/reports/<NUMBER>/test.exit',
     },
+    'invariants_violated': 0,   # ← 7-1b の stats.invariants_violated
 }
 result = judge(context)
 # result['verdict']: 'auto_pass' | 'needs_human' | 'fail'

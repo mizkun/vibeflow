@@ -19,6 +19,7 @@ handled by the HealthCheck / PR-gate layer; this engine reports which tests exis
 
 import ast
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -347,6 +348,94 @@ def verify(spec_dir: str, repo_root: str) -> dict:
     }
 
 
+# ──────────────────────────────────────────────
+# Dynamic verification: run invariant tests (--run-tests)
+# ──────────────────────────────────────────────
+
+# Per-test timeout (seconds)
+INVARIANT_TEST_TIMEOUT = 120
+
+
+def _runner_cmd(test_path: str) -> list | None:
+    """Pick a test runner command for a single test path.
+
+    Returns None when no runner can be determined."""
+    if test_path.endswith(".py"):
+        return [sys.executable, "-m", "pytest", "-q", test_path]
+    if test_path.endswith(".sh"):
+        return ["bash", test_path]
+    if test_path.endswith((".ts", ".tsx", ".js", ".jsx", ".mjs")):
+        return ["npx", "vitest", "run", test_path]
+    return None
+
+
+def run_invariant_tests(spec_dir: str, repo_root: str) -> list:
+    """Execute each invariant's test and compute its status.
+
+    This is the layer the schema promises ('test 有り・失敗 → 違反'):
+    - test passes        → verified
+    - test fails/timeout → violated
+    - no test declared   → pending
+    - runner problems (no runner, path missing, pytest collected 0
+      tests) → error — the unique failure mode a full-suite run can
+      never surface (a test path the runner silently doesn't collect).
+
+    Returns a list of {id, story, test, status, detail} dicts.
+    """
+    spec = load_spec(spec_dir)
+    invariants: list = []
+    by_test: dict = {}
+
+    for stem, data in spec["stories"].items():
+        if not isinstance(data, dict):
+            continue
+        for inv in data.get("invariants") or []:
+            if not isinstance(inv, dict):
+                continue
+            test = inv.get("test")
+            entry = {
+                "id": inv.get("id", "?"),
+                "story": stem,
+                "test": test if isinstance(test, str) and test else None,
+                "status": "pending",
+                "detail": "",
+            }
+            invariants.append(entry)
+            if entry["test"]:
+                by_test.setdefault(entry["test"], []).append(entry)
+
+    for test_path, entries in by_test.items():
+        if not (Path(repo_root) / test_path).exists():
+            status, detail = "error", f"test path not found: {test_path}"
+        else:
+            cmd = _runner_cmd(test_path)
+            if cmd is None:
+                status, detail = "error", f"no test runner for: {test_path}"
+            else:
+                try:
+                    r = subprocess.run(
+                        cmd, cwd=repo_root, capture_output=True, text=True,
+                        timeout=INVARIANT_TEST_TIMEOUT,
+                    )
+                    if r.returncode == 0:
+                        status, detail = "verified", ""
+                    elif test_path.endswith(".py") and r.returncode == 5:
+                        # pytest exit 5 = no tests collected — the path
+                        # exists but the runner sees nothing in it.
+                        status, detail = "error", "no tests collected"
+                    else:
+                        tail = (r.stdout + r.stderr).strip()[-500:]
+                        status, detail = "violated", tail
+                except subprocess.TimeoutExpired:
+                    status, detail = "violated", "test timed out"
+                except FileNotFoundError as exc:
+                    status, detail = "error", f"runner unavailable: {exc}"
+        for e in entries:
+            e["status"], e["detail"] = status, detail
+
+    return invariants
+
+
 def format_report(report: dict, spec_dir: str) -> str:
     """Render a verify() report as human-readable text."""
     s = report.get("stats", {})
@@ -358,6 +447,21 @@ def format_report(report: dict, spec_dir: str) -> str:
             f"{s['invariants_pending']} pending, "
             f"{s['invariants_with_test']} with test"
         )
+    invariants = report.get("invariants")
+    if invariants is not None:
+        verified = sum(1 for i in invariants if i["status"] == "verified")
+        violated = [i for i in invariants if i["status"] == "violated"]
+        errored = [i for i in invariants if i["status"] == "error"]
+        pending = sum(1 for i in invariants if i["status"] == "pending")
+        lines.append(
+            f"  invariant tests: {verified} verified, "
+            f"{len(violated)} violated, {len(errored)} error, "
+            f"{pending} pending"
+        )
+        for i in violated:
+            lines.append(f"    VIOLATED {i['story']}/{i['id']}: {i['test']}")
+        for i in errored:
+            lines.append(f"    ERROR    {i['story']}/{i['id']}: {i['detail']}")
     errors = report.get("errors", [])
     warnings = report.get("warnings", [])
     lines.append(f"  ERRORS ({len(errors)}):")
@@ -379,17 +483,34 @@ def _default_repo_root(spec_dir: str) -> str:
 
 
 def main(argv: list[str]) -> int:
-    args = [a for a in argv if a != "--json"]
-    as_json = "--json" in argv
+    flags = {a for a in argv if a.startswith("--")}
+    args = [a for a in argv if not a.startswith("--")]
+    as_json = "--json" in flags
+    run_tests = "--run-tests" in flags
 
     if not args:
-        sys.stderr.write("usage: spec_verify.py <spec_dir> [repo_root] [--json]\n")
+        sys.stderr.write(
+            "usage: spec_verify.py <spec_dir> [repo_root] [--json] [--run-tests]\n"
+        )
         return 2
 
     spec_dir = args[0]
     repo_root = args[1] if len(args) > 1 else _default_repo_root(spec_dir)
 
     report = verify(spec_dir, repo_root)
+
+    if run_tests and report.get("stats"):
+        invariants = run_invariant_tests(spec_dir, repo_root)
+        report["invariants"] = invariants
+        violated = sum(1 for i in invariants if i["status"] == "violated")
+        errored = sum(1 for i in invariants if i["status"] == "error")
+        report["stats"]["invariants_violated"] = violated
+        report["stats"]["invariants_verified"] = sum(
+            1 for i in invariants if i["status"] == "verified"
+        )
+        report["stats"]["invariants_error"] = errored
+        if violated or errored:
+            report["ok"] = False
 
     if as_json:
         print(json.dumps(report, ensure_ascii=False, indent=2))

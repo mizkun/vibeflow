@@ -90,6 +90,16 @@ def judge(context: Dict[str, Any]) -> Dict[str, Any]:
     if not tests_passed:
         return _fail("Tests failed")
 
+    # Hard fail: a violated invariant is an existing guarantee broken by
+    # this change ('test 有り・失敗 → 違反' — spec.yaml's promise).
+    # None means the invariant runner wasn't executed (backward compat).
+    invariants_violated = context.get("invariants_violated")
+    if invariants_violated is not None and invariants_violated > 0:
+        return _fail(
+            f"{invariants_violated} spec invariant(s) violated "
+            f"(existing guarantees broken)"
+        )
+
     # Evidence beats claims: a recorded non-zero test exit code fails
     # the judgment even when tests_passed=True was reported.
     evidence_ok = False
