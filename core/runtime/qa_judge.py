@@ -100,6 +100,17 @@ def judge(context: Dict[str, Any]) -> Dict[str, Any]:
             f"(existing guarantees broken)"
         )
 
+    # TestGuard: a change that weakened existing tests (deletions, dropped
+    # cases, added skips) can never auto_pass — a human must approve a
+    # deliberate test removal.
+    tg = context.get("test_guard")
+    if isinstance(tg, dict) and (
+        tg.get("tests_deleted")
+        or tg.get("tests_skipped_added")
+        or (tg.get("test_count_delta", 0) or 0) < 0
+    ):
+        reasons.append("existing tests were weakened (deleted / skipped / dropped)")
+
     # Evidence beats claims: a recorded non-zero test exit code fails
     # the judgment even when tests_passed=True was reported.
     evidence_ok = False

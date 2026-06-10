@@ -138,6 +138,11 @@ verdict・UI ならスクショ）④スコープ外変更の列挙 ⑤invariant
 - レビュー指摘を `eslint-disable` / `@ts-ignore` / `// TODO` で握りつぶすこと
 - 「軽微だから」という理由で warn を無視すること
 - 未使用 import の指摘に対して disable コメントで対応すること（コードを削除して対応）
+- **既存テストの削除・skip 化（`.skip` / `xit` / `@pytest.mark.skip` 等）・
+  期待値の緩和でゲートを通す行為**（reward hacking）。テストが落ちるなら
+  コードを直す。テスト削除が本当に正当な場合のみ Human Checkpoint の承認を得る
+  — `validate_step7a.py`（TestGuard）が PR 作成時に決定論的に強制し、
+  qa:auto では bypass できない
 
 ## TDD Enforcement
 

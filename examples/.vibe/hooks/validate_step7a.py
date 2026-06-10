@@ -252,6 +252,78 @@ def issue_declares_no_spec_change(issue: str) -> bool:
     return False
 
 
+# Test files whose weakening counts as reward hacking
+_TEST_PATH_RE = re.compile(
+    r"(^|/)(tests?)/|\.test\.|\.spec\.|(^|/)__tests__/"
+)
+# A test-case definition (JS/TS it()/test(), python def test_)
+_TEST_DEF_RE = re.compile(r"\b(?:it|test)\s*\(|def\s+test_\w+")
+# A skip/only marker that silences a test
+_SKIP_RE = re.compile(
+    r"\.skip\b|\.only\b|\bxit\b|\bxdescribe\b|it\.todo\b|"
+    r"@pytest\.mark\.skip|@unittest\.skip"
+)
+
+
+def tests_weakened(root: str, command: str = "") -> bool:
+    """True if the branch deletes test files, drops test cases, or adds
+    skip markers relative to the PR base. Reward-hacking the gate by
+    editing the tests it relies on (SpecBench/ImpossibleBench).
+
+    Fail-closed: if a base resolves but the diff cannot be computed,
+    return True."""
+    base = _base_branch(root, command)
+    if not base:
+        return False  # no base → cannot diff; spec gate handles its own fail-closed
+    # 1) deleted test files
+    try:
+        ns = subprocess.run(
+            ["git", "-C", root, "diff", "--name-status", f"{base}...HEAD"],
+            capture_output=True, text=True, timeout=5,
+        )
+    except Exception:
+        return True
+    if ns.returncode != 0:
+        return True
+    for line in ns.stdout.splitlines():
+        cols = line.split("\t")
+        status = cols[0]
+        for path in cols[1:]:
+            if _TEST_PATH_RE.search(path) and status.startswith("D"):
+                return True
+    # 2) per-line diff of test files: net test-case drop or added skips
+    try:
+        diff = subprocess.run(
+            ["git", "-C", root, "diff", f"{base}...HEAD", "--unified=0"],
+            capture_output=True, text=True, timeout=5,
+        )
+    except Exception:
+        return True
+    if diff.returncode != 0:
+        return True
+
+    in_test_file = False
+    def_added = def_removed = skip_added = skip_removed = 0
+    for line in diff.stdout.splitlines():
+        if line.startswith("diff --git"):
+            in_test_file = bool(_TEST_PATH_RE.search(line))
+            continue
+        if not in_test_file or line.startswith(("+++", "---")):
+            continue
+        if line.startswith("+"):
+            def_added += len(_TEST_DEF_RE.findall(line))
+            skip_added += len(_SKIP_RE.findall(line))
+        elif line.startswith("-"):
+            def_removed += len(_TEST_DEF_RE.findall(line))
+            skip_removed += len(_SKIP_RE.findall(line))
+
+    if def_removed > def_added:
+        return True
+    if skip_added > skip_removed:
+        return True
+    return False
+
+
 def check_qa_auto_label(issue: str) -> bool:
     """Check if the issue has qa:auto label via gh CLI.
     Returns False on any failure (fail-closed)."""
@@ -410,6 +482,21 @@ def main() -> None:
             f"  2) 仕様に触れない変更（バグ分類 (i) 等）なら: Issue 本文の\n"
             f"     「## Spec 変更」欄に『対象 Story / Contract: spec 変更なし'\n"
             f"     （コードのみ）』と記入する（テンプレートの角括弧は外すこと）\n"
+        )
+
+    # TestGuard: weakening the tests the gate relies on (deleting files,
+    # dropping cases, adding skips) requires explicit human approval —
+    # qa:auto cannot rubber-stamp it.
+    if tests_weakened(root, command) and not checkpoint_exists(root, issue, human_only=True):
+        block(root=root, msg=
+            f"[VibeFlow Step7a Guard — TestGuard]\n"
+            f"この PR は既存テストを弱体化しています"
+            f"（削除 / テストケースの純減 / skip 追加）。\n"
+            f"テストを骨抜きにしてゲートを通すことは禁止です。\n\n"
+            f"対応:\n"
+            f"  1) テストを戻し、コードを直して GREEN にする、または\n"
+            f"  2) テスト削除が正当なら PO に提示し、Human Checkpoint"
+            f"（{issue}-qa-approved + packet）の承認を得る\n"
         )
 
     # Check if checkpoint already exists. A *human* approval also needs
