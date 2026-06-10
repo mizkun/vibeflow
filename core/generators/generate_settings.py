@@ -65,6 +65,15 @@ def generate_settings(schema_dir: str, output_dir: str) -> None:
                 "timeout": 10,
             }],
         })
+        # Bash guard: blocks destructive git + write-bypass to guarded paths
+        pre_tool_use.append({
+            "matcher": "Bash",
+            "hooks": [{
+                "type": "command",
+                "command": 'python3 "$CLAUDE_PROJECT_DIR"/.vibe/hooks/validate_bash.py',
+                "timeout": 10,
+            }],
+        })
 
     settings = {
         "hooks": {

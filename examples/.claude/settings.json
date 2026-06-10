@@ -30,6 +30,16 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.vibe/hooks/validate_bash.py",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PostToolUse": [

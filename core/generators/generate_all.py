@@ -59,7 +59,7 @@ def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: st
         os.makedirs(hooks_dir, exist_ok=True)
         generate_validate_access(os.path.join(schema_dir, "policy.yaml"), hooks_dir)
         copy_static_hooks(hooks_dir)
-        for hook_file in ("validate_access.py", "validate_write.sh", "validate_step7a.py"):
+        for hook_file in ("validate_access.py", "validate_bash.py", "validate_write.sh", "validate_step7a.py"):
             if (project / ".vibe" / "hooks" / hook_file).exists():
                 generated_files.append(
                     (f".vibe/hooks/{hook_file}", "core/schema/policy.yaml")

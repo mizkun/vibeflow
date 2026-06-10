@@ -73,16 +73,19 @@ def generate_validate_access(schema_path: str, output_dir: str) -> None:
         loader=FileSystemLoader(str(templates_dir)),
         keep_trailing_newline=True,
     )
-    template = env.get_template("validate_access.py.j2")
-
     context = build_template_context(policy)
-    rendered = template.render(**context)
 
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
-    (output_path / "validate_access.py").write_text(rendered)
 
-    print(f"Generated: {output_path / 'validate_access.py'}")
+    # Both guards render from the same policy context.
+    for tmpl_name, out_name in (
+        ("validate_access.py.j2", "validate_access.py"),
+        ("validate_bash.py.j2", "validate_bash.py"),
+    ):
+        rendered = env.get_template(tmpl_name).render(**context)
+        (output_path / out_name).write_text(rendered)
+        print(f"Generated: {output_path / out_name}")
 
 
 def main() -> None:
