@@ -71,15 +71,12 @@ git checkout -b vf/issue-<NUMBER>
 
 ## ── ロール切替: Iris → Coding Agent ──
 
-**state.yaml の `current_role` を切り替える:**
+**ワークフロー状態を 3 ストア（state.yaml / project_state.yaml / session）
+同時に更新する**（/progress とアラートが実態とずれないように）:
 
 ```bash
-mkdir -p .vibe
-cat > .vibe/state.yaml << 'YAML'
-current_role: "Coding Agent (Claude Code / Codex)"
-current_issue: "<NUMBER>"
-current_step: "4_test_writing"
-YAML
+python3 -c "import sys; sys.path.insert(0,'.vibe/runtime'); import state; \
+  state.update_workflow_state('.', role='Coding Agent (Claude Code / Codex)', step='4_test_writing', issue=<NUMBER>)"
 ```
 
 これにより `validate_access.py` が `src/*`, `tests/*`, `.vibe/spec/**` への書き込みを許可します。
@@ -142,11 +139,8 @@ git diff --shortstat main...HEAD
 ## ── ロール切替: Coding Agent → Iris ──
 
 ```bash
-cat > .vibe/state.yaml << 'YAML'
-current_role: "Iris"
-current_issue: "<NUMBER>"
-current_step: "7_acceptance_test"
-YAML
+python3 -c "import sys; sys.path.insert(0,'.vibe/runtime'); import state; \
+  state.update_workflow_state('.', role='Iris', step='7_acceptance_test', issue=<NUMBER>)"
 ```
 
 ## Step 7: QA 判定（Iris）— 暫定トリアージ
@@ -243,6 +237,13 @@ result = judge(context)
 
 **`needs_human` の場合、Checkpoint Packet を作って PO の確認を求める。**
 PO はコードを読まない — packet が PO の判断材料のすべてになる。
+
+まず current_step を 7a に進める（PO が席を外していてもアラートが鳴る）:
+
+```bash
+python3 -c "import sys; sys.path.insert(0,'.vibe/runtime'); import state; \
+  state.update_workflow_state('.', role='Iris', step='7a_human_checkpoint', issue=<NUMBER>)"
+```
 
 ### 1. Checkpoint Packet を作成
 
@@ -385,14 +386,11 @@ gh pr merge --squash --delete-branch
 gh issue close <NUMBER>
 ```
 
-state.yaml を更新:
+ワークフロー状態を idle に戻す:
 
 ```bash
-cat > .vibe/state.yaml << 'YAML'
-current_role: "Iris"
-current_issue: null
-current_step: "idle"
-YAML
+python3 -c "import sys; sys.path.insert(0,'.vibe/runtime'); import state; \
+  state.update_workflow_state('.', role='Iris', step='idle', issue=None)"
 ```
 
 ユーザーに完了報告。**チェックマークだけの主張は禁止 — 証拠を添える:**

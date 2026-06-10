@@ -129,6 +129,45 @@ def write_session_state(project_dir: str, session_id: str, data: dict) -> None:
     _write_yaml(path, data)
 
 
+def update_workflow_state(project_dir: str, role: str, step: str,
+                          issue=None, session_id: str | None = None) -> None:
+    """Update the workflow position in all stores at once.
+
+    /progress reads project_state.yaml + sessions, validate_access and
+    the alert hooks read state.yaml — execute-issue used to write only
+    state.yaml, so the progress view and the checkpoint alert drifted
+    from reality. This writes all three (read-modify-write so existing
+    fields survive).
+    """
+    sid = session_id or resolve_session_id(project_dir) or "iris-main"
+
+    # 1. session file
+    sess = read_session_state(project_dir, sid) or {}
+    sess["session_id"] = sid
+    sess["current_role"] = role
+    sess["current_step"] = step
+    if issue is not None:
+        sess["attached_issue"] = issue
+    write_session_state(project_dir, sid, sess)
+
+    # 2. project_state.yaml (preserve other fields)
+    ps = read_project_state(project_dir)
+    ps["current_role"] = role
+    ps["current_step"] = step
+    if issue is not None:
+        ps["active_issue"] = issue
+    write_project_state(project_dir, ps)
+
+    # 3. legacy state.yaml (waiting_input / validate_access fallback)
+    legacy_path = os.path.join(project_dir, ".vibe", "state.yaml")
+    legacy = _read_yaml(legacy_path)
+    legacy["current_role"] = role
+    legacy["current_step"] = step
+    if issue is not None:
+        legacy["current_issue"] = issue
+    _write_yaml(legacy_path, legacy)
+
+
 def create_dev_session(project_dir: str, issue_number: int) -> str:
     """Create a new development session for the given issue.
 

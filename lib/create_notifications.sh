@@ -67,11 +67,17 @@ create_macos_notifications() {
 afplay /System/Library/Sounds/Glass.aiff 2>/dev/null || echo "Task completed"
 EOF
     
-    # Blocking/waiting sound
+    # Blocking/waiting sound — dramatic at the Human Checkpoint (Step 7/7a)
     cat > .vibe/hooks/waiting_input.sh << 'EOF'
 #!/bin/bash
-# Play attention sound on macOS
-afplay /System/Library/Sounds/Ping.aiff 2>/dev/null || echo "Waiting for input"
+CURRENT_STEP=$(grep -E "^current_step:" "${CLAUDE_PROJECT_DIR:-.}/.vibe/state.yaml" 2>/dev/null | head -1 | sed 's/current_step:[[:space:]]*//' | tr -d '"')
+case "$CURRENT_STEP" in
+    7|7_*|7a|7a_*)
+        ( afplay /System/Library/Sounds/Hero.aiff 2>/dev/null; sleep 0.3; afplay /System/Library/Sounds/Glass.aiff 2>/dev/null ) &
+        ;;
+    *)
+        afplay /System/Library/Sounds/Ping.aiff 2>/dev/null || echo "Waiting for input" ;;
+esac
 EOF
     
     # Error sound

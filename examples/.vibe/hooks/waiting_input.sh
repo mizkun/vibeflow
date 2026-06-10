@@ -10,9 +10,11 @@ IS_STEP7A=false
 STATE_FILE="${CLAUDE_PROJECT_DIR:-.}/.vibe/state.yaml"
 if [ -f "$STATE_FILE" ]; then
     CURRENT_STEP=$(grep -E "^current_step:" "$STATE_FILE" 2>/dev/null | head -1 | sed 's/current_step:[[:space:]]*//' | tr -d '"' | tr -d "'")
-    if [ "$CURRENT_STEP" = "7" ]; then
-        IS_STEP7A=true
-    fi
+    # execute-issue writes 7_acceptance_test / 7a_human_checkpoint, not a
+    # bare "7" — match every Step-7 variant or the alert never fires.
+    case "$CURRENT_STEP" in
+        7|7_*|7a|7a_*) IS_STEP7A=true ;;
+    esac
 fi
 
 case "$OS_TYPE" in
