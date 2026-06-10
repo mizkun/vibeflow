@@ -28,7 +28,7 @@ from core.runtime.dor_gate import check_dor
 
 issue = {
     'title': 'Add login feature',
-    'body': '## Overview\nLogin\n\n## Acceptance Criteria\n- works\n\n## File Locations\nsrc/\n\n## Testing Requirements\nunit tests',
+    'body': '## Overview\nLogin\n\n## Spec 変更\n対象 Story / Contract: spec 変更なし\n\n## Acceptance Criteria\n- works\n\n## File Locations\nsrc/\n\n## Testing Requirements\nunit tests',
     'labels': [
         {'name': 'type:dev'},
         {'name': 'workflow:standard'},

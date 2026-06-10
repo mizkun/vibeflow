@@ -17,6 +17,12 @@ Every issue file MUST include these sections:
 ### Overview
 Brief description of the task (1-2 sentences).
 
+### Spec 変更
+- 対象 Story / Contract: `.vibe/spec/stories/<id>.yaml` の変更内容、
+  または「spec 変更なし（コードのみ）」と**記入する**（角括弧の
+  プレースホルダを残さない — Reverse Spec Gate が記入済み宣言を要求する）
+- バグ分類 (i)/(ii)/(iii) のどれに当たるかも書く（`spec-loop.md`）
+
 ### Requirements
 - Bullet list of functional requirements
 - What the implementation must achieve

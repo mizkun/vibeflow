@@ -22,22 +22,46 @@ gh issue view <NUMBER> --json number,title,body,labels
 ```
 
 1. Issue の内容を読み、要件を整理する
-2. **UI task 判定**: 以下に該当するか確認
+2. **DoR チェック（Definition of Ready）**:
+
+```python
+import json, subprocess, sys
+sys.path.insert(0, '.vibe/runtime')
+from dor_gate import check_dor
+
+issue = json.loads(subprocess.run(
+    ['gh', 'issue', 'view', '<NUMBER>', '--json', 'title,body,labels'],
+    capture_output=True, text=True).stdout)
+result = check_dor(issue)
+# hard_blocks があれば停止して PO に報告。warnings は報告して続行
+# （「## Spec 変更」セクション欠落は warning — Issue 本文に追記して直す）
+```
+
+3. **UI task 判定**: 以下に該当するか確認
    - 変更対象に UI ファイル (`.tsx`, `.jsx`, `.vue`, `.svelte`, `.html`, `.css`, `.scss`) を含む
    - Issue タイトル/本文に UI キーワード（画面、表示、UI、デザイン、コンポーネント等）がある
-3. ラベル確認: `risk:low/medium/high`, `qa:auto/manual`, `type:dev/fix/patch`
-4. UI task の場合: `qa:manual` ラベルを付与（未付与なら）
+4. ラベル確認: `risk:low/medium/high`, `qa:auto/manual`, `type:dev/fix/patch`
+5. UI task の場合: `qa:manual` ラベルを付与（未付与なら）
 
 ```bash
 # UI task の場合
 gh issue edit <NUMBER> --add-label "qa:manual"
 ```
 
-## Step 2: Task Breakdown（Iris）
+## Step 2: Task Breakdown + To-Be 確認（Iris）
 
 1. Acceptance Criteria を明確化
-2. 必要なファイル・テストを洗い出す
-3. 実装方針を決定
+2. Issue の「## Spec 変更」欄を読み、To-Be spec 差分案（どの Story の
+   invariant / どの Contract をどう変えるか）を具体化する
+3. **曖昧性の解消（実装前 clarify）**: 複数解釈できる点・未定義の入力域・
+   不明確な完了条件があれば、**AskUserQuestion で PO に質問する**（最大 3-5 問）。
+   回答は Issue 本文の「## Clarifications」セクションに追記して記録する
+   — 手戻りは実装後検出より実装前検出のほうが圧倒的に安い
+4. **Go 確認**: spec 変更がある場合のみ、「この Issue でできるようになる
+   こと / 変わること」を日本語 3-5 行で提示して PO の Go を得てから Step 3 へ。
+   **スキップ条件**: 「spec 変更なし（コードのみ）」かつ曖昧点なしの場合は
+   確認不要で進む（バグ分類 (i) の autonomy を保つ）
+5. 必要なファイル・テストを洗い出し、実装方針を決定
 
 ## Step 3: Branch Creation
 

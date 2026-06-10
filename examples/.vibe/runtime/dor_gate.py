@@ -25,6 +25,8 @@ _SECTION_CHECKS = [
     ("acceptance_criteria", r"##\s*Acceptance\s+Criteria"),
     ("file_locations", r"##\s*File\s+Locations"),
     ("testing_requirements", r"##\s*Testing\s+Requirements"),
+    # v6: every issue declares its spec delta (or 'spec 変更なし')
+    ("spec_change", r"##\s*Spec\s*変更"),
 ]
 
 
