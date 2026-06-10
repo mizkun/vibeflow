@@ -4,8 +4,8 @@
 # This script creates Claude Code Subagents for VibeFlow workflow
 
 # Source common functions
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/common.sh"
+_VF_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${_VF_LIB_DIR}/common.sh"
 
 # Function to create all subagents
 create_subagents() {

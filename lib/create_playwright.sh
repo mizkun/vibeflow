@@ -2,8 +2,8 @@
 # Vibe Coding Framework - Playwright E2E Test Setup
 
 # Source common functions
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/common.sh"
+_VF_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${_VF_LIB_DIR}/common.sh"
 
 # Check prerequisites for E2E (Node/npm)
 check_e2e_prerequisites() {
@@ -319,7 +319,7 @@ EOF
 }
 
 # Framework root (parent of lib/)
-FRAMEWORK_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+FRAMEWORK_ROOT="$(cd "${_VF_LIB_DIR}/.." && pwd)"
 
 # Deploy Playwright MCP template and helper scripts to project
 # Called during standard setup (no --with-e2e required)

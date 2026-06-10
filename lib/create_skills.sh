@@ -4,11 +4,11 @@
 # This script creates Claude Code Skills for VibeFlow workflow
 
 # Source common functions
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/common.sh"
+_VF_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${_VF_LIB_DIR}/common.sh"
 
 # Framework root (parent of lib/)
-FRAMEWORK_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+FRAMEWORK_ROOT="$(cd "${_VF_LIB_DIR}/.." && pwd)"
 
 # All skills to install
 ALL_SKILLS=(

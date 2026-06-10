@@ -4,8 +4,8 @@
 # This script creates the validate_access.py hook for role-based access control
 
 # Source common functions
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/common.sh"
+_VF_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${_VF_LIB_DIR}/common.sh"
 
 # Function to create the access guard hook
 create_access_guard() {

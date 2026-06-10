@@ -12,8 +12,8 @@
 # - Access guard: .vibe/hooks/validate_access.py (PreToolUse)
 
 # Source common functions
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/common.sh"
+_VF_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${_VF_LIB_DIR}/common.sh"
 
 # Use common detect_os from common.sh (normalize to lowercase)
 normalize_os() {

@@ -5,8 +5,8 @@
 # Vibe Coding Framework - Dev Launcher Creation (v4 legacy)
 
 # Source common functions
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/common.sh"
+_VF_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${_VF_LIB_DIR}/common.sh"
 
 # Function to create the dev launcher script
 create_dev_launcher() {

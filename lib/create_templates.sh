@@ -4,8 +4,8 @@
 # This script creates template files and issue templates
 
 # Source common functions
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/common.sh"
+_VF_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${_VF_LIB_DIR}/common.sh"
 
 # Function to create all templates
 create_templates() {
@@ -558,14 +558,14 @@ User Action → Component → API → Database → Response
 create_role_documents() {
     info "ロール別ドキュメントを作成中..."
 
-    local roles_dir="${SCRIPT_DIR}/roles"
+    local roles_dir="${_VF_LIB_DIR}/roles"
     local role_files=(
         "iris.md"
     )
 
     # v5: Also deploy from examples/ if available (schema-generated roles)
     local framework_root
-    framework_root="$(cd "${SCRIPT_DIR}/.." && pwd)"
+    framework_root="$(cd "${_VF_LIB_DIR}/.." && pwd)"
     local examples_roles="${framework_root}/examples/.vibe/roles"
 
     if [ -d "$examples_roles" ]; then
@@ -594,7 +594,7 @@ create_role_documents() {
 # Create machine-readable policy template
 create_policy_template() {
     info "policy.yaml テンプレートを作成中..."
-    local src="${SCRIPT_DIR}/../examples/.vibe/policy.yaml"
+    local src="${_VF_LIB_DIR}/../examples/.vibe/policy.yaml"
     if [ -f "$src" ]; then
         create_file_with_backup ".vibe/policy.yaml" "$(cat "$src")"
     else
@@ -605,7 +605,7 @@ create_policy_template() {
 # v3: STATUS.md template creation
 create_status_template() {
     info "STATUS.md テンプレートを作成中..."
-    local src="${SCRIPT_DIR}/../examples/.vibe/context/STATUS.md"
+    local src="${_VF_LIB_DIR}/../examples/.vibe/context/STATUS.md"
     if [ -f "$src" ]; then
         create_file_with_backup ".vibe/context/STATUS.md" "$(cat "$src")"
     else
@@ -632,7 +632,7 @@ create_status_template() {
 # v3: GitHub Issue templates creation
 create_github_issue_templates() {
     info "GitHub Issue テンプレートを作成中..."
-    local templates_dir="${SCRIPT_DIR}/../examples/.github/ISSUE_TEMPLATE"
+    local templates_dir="${_VF_LIB_DIR}/../examples/.github/ISSUE_TEMPLATE"
     if [ -d "$templates_dir" ]; then
         for tmpl in "$templates_dir"/*.md; do
             [ -f "$tmpl" ] || continue

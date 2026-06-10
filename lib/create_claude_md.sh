@@ -4,14 +4,14 @@
 # Copies the CLAUDE.md template from examples/
 
 # Source common functions
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/common.sh"
+_VF_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${_VF_LIB_DIR}/common.sh"
 
 # Function to create CLAUDE.md
 create_claude_md() {
     section "CLAUDE.md を作成中"
 
-    local src="${SCRIPT_DIR}/../examples/CLAUDE.md"
+    local src="${_VF_LIB_DIR}/../examples/CLAUDE.md"
 
     if [ -f "$src" ]; then
         create_file_with_backup "CLAUDE.md" "$(cat "$src")"

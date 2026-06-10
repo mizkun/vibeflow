@@ -4,8 +4,8 @@
 # Copies command definitions from lib/commands/ to project .claude/commands/
 
 # Source common functions
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/common.sh"
+_VF_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${_VF_LIB_DIR}/common.sh"
 
 # Function to create slash commands
 create_slash_commands() {
@@ -31,7 +31,7 @@ create_slash_commands() {
 
         show_progress $current $total "コマンド作成 (${cmd_name})"
 
-        local src="${SCRIPT_DIR}/commands/${cmd_name}.md"
+        local src="${_VF_LIB_DIR}/commands/${cmd_name}.md"
         local dst=".claude/commands/${cmd_name}.md"
 
         if [ -f "$src" ]; then
