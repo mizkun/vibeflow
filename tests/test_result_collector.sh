@@ -146,4 +146,64 @@ test_has_test_results() {
 run_test "collects test results" test_has_test_results
 
 # ──────────────────────────────────────────────
+describe "Result Collector — fail-closed parsing"
+
+test_claude_non_json_is_not_success() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.result_collector import collect_results
+
+out = collect_results({
+    'agent': 'claude_code',
+    'raw_output': 'Error: something went wrong before any JSON was emitted',
+    'exit_code': 0,
+})
+assert out['status'] == 'unparsed', f\"non-JSON must be 'unparsed', got: {out['status']}\"
+print('OK')
+")
+    assert_equals "OK" "$result" "claude_code non-JSON output must be status='unparsed'"
+}
+run_test "claude_code non-JSON output is unparsed, not success" test_claude_non_json_is_not_success
+
+test_codex_garbage_is_not_success() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.result_collector import collect_results
+
+out = collect_results({
+    'agent': 'codex',
+    'raw_output': 'total garbage\nnot a single json line',
+    'exit_code': 0,
+})
+assert out['status'] == 'unparsed', f\"garbage JSONL must be 'unparsed', got: {out['status']}\"
+print('OK')
+")
+    assert_equals "OK" "$result" "codex unparseable JSONL must be status='unparsed'"
+}
+run_test "codex unparseable JSONL is unparsed, not success" test_codex_garbage_is_not_success
+
+test_codex_result_without_status_is_not_success() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.result_collector import collect_results
+
+out = collect_results({
+    'agent': 'codex',
+    'raw_output': '{\"type\": \"result\", \"summary\": \"did something\"}',
+    'exit_code': 0,
+})
+assert out['status'] == 'unparsed', f\"result entry without status must be 'unparsed', got: {out['status']}\"
+print('OK')
+")
+    assert_equals "OK" "$result" "codex result entry without status must not default to success"
+}
+run_test "codex result entry without status is unparsed" test_codex_result_without_status_is_not_success
+
+# ──────────────────────────────────────────────
 print_summary

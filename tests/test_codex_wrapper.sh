@@ -159,4 +159,22 @@ test_sh_shows_usage() {
 run_test "shows usage without args" test_sh_shows_usage
 
 # ──────────────────────────────────────────────
+describe "Codex Wrapper — fail-closed parsing"
+
+test_result_entry_without_status_is_not_success() {
+    local result
+    result=$(python3 -c "
+import sys, json
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.codex_wrapper import parse_output
+
+parsed = parse_output(json.dumps({'type': 'result', 'summary': 'did something'}))
+assert parsed['status'] == 'unparsed', f\"result entry without status must be 'unparsed', got: {parsed['status']}\"
+print('OK')
+")
+    assert_equals "OK" "$result" "result entry without status must not default to success"
+}
+run_test "result entry without status is unparsed, not success" test_result_entry_without_status_is_not_success
+
+# ──────────────────────────────────────────────
 print_summary

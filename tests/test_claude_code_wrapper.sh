@@ -167,4 +167,24 @@ test_sh_shows_usage() {
 run_test "shows usage without args" test_sh_shows_usage
 
 # ──────────────────────────────────────────────
+describe "Claude Code Wrapper — fail-closed parsing"
+
+test_parse_output_non_json_is_not_success() {
+    # An agent that crashed prints an error string, not JSON. Treating
+    # that as success poisons every downstream QA judgment.
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.claude_code_wrapper import parse_output
+
+parsed = parse_output('Error: API connection failed')
+assert parsed['status'] == 'unparsed', f\"non-JSON must be 'unparsed', got: {parsed['status']}\"
+print('OK')
+")
+    assert_equals "OK" "$result" "non-JSON output must parse as status='unparsed'"
+}
+run_test "non-JSON output is status=unparsed, not success" test_parse_output_non_json_is_not_success
+
+# ──────────────────────────────────────────────
 print_summary

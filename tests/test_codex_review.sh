@@ -391,4 +391,41 @@ print('OK')
 run_test "error+warning review fails with has_warnings" test_error_fails_with_warnings
 
 # ──────────────────────────────────────────────
+describe "Codex review — execution failure is fail-closed"
+
+test_execution_failure_is_fail_closed() {
+    # When the codex CLI itself fails, the review must NOT come back as
+    # passed=true (previously a fallback string was parsed as a clean,
+    # finding-free review).
+    cd "$TEST_DIR"
+    echo "diff --git a/x.py b/x.py" > test.diff
+
+    local rc=0 out=""
+    out=$(VIBEFLOW_CODEX_CMD="false" \
+          VIBEFLOW_FRAMEWORK_DIR="$FRAMEWORK_DIR" \
+          bash "${FRAMEWORK_DIR}/scripts/codex_review.sh" \
+              --diff test.diff --output-dir reviews 2>&1) || rc=$?
+
+    [ "$rc" -ne 0 ] || { fail "codex execution failure must exit non-zero"; return 1; }
+
+    local review_file
+    review_file=$(ls reviews/*.json 2>/dev/null | head -1)
+    if [ -z "$review_file" ]; then
+        fail "a fail-closed review JSON must still be written on execution failure"
+        return 1
+    fi
+
+    python3 -c "
+import json, sys
+with open('$review_file') as f:
+    r = json.load(f)
+assert r['passed'] is False, f\"execution failure must record passed=false, got: {r['passed']}\"
+assert r.get('status') == 'execution_failed', f\"status must be execution_failed, got: {r.get('status')}\"
+print('OK')
+" > /dev/null || { fail "review JSON must record passed=false / status=execution_failed"; return 1; }
+    return 0
+}
+run_test "codex execution failure writes passed=false and exits non-zero" test_execution_failure_is_fail_closed
+
+# ──────────────────────────────────────────────
 print_summary
