@@ -528,4 +528,36 @@ test_healthcheck_uses_run_tests() {
 run_test "healthcheck SKILL runs spec-verify --run-tests" test_healthcheck_uses_run_tests
 
 # ──────────────────────────────────────────────
+describe "spec_verify — pending invariant convergence pressure"
+
+test_json_lists_pending_invariants() {
+    create_runnable_spec_fixture
+    local out
+    out=$(python3 "$SPEC_VERIFY" "$TEST_DIR/.vibe/spec" "$TEST_DIR" --json 2>/dev/null) || true
+    echo "$out" | python3 -c "
+import json, sys
+r = json.load(sys.stdin)
+pend = r.get('stats', {}).get('pending_invariants')
+assert isinstance(pend, list), f'stats.pending_invariants must be a list: {pend}'
+ids = {(p['story'], p['id']) for p in pend}
+assert ('core', 'unproven') in ids, f'untested invariant must be listed: {ids}'
+assert ('core', 'holds') not in ids, f'tested invariants must not be listed: {ids}'
+print('OK')
+" | grep -q OK || { fail "pending invariant list missing or wrong, got: $out"; return 1; }
+    return 0
+}
+run_test "--json lists pending invariants (story/id/text)" test_json_lists_pending_invariants
+
+test_healthcheck_records_spec_health() {
+    local f="${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-healthcheck/SKILL.md"
+    assert_file_contains "$f" "Spec Health" \
+        "healthcheck must record a Spec Health line into STATUS.md" || return 1
+    assert_file_contains "$f" "直近 10 行" \
+        "Spec Health history must be bounded (STATUS.md is Tier-1 always-loaded)" || return 1
+    assert_file_contains "$f" "補強 Issue" \
+        "healthcheck must propose a reinforcement issue when pending stagnates" || return 1
+}
+run_test "healthcheck records Spec Health and proposes reinforcement issues" test_healthcheck_records_spec_health
+
+# ──────────────────────────────────────────────
 print_summary
