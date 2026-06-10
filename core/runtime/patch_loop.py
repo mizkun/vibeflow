@@ -17,7 +17,12 @@ Statuses: in_progress → completed | escalated
 import json
 import subprocess
 
-from core.runtime.state import read_project_state, write_project_state
+# Modules are deployed flat into .vibe/runtime/, so package imports
+# need a flat fallback.
+try:
+    from core.runtime.state import read_project_state, write_project_state
+except ImportError:  # flat .vibe/runtime/ deployment
+    from state import read_project_state, write_project_state
 
 # Limits — exceeding these suggests the fix is too large for Patch Loop
 DEFAULT_FILE_LIMIT = 10

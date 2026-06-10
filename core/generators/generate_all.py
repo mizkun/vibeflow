@@ -29,10 +29,10 @@ from core.generators.generate_agents_md import generate_agents_md
 from core.generators.manifest import Manifest
 
 # Valid targets for --target
-VALID_TARGETS = ("hooks", "settings", "policy", "docs", "claude_md", "agents_md", "state", "spec", "manifest")
+VALID_TARGETS = ("hooks", "settings", "policy", "docs", "claude_md", "agents_md", "state", "spec", "runtime", "manifest")
 
-# Generation order: policy → hooks → settings → docs → claude_md → agents_md → state → spec → manifest
-GENERATION_ORDER = ["policy", "hooks", "settings", "docs", "claude_md", "agents_md", "state", "spec", "manifest"]
+# Generation order: policy → hooks → settings → docs → claude_md → agents_md → state → spec → runtime → manifest
+GENERATION_ORDER = ["policy", "hooks", "settings", "docs", "claude_md", "agents_md", "state", "spec", "runtime", "manifest"]
 
 # Runtime-mutable state files: generated once as templates, then written
 # by normal operation. Integrity checks (doctor, --check, --diff) verify
@@ -145,6 +145,29 @@ def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: st
             generated_files.append(
                 (f".vibe/spec/{sub}/.gitkeep", "core/schema/spec.yaml")
             )
+
+    elif target == "runtime":
+        # Deploy the runtime judgment modules (qa_judge, spec_verify,
+        # ui_task, ...) flat into .vibe/runtime/ and manifest-track them
+        # — these decide merges, so their drift must be detectable.
+        import shutil
+
+        fw = Path(framework_dir)
+        src_runtime = fw / "core" / "runtime"
+        dest_runtime = project / ".vibe" / "runtime"
+        if src_runtime.is_dir():
+            os.makedirs(dest_runtime, exist_ok=True)
+            for src_py in sorted(src_runtime.glob("*.py")):
+                dest_py = dest_runtime / src_py.name
+                if src_py.resolve() == dest_py.resolve():
+                    continue
+                if (not dest_py.exists()
+                        or src_py.read_bytes() != dest_py.read_bytes()):
+                    shutil.copy2(str(src_py), str(dest_py))
+                    print(f"Generated: {dest_py}")
+                generated_files.append(
+                    (f".vibe/runtime/{src_py.name}", f"core/runtime/{src_py.name}")
+                )
 
     elif target == "manifest":
         # Record all previously generated files in the manifest
