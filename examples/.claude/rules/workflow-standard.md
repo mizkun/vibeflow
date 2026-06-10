@@ -115,6 +115,15 @@ Step 7 時点では review_verdict='pending' のため auto_pass は出ない。
 > hook（Spec Gate）で強制される。spec を変更した PR は、人間承認の
 > checkpoint がない限り `gh pr create` がブロックされる。
 
+### Checkpoint Packet（needs_human の提示物）
+
+人間承認は **Checkpoint Packet**（`.vibe/checkpoints/<issue>-packet.md`、
+1 markdown）を提示して行う。内容: ①AC チェックリスト（対応テスト名付き）
+②spec 差分の平易な要約 ③証拠（テスト exit code・invariant 3 状態・レビュー
+verdict・UI ならスクショ）④スコープ外変更の列挙 ⑤invariant 接触リスト
+（best-effort）。**packet のない人間承認 checkpoint は hook がブロックする**
+（qa:auto 自動承認には不要）。詳細は `vibeflow-execute-issue` スキルの Step 7a。
+
 ## Step 9: Cross-Review — warn 対応の義務化
 
 レビュー結果による対応:

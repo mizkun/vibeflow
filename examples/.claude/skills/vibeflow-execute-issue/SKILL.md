@@ -228,39 +228,58 @@ result = judge(context)
 
 ## Step 7a: Human Checkpoint（必要な場合のみ）
 
-**`needs_human` の場合、ユーザーに確認を求める:**
+**`needs_human` の場合、Checkpoint Packet を作って PO の確認を求める。**
+PO はコードを読まない — packet が PO の判断材料のすべてになる。
 
-1. テスト結果のサマリを表示
-2. diff の概要を表示
-3. **spec を変更した場合: As-Is → To-Be 差分を提示**
+### 1. Checkpoint Packet を作成
 
-```bash
-git diff main...HEAD -- .vibe/spec/
+`.vibe/checkpoints/<NUMBER>-packet.md` に以下を 1 枚にまとめる
+（**packet がない人間承認は hook がブロックする**）:
+
+```markdown
+# Checkpoint Packet — Issue #<NUMBER>: <タイトル>
+
+## AC チェックリスト
+- [x] AC-1: <内容> → テスト: <対応テスト名>
+- [x] AC-2: <内容> → テスト: <対応テスト名>
+
+## Spec 差分の要約（spec 変更がある場合）
+<「できるようになること / 変わること / なくなること」を平易な日本語 3-5 行>
+（生の差分: git diff main...HEAD -- .vibe/spec/）
+
+## 証拠
+- テスト: <test.exit の値> — <test.log 末尾のサマリ行>（.vibe/reports/<NUMBER>/test.log）
+- invariant: verified N / violated 0 / pending N
+- レビュー: <review.md の verdict>
+- UI task の場合: スクリーンショットのパス
+
+## スコープ外変更
+<git diff のファイル一覧のうち、AC / Spec 変更に対応しないもの。なければ「なし」>
+
+## invariant 接触リスト（best-effort）
+<変更ファイル ∩ invariants[].source_ref で当たった invariant の story/id>
 ```
 
-   差分の生 YAML に加えて、「この Issue でできるようになること / 変わる
-   こと / なくなること」を平易な日本語 3-5 行で要約して提示する。
-4. UI task の場合: スクリーンショットを提示
-5. **ユーザーの OK を待つ**
+注意: packet に独自スキーマ・インデックス・履歴集約を作らない。
+ただの 1 markdown ファイルであること。
+
+### 2. packet 全文をチャットに提示して PO の OK を待つ
 
 ```
-📋 QA レポート — Issue #<NUMBER>
-━━━━━━━━━━━━━━━━━━━━━
-テスト: ✅ 全 PASS
-diff: X files, Y lines
-理由: <qa_judge の reason>
+📋 Checkpoint Packet — Issue #<NUMBER>
+（packet.md の内容をそのまま表示）
 
 確認をお願いします。OK / NG を教えてください。
 ```
 
-6. OK の場合: checkpoint 作成
+### 3. OK の場合: checkpoint 作成
 
 ```bash
 mkdir -p .vibe/checkpoints
 echo "approved" > .vibe/checkpoints/<NUMBER>-qa-approved
 ```
 
-7. NG の場合: フィードバックを反映して Step 4 に戻る
+### 4. NG の場合: フィードバックを反映して Step 4 に戻る
 
 **注意**: アルゴリズム変更やデータ構造作成など、目視確認が不可能な場合は `qa:auto` ラベルが付いているはずなので、このステップはスキップされます。
 

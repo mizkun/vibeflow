@@ -28,8 +28,12 @@ Validate that implementations meet acceptance criteria and generate comprehensiv
    - Document both passing and failing criteria
 
 4. **Output requirements**:
-   - Write results to `.vibe/qa-reports/<date>-<topic>.md`
-   - Use format: `YYYY-MM-DD-<descriptive-name>.md`
+   - When validating a specific issue for its Human Checkpoint, write the
+     AC checklist into the issue's Checkpoint Packet
+     (`.vibe/checkpoints/<issue>-packet.md`) — the packet is the single
+     document the PO reviews
+   - For standalone QA runs (no checkpoint), write to
+     `.vibe/qa-reports/<date>-<topic>.md` (`YYYY-MM-DD-<descriptive-name>.md`)
    - Include: Summary, Test Results, Issues Found, Recommendations
 
 5. **Gap identification**:

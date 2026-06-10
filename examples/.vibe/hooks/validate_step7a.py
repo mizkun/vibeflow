@@ -104,6 +104,32 @@ def checkpoint_exists(root: str, issue: str, human_only: bool = False) -> bool:
     return False
 
 
+def packet_exists(root: str, issue: str) -> bool:
+    """True if the checkpoint packet (what the PO actually reviewed)
+    exists for the issue. A human 'approved' checkpoint without its
+    packet is a rubber stamp — the approval recorded nothing about what
+    was approved."""
+    if not is_valid_issue(issue):
+        return False
+    normalized = normalize_issue(issue)
+    if not normalized:
+        return False
+    checkpoint_dir = os.path.join(root, ".vibe", "checkpoints")
+    candidates = [
+        os.path.join(checkpoint_dir, f"{issue}-packet.md"),
+        os.path.join(checkpoint_dir, f"#{normalized}-packet.md"),
+        os.path.join(checkpoint_dir, f"{normalized}-packet.md"),
+    ]
+    for p in candidates:
+        real_p = os.path.realpath(p)
+        real_dir = os.path.realpath(checkpoint_dir)
+        if not real_p.startswith(real_dir + os.sep) and real_p != real_dir:
+            continue
+        if os.path.isfile(p) and os.path.getsize(p) > 0:
+            return True
+    return False
+
+
 def _ref_exists(root: str, ref: str) -> bool:
     """True if `ref` resolves in the repo at `root`."""
     try:
@@ -340,7 +366,16 @@ def main() -> None:
     # human "approved" checkpoint lets a spec-changing PR through.
     if spec:
         if checkpoint_exists(root, issue, human_only=True):
-            sys.exit(0)
+            if packet_exists(root, issue):
+                sys.exit(0)
+            block(root=root, msg=
+                f"[VibeFlow Step7a Guard — Checkpoint Packet]\n"
+                f"Issue {issue} に人間承認はありますが、承認の根拠となる\n"
+                f"Checkpoint Packet (.vibe/checkpoints/{issue}-packet.md) が\n"
+                f"ありません。PO が何を見て承認したかを記録するため、\n"
+                f"Step 7a で packet（AC チェックリスト・spec 差分要約・証拠・\n"
+                f"スコープ外変更）を作成してから提示・承認してください。\n"
+            )
         block(root=root, msg=
             f"[VibeFlow Step7a Guard — Spec Gate]\n"
             f"この PR は構造化 spec (.vibe/spec/ の Story/Contract) を変更しています。\n"
@@ -377,8 +412,18 @@ def main() -> None:
             f"     （コードのみ）』と記入する（テンプレートの角括弧は外すこと）\n"
         )
 
-    # Check if checkpoint already exists
+    # Check if checkpoint already exists. A *human* approval also needs
+    # its packet (what the PO reviewed); qa:auto auto-approvals don't.
     if checkpoint_exists(root, issue):
+        if (checkpoint_exists(root, issue, human_only=True)
+                and not packet_exists(root, issue)):
+            block(root=root, msg=
+                f"[VibeFlow Step7a Guard — Checkpoint Packet]\n"
+                f"Issue {issue} に人間承認はありますが、承認の根拠となる\n"
+                f"Checkpoint Packet (.vibe/checkpoints/{issue}-packet.md) が\n"
+                f"ありません。Step 7a で packet を作成してから提示・承認して\n"
+                f"ください。\n"
+            )
         sys.exit(0)
 
     # Check if issue has qa:auto label
