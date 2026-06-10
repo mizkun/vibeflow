@@ -62,11 +62,14 @@ def build_source_map(framework_dir: str) -> dict[str, str]:
             if f.is_file() and not f.name.startswith("."):
                 source_map[f".vibe/roles/{f.name}"] = str(f)
 
-    # lib/commands/* → .claude/commands/*
+    # lib/commands/* → .claude/commands/*  (only the actively-deployed set;
+    # a bare glob resurrected deprecated commands like next.md on upgrade)
+    DEPRECATED_COMMANDS = {"next.md", "next-v2-extension.md"}
     cmds_dir = fw / "lib" / "commands"
     if cmds_dir.exists():
         for f in cmds_dir.iterdir():
-            if f.is_file() and not f.name.startswith("."):
+            if (f.is_file() and not f.name.startswith(".")
+                    and f.name not in DEPRECATED_COMMANDS):
                 source_map[f".claude/commands/{f.name}"] = str(f)
 
     # examples/.github/ISSUE_TEMPLATE/* → .github/ISSUE_TEMPLATE/*

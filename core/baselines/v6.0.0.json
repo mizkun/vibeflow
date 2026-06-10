@@ -1,0 +1,305 @@
+{
+  "files": {
+    ".claude/agents/code-reviewer.md": {
+      "sha256": "035cd12f4443faaa36124a3c9699be4f82ceb574b1d60d25ed5163cc7a5cb656"
+    },
+    ".claude/agents/qa-acceptance.md": {
+      "sha256": "03fee5410aa40f964ec75faa0baa9cdfdcc98015bfe76ad1f6633a072bf77359"
+    },
+    ".claude/agents/test-runner.md": {
+      "sha256": "c33ea918c10dfeb26109bfaf35e5edab48e172472314daae09b05980fdceb159"
+    },
+    ".claude/commands/conclude.md": {
+      "sha256": "bd0210403eeff136a7d4a97a9e9dbc5fdb0a7f165048221627e64319f6950b21"
+    },
+    ".claude/commands/discuss.md": {
+      "sha256": "1b6f82bb5f4fd586640af49f51fbe191085010f567852938015034823e2d4330"
+    },
+    ".claude/commands/execute-all.md": {
+      "sha256": "dc2d32c5f037b964e7cc8e64c9b09bde91d1a08fd2fa47b909c4e858a1752b0f"
+    },
+    ".claude/commands/execute-issue.md": {
+      "sha256": "64a96a0a51f2d8e11d3d4c5ad01a0dfff3da58a006d56224f1fbd5dcfa56229f"
+    },
+    ".claude/commands/healthcheck.md": {
+      "sha256": "c7344bc4f1bf085112879ed17740362fda0a80bf206ab85c3e4b6b3c99d67f65"
+    },
+    ".claude/commands/patch.md": {
+      "sha256": "3a8bf03d750eb2ab5dfc72f9bc2780353371d4b794c1bec2de2b506c832984d5"
+    },
+    ".claude/commands/progress.md": {
+      "sha256": "1002a672de3454c268e3fff0042ea13ad513a10994e76642978657ab1c9d3d3a"
+    },
+    ".claude/commands/quickfix.md": {
+      "sha256": "07569fd21568f242cad8a5f8d2a4bd7ee8dea78a9d40ee6476aec3c16c35cb0d"
+    },
+    ".claude/commands/run-e2e.md": {
+      "sha256": "50d15e10e545657d1da2bb7cbfaf2e300ea16cbab16987920b0e15bd3a38c15b"
+    },
+    ".claude/rules/iris-core.md": {
+      "sha256": "0a2941467a5c6947a8c28e0592c740224b98951a3b00c513cc867fba4098f3dc"
+    },
+    ".claude/rules/playwright.md": {
+      "sha256": "cb088f62111486ec67296bd901e03188e1f5e38bc08f56e8675d4bf3e35883f6"
+    },
+    ".claude/rules/project-structure.md": {
+      "sha256": "062160095919470970f3f7b9cd48c9da010bcfb0c1582da88d1a409fbc49818a"
+    },
+    ".claude/rules/safety.md": {
+      "sha256": "c83db0d511d3f1fe02a5f8c26b1508817edad4d9bb76bf95fdbb17166f2aa2fd"
+    },
+    ".claude/rules/session-startup.md": {
+      "sha256": "b5f524425d8fb1ffc43bedcad8ccd0d8f0acc93d2eccbaa97a11a5e1f4888e2c"
+    },
+    ".claude/rules/spec-loop.md": {
+      "sha256": "a7e7b19ff725c205d28f41c62e145aa0f229eca31b2b19814375db19dd8f2ee0"
+    },
+    ".claude/rules/workflow-patch.md": {
+      "sha256": "6f708e1034710033cc1a66bbb8099ae8c080bdcb097bb60748139f0e545ae324"
+    },
+    ".claude/rules/workflow-standard.md": {
+      "sha256": "e950d56adf0dc2d3fb75a363df56d9c5d799ad25644617c512c231f7e4164223"
+    },
+    ".claude/rules/workflows.md": {
+      "sha256": "8df9e7429179b402681cf464e05227a333921e896642384759adf1e75b42443e"
+    },
+    ".claude/settings.json": {
+      "sha256": "01bf82650a20befd75160c8f0d8a0bad309b5a8fe855c5301d17bfe5eb3527dd"
+    },
+    ".claude/skills/vibeflow-conclude/SKILL.md": {
+      "sha256": "0f41ddfc4c57d20e11b4e3ab171ef570836f95ec4eb08d22235ef5e98365f546"
+    },
+    ".claude/skills/vibeflow-discuss/SKILL.md": {
+      "sha256": "5906662828ed5448a3d27694c440103de072aa97ee80d607c12f723a3f5fb7c6"
+    },
+    ".claude/skills/vibeflow-execute-all/SKILL.md": {
+      "sha256": "a3ef9e12fbf1794f2c158bf73d2cbd648ac710f82b716f61a8d1a854a9b00e29"
+    },
+    ".claude/skills/vibeflow-execute-issue/SKILL.md": {
+      "sha256": "c3235ede1e1504ae1b862fe27f7df396c59ffadd795807e1174e71118f6974b5"
+    },
+    ".claude/skills/vibeflow-healthcheck/SKILL.md": {
+      "sha256": "32a046abb8ac77877e8190dbe4d0139e0ab33312c66146e722e5e0bf6a8dc75d"
+    },
+    ".claude/skills/vibeflow-issue-template/SKILL.md": {
+      "sha256": "a8ece21558913cd68255ddde6d46d76b35737935093bc1b83266d10319b7d42f"
+    },
+    ".claude/skills/vibeflow-kickoff/SKILL.md": {
+      "sha256": "b826fa55176283734e599b00a337afc4b9707d48b86c6f4b8792a7f7b3ee510d"
+    },
+    ".claude/skills/vibeflow-progress/SKILL.md": {
+      "sha256": "5e8dbdd63a930504a00dfd31c6a441a2d8bd8789357253640893df6874f14deb"
+    },
+    ".claude/skills/vibeflow-tdd/SKILL.md": {
+      "sha256": "dda33c19652758cbbeb3678a981a37f6a8a0b2a2598a744b34781961205b19f4"
+    },
+    ".claude/skills/vibeflow-ui-explore/SKILL.md": {
+      "sha256": "4d097dd0b51c951a3359b8783988b4a64402910f500a68b07136c49707f2d4b8"
+    },
+    ".claude/skills/vibeflow-ui-smoke/SKILL.md": {
+      "sha256": "40e380a9e333f6b0ca146b1426265a961cf1171036f8ec2d49dd39d138781cc2"
+    },
+    ".github/ISSUE_TEMPLATE/config.yml": {
+      "sha256": "e71bea835ed1158881306294d96968f125b0b0c5eff66cd94df559336bd0b210"
+    },
+    ".github/ISSUE_TEMPLATE/dev.md": {
+      "sha256": "230aaa06436e2b97fa399274dc22cdde6bf683705f1844c6d45e164c67438a6c"
+    },
+    ".github/ISSUE_TEMPLATE/discussion.md": {
+      "sha256": "c02420f7414b18f7353e6d2175f713ad4916b5a596e5827b2541f7571cfc3d0d"
+    },
+    ".github/ISSUE_TEMPLATE/human.md": {
+      "sha256": "02d0c84bb9a8b78c3a5d4a80aad36bc10bada68917b5d585384e12882ee25021"
+    },
+    ".github/ISSUE_TEMPLATE/ops.md": {
+      "sha256": "3eef32f3cd20c0e154fec609ba7710ec853cc708564d0f8ea2860d2bab56c9ca"
+    },
+    ".github/ISSUE_TEMPLATE/patch.md": {
+      "sha256": "5a8730c486a16ff4768e13e75b38f551f300a756c54db16964bd7ae58a1afa8d"
+    },
+    ".github/ISSUE_TEMPLATE/spike.md": {
+      "sha256": "4da50645457a61402b6061904b821fdffcf36fb7294dbec5b51e77ee62cbe3a5"
+    },
+    ".github/ISSUE_TEMPLATE/standard.md": {
+      "sha256": "10fde314d175344eb1aa3df13d0f9ceb6d765ab3728b89a464be340db817dc27"
+    },
+    ".gitignore": {
+      "sha256": "f07e102f872769183adf012f1ad32231dd96f834827e85b61be39d5a6ce19d43"
+    },
+    ".mcp.json.example": {
+      "sha256": "8374c1b180b9a312c37efb0a37861538345e828aff11f3db85429a2226fc44fa"
+    },
+    ".vibe/context/STATUS.md": {
+      "sha256": "f6ef6460d7b46d27a5e6f7422f5cf368d8325f97ce0aa04139bca1b00eb8821f"
+    },
+    ".vibe/discussions/.gitkeep": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".vibe/framework_version.yaml": {
+      "sha256": "393c598567450e802e893e28ba5fb64dea9f208d300671b4fbc5eafc0726d996"
+    },
+    ".vibe/hooks/checkpoint_alert.sh": {
+      "sha256": "9e5728a688a1fdeb44900206f24035ccca45779033f999e0c8ad160d49c14f24"
+    },
+    ".vibe/hooks/postwrite_lint.sh": {
+      "sha256": "d3f19327e09714fd5db4e205a7d696b9c4202086ee8baf76ad2a00dd9a4ae35d"
+    },
+    ".vibe/hooks/stop_test_gate.sh": {
+      "sha256": "143ade25c071b379ee547f26f53d6718be2bacbed0f77e9df2f2ab5e1a064650"
+    },
+    ".vibe/hooks/task_complete.sh": {
+      "sha256": "313a408cd08e6b04a70f92140cfd2301e4e2c47c4173353332aa86c517778850"
+    },
+    ".vibe/hooks/validate_access.py": {
+      "sha256": "2c5c4f5e17503318f29c968eef9a06a5e8496d8998775eca4939d35907b3843e"
+    },
+    ".vibe/hooks/validate_bash.py": {
+      "sha256": "fcbd16fd209f50347574a37ee52e97bf0514021f4a371f357bd7c63fe4e294c9"
+    },
+    ".vibe/hooks/validate_step7a.py": {
+      "sha256": "b6cb4b6135363c5b5b696bf9e85219066435f4d3c859a81b3848d5601d18df8b"
+    },
+    ".vibe/hooks/validate_write.sh": {
+      "sha256": "579b91113e841832a72497410278549fc0ff8c1a7c8a13c4bd317b66ca4f9694"
+    },
+    ".vibe/hooks/waiting_input.sh": {
+      "sha256": "12bc477530999d7ebb33d2aec39aa8cb913ad55678f1ede8be2cc5c6c4d48af2"
+    },
+    ".vibe/policy.yaml": {
+      "sha256": "4c58473058f5ad39aa9acb484d1c91ff0ef4490d9eae60f07061c843506af97b"
+    },
+    ".vibe/project_state.yaml": {
+      "sha256": "e0b0950dfb68e64c8d2f132dd279a5403477478d9d5cd6e4eb47e55da9b9cd9d"
+    },
+    ".vibe/roles/coding-agent.md": {
+      "sha256": "6d1927e65900473fa364542bb3300176ad0f304e0c11e1cd573e03e44dd91825"
+    },
+    ".vibe/roles/iris.md": {
+      "sha256": "40671e1316ec769c159d61be1f35006a1f943cc5e6c3599bdb467783ee93ecd3"
+    },
+    ".vibe/runtime/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".vibe/runtime/agent_selector.py": {
+      "sha256": "791041feeb8bb012d3628e6b640f59176ed4cd80fbab05ecb3609f8fe07fb88c"
+    },
+    ".vibe/runtime/auto_close.py": {
+      "sha256": "c4e0484ac1d04b9ce00a666edec50f87b05623362822b8d05be1b705930b4b39"
+    },
+    ".vibe/runtime/claude_code_wrapper.py": {
+      "sha256": "83ec221a0010a9ce6f5cac1681006d730449da7a288fef64c9ef34e3dae8bd59"
+    },
+    ".vibe/runtime/codex_impl.py": {
+      "sha256": "d53390a9101d5967a3fa8990a3b70c87caaee163fbfb4ea94ba65a86cb7b69c7"
+    },
+    ".vibe/runtime/codex_review.py": {
+      "sha256": "b61f60c6ad41ca74782205a62d53a9ec4d17beaca71a6498d7cc11fbb4586e78"
+    },
+    ".vibe/runtime/codex_wrapper.py": {
+      "sha256": "1ebddb66bf39c0b0939d3266bc28ef567484a984c36568afa41a00d72b31ed44"
+    },
+    ".vibe/runtime/cross_review.py": {
+      "sha256": "9d82ed463fc7b07fc7318f533ae64715a6a1a13b62bef41621c003f866c7657e"
+    },
+    ".vibe/runtime/dependency_analyzer.py": {
+      "sha256": "566b72c716e9ff981a349081dd5e927d1130f21eac0b4a8daff0e5113d6ac5f4"
+    },
+    ".vibe/runtime/dispatcher.py": {
+      "sha256": "1326237830e00e9f35c14eac5104de768b540d1ca0deeed374c66a8df6986a64"
+    },
+    ".vibe/runtime/dor_gate.py": {
+      "sha256": "b6c02c34886b4b4e35ffc96ab9497d687e8ec8c8a32aa5a166d022cc433848c3"
+    },
+    ".vibe/runtime/handoff.py": {
+      "sha256": "b32cbd3dd696201981f88d37df692beff14c111c551135c05cb57d21efee220b"
+    },
+    ".vibe/runtime/issue_generator.py": {
+      "sha256": "509cdea664dbcde0f83e1659729bdd4f3de314cb8a651d77d8f75177eac1ceb1"
+    },
+    ".vibe/runtime/loop_control.py": {
+      "sha256": "d18744307b3f944b76f20800ae93030beeccd4268ef13deb2fd7be4092f444ba"
+    },
+    ".vibe/runtime/patch_loop.py": {
+      "sha256": "420815a757a44a49185cf486b3e42ebe68cb1e9bf43986922a0d5c31bcf10500"
+    },
+    ".vibe/runtime/qa_judge.py": {
+      "sha256": "95be93a62b9c87f96d5c98264bb1e111b7e3debb5c8e4e9420cea3c7dcbf5b01"
+    },
+    ".vibe/runtime/result_collector.py": {
+      "sha256": "96ea7ffa82951e3c93689972f85da1dbff6564899cd2c799d3ca246ec055f969"
+    },
+    ".vibe/runtime/run_ledger.py": {
+      "sha256": "db8efd0befd1d487ac08300e593f6dfcb1c34e17e774945a2522105162def413"
+    },
+    ".vibe/runtime/spec_verify.py": {
+      "sha256": "3248b572f9ee06d51020c66b72fd22a123769bcbd1466dbc8eeee44b6f544e12"
+    },
+    ".vibe/runtime/state.py": {
+      "sha256": "b08dea8468a1540232eddda9ac684555d641183ece56bc8e4e7bca13adb940e9"
+    },
+    ".vibe/runtime/ui_task.py": {
+      "sha256": "47d22f4516b2079f9ac8e113c705d2c14e38ca8f791aac1448972f72a4e80214"
+    },
+    ".vibe/runtime/worker_adapter.py": {
+      "sha256": "51e4f483b214814868ea4394286049b05881e59efd827329d332d80248d3eae4"
+    },
+    ".vibe/sessions/iris-main.yaml": {
+      "sha256": "c265e2735dc583a447e3b2f73e6f071f526bfce83dde6e9839507abafafc8209"
+    },
+    ".vibe/spec/contracts/.gitkeep": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".vibe/spec/stories/.gitkeep": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".vibe/state.yaml": {
+      "sha256": "b2d09ebabc22e0680a065ff7e8f20ea76c578dae3d07d4e0faa401b9b43d2e7b"
+    },
+    ".vibe/templates/discussion-template.md": {
+      "sha256": "7be7109444a71894f1279d5922f10fedadba72ca79026c24a880d2e693c57654"
+    },
+    ".vibe/templates/issue-templates.md": {
+      "sha256": "7eedb7a70cb6af50a7c1b5eb8f52a6538b52f6eb451f45cd973f782d2293d9a2"
+    },
+    ".vibe/version": {
+      "sha256": "54ef76332b31df830699e9d4138396885ab72bae260a034a81ff02bf32d8e90a"
+    },
+    "AGENTS.md": {
+      "sha256": "1732f22e6bd167fc3d07be1d2ad6faa989b51c0c06874298b093fe7c61c083e0"
+    },
+    "CLAUDE.md": {
+      "sha256": "ac9236484133f87eb8d4be59aa06d3036fea38d1574b10c8976d12a8dc74ef02"
+    },
+    "plan.md": {
+      "sha256": "62eb0362204ae3460745816288abd3c4e933400c6a20546c2c71d0810c41ac2f"
+    },
+    "playwright.config.js": {
+      "sha256": "25d2319617d0af2cbeeb961eda5770bb8dac1dd75f29c986f1cc56afef74740b"
+    },
+    "scripts/playwright_open_report.sh": {
+      "sha256": "ac181be3f56d812bbc0a505d1177da212c10cf8d1950d555bd1c3671887f30b4"
+    },
+    "scripts/playwright_smoke.sh": {
+      "sha256": "5f388861f2b5c21b53694e7b407e5325e9d47ed1b7379cc78ac82772d2d6aea5"
+    },
+    "scripts/playwright_trace_pack.sh": {
+      "sha256": "283a2b762761e21a5406f7c9282ea5de1aa002478166d25243240e7138edfc59"
+    },
+    "tests/e2e/README.md": {
+      "sha256": "26496e05a92bd515c4e4cecf6bb59ec0feeb5af174951eca98868cd6fdde76cb"
+    },
+    "tests/e2e/auth/login.spec.js": {
+      "sha256": "d2bfb427543e11190bb96a682b60ba85f325e78a49e8a80f9a02d233faec6d94"
+    },
+    "tests/e2e/pageobjects/login.page.js": {
+      "sha256": "dd6739f3eeff96f4283a42793668179bbed0c17e57ac3f79679e8ac70416db23"
+    },
+    "tests/e2e/utils/test-helpers.js": {
+      "sha256": "c52ef6d632de273753bb7453478f1b11a46b70b2234621575ecbce70631db4eb"
+    },
+    "vision.md": {
+      "sha256": "2b3fbed89b11bd16b89d4a5dd99359a95480870a5d17e1da069a7812e75a6c13"
+    }
+  },
+  "version": "6.0.0"
+}
