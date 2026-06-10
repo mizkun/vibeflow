@@ -6,7 +6,7 @@
       "sha256": "4c58473058f5ad39aa9acb484d1c91ff0ef4490d9eae60f07061c843506af97b",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.314525+00:00",
+      "generated_at": "2026-06-10T23:10:07.630798+00:00",
       "type": "full",
       "schema_hash": "5d775cadd2c78503719196d36ba4b3d91784e6e499d63ccdb7f9c9f41ca28bcb"
     },
@@ -14,7 +14,7 @@
       "sha256": "2c5c4f5e17503318f29c968eef9a06a5e8496d8998775eca4939d35907b3843e",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.314699+00:00",
+      "generated_at": "2026-06-10T23:10:07.630963+00:00",
       "type": "full",
       "schema_hash": "5d775cadd2c78503719196d36ba4b3d91784e6e499d63ccdb7f9c9f41ca28bcb"
     },
@@ -22,7 +22,7 @@
       "sha256": "579b91113e841832a72497410278549fc0ff8c1a7c8a13c4bd317b66ca4f9694",
       "source": "examples/.vibe/hooks/validate_write.sh",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.314965+00:00",
+      "generated_at": "2026-06-10T23:10:07.631059+00:00",
       "type": "full",
       "schema_hash": "579b91113e841832a72497410278549fc0ff8c1a7c8a13c4bd317b66ca4f9694"
     },
@@ -30,7 +30,7 @@
       "sha256": "b6cb4b6135363c5b5b696bf9e85219066435f4d3c859a81b3848d5601d18df8b",
       "source": "examples/.vibe/hooks/validate_step7a.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.315128+00:00",
+      "generated_at": "2026-06-10T23:10:07.631116+00:00",
       "type": "full",
       "schema_hash": "b6cb4b6135363c5b5b696bf9e85219066435f4d3c859a81b3848d5601d18df8b"
     },
@@ -38,7 +38,7 @@
       "sha256": "01bf82650a20befd75160c8f0d8a0bad309b5a8fe855c5301d17bfe5eb3527dd",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.315179+00:00",
+      "generated_at": "2026-06-10T23:10:07.631167+00:00",
       "type": "full",
       "schema_hash": "5d775cadd2c78503719196d36ba4b3d91784e6e499d63ccdb7f9c9f41ca28bcb"
     },
@@ -46,7 +46,7 @@
       "sha256": "6d1927e65900473fa364542bb3300176ad0f304e0c11e1cd573e03e44dd91825",
       "source": "core/schema/roles.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.315219+00:00",
+      "generated_at": "2026-06-10T23:10:07.631208+00:00",
       "type": "full",
       "schema_hash": "e61bbf87ec606177ed5450c331465cc36c8bcfafac2999bc70585e1e7defe53e"
     },
@@ -54,7 +54,7 @@
       "sha256": "40671e1316ec769c159d61be1f35006a1f943cc5e6c3599bdb467783ee93ecd3",
       "source": "core/schema/roles.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.315259+00:00",
+      "generated_at": "2026-06-10T23:10:07.631248+00:00",
       "type": "full",
       "schema_hash": "e61bbf87ec606177ed5450c331465cc36c8bcfafac2999bc70585e1e7defe53e"
     },
@@ -62,7 +62,7 @@
       "sha256": "ac9236484133f87eb8d4be59aa06d3036fea38d1574b10c8976d12a8dc74ef02",
       "source": "core/schema",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.315295+00:00",
+      "generated_at": "2026-06-10T23:10:07.631287+00:00",
       "type": "partial",
       "managed_sections": [
         "roles",
@@ -77,14 +77,14 @@
       "sha256": "1732f22e6bd167fc3d07be1d2ad6faa989b51c0c06874298b093fe7c61c083e0",
       "source": "core/schema",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.315357+00:00",
+      "generated_at": "2026-06-10T23:10:07.631349+00:00",
       "type": "full"
     },
     ".vibe/project_state.yaml": {
       "sha256": "e0b0950dfb68e64c8d2f132dd279a5403477478d9d5cd6e4eb47e55da9b9cd9d",
       "source": "examples/.vibe/project_state.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.315498+00:00",
+      "generated_at": "2026-06-10T23:10:07.631381+00:00",
       "type": "mutable",
       "schema_hash": "e0b0950dfb68e64c8d2f132dd279a5403477478d9d5cd6e4eb47e55da9b9cd9d"
     },
@@ -92,7 +92,7 @@
       "sha256": "c265e2735dc583a447e3b2f73e6f071f526bfce83dde6e9839507abafafc8209",
       "source": "examples/.vibe/sessions/iris-main.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.315628+00:00",
+      "generated_at": "2026-06-10T23:10:07.631425+00:00",
       "type": "mutable",
       "schema_hash": "c265e2735dc583a447e3b2f73e6f071f526bfce83dde6e9839507abafafc8209"
     },
@@ -100,7 +100,7 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "source": "core/schema/spec.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.315690+00:00",
+      "generated_at": "2026-06-10T23:10:07.631468+00:00",
       "type": "full",
       "schema_hash": "be4d1c7fd20b63cec56b3e894c195caa9652b5613cf125f3eba45a340f6d73df"
     },
@@ -108,7 +108,7 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "source": "core/schema/spec.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316026+00:00",
+      "generated_at": "2026-06-10T23:10:07.631701+00:00",
       "type": "full",
       "schema_hash": "be4d1c7fd20b63cec56b3e894c195caa9652b5613cf125f3eba45a340f6d73df"
     },
@@ -116,7 +116,7 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "source": "core/runtime/__init__.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316065+00:00",
+      "generated_at": "2026-06-10T23:10:07.631740+00:00",
       "type": "full",
       "schema_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -124,7 +124,7 @@
       "sha256": "791041feeb8bb012d3628e6b640f59176ed4cd80fbab05ecb3609f8fe07fb88c",
       "source": "core/runtime/agent_selector.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316102+00:00",
+      "generated_at": "2026-06-10T23:10:07.631776+00:00",
       "type": "full",
       "schema_hash": "791041feeb8bb012d3628e6b640f59176ed4cd80fbab05ecb3609f8fe07fb88c"
     },
@@ -132,7 +132,7 @@
       "sha256": "c4e0484ac1d04b9ce00a666edec50f87b05623362822b8d05be1b705930b4b39",
       "source": "core/runtime/auto_close.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316140+00:00",
+      "generated_at": "2026-06-10T23:10:07.631814+00:00",
       "type": "full",
       "schema_hash": "c4e0484ac1d04b9ce00a666edec50f87b05623362822b8d05be1b705930b4b39"
     },
@@ -140,7 +140,7 @@
       "sha256": "83ec221a0010a9ce6f5cac1681006d730449da7a288fef64c9ef34e3dae8bd59",
       "source": "core/runtime/claude_code_wrapper.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316182+00:00",
+      "generated_at": "2026-06-10T23:10:07.631854+00:00",
       "type": "full",
       "schema_hash": "83ec221a0010a9ce6f5cac1681006d730449da7a288fef64c9ef34e3dae8bd59"
     },
@@ -148,7 +148,7 @@
       "sha256": "d53390a9101d5967a3fa8990a3b70c87caaee163fbfb4ea94ba65a86cb7b69c7",
       "source": "core/runtime/codex_impl.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316222+00:00",
+      "generated_at": "2026-06-10T23:10:07.631893+00:00",
       "type": "full",
       "schema_hash": "d53390a9101d5967a3fa8990a3b70c87caaee163fbfb4ea94ba65a86cb7b69c7"
     },
@@ -156,7 +156,7 @@
       "sha256": "b61f60c6ad41ca74782205a62d53a9ec4d17beaca71a6498d7cc11fbb4586e78",
       "source": "core/runtime/codex_review.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316260+00:00",
+      "generated_at": "2026-06-10T23:10:07.631931+00:00",
       "type": "full",
       "schema_hash": "b61f60c6ad41ca74782205a62d53a9ec4d17beaca71a6498d7cc11fbb4586e78"
     },
@@ -164,7 +164,7 @@
       "sha256": "1ebddb66bf39c0b0939d3266bc28ef567484a984c36568afa41a00d72b31ed44",
       "source": "core/runtime/codex_wrapper.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316299+00:00",
+      "generated_at": "2026-06-10T23:10:07.631969+00:00",
       "type": "full",
       "schema_hash": "1ebddb66bf39c0b0939d3266bc28ef567484a984c36568afa41a00d72b31ed44"
     },
@@ -172,23 +172,23 @@
       "sha256": "9d82ed463fc7b07fc7318f533ae64715a6a1a13b62bef41621c003f866c7657e",
       "source": "core/runtime/cross_review.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316338+00:00",
+      "generated_at": "2026-06-10T23:10:07.632007+00:00",
       "type": "full",
       "schema_hash": "9d82ed463fc7b07fc7318f533ae64715a6a1a13b62bef41621c003f866c7657e"
     },
     ".vibe/runtime/dependency_analyzer.py": {
-      "sha256": "7719a69d1d0af61b0681741c7483222934222e29cf38ce791a6b346cc339ea04",
+      "sha256": "566b72c716e9ff981a349081dd5e927d1130f21eac0b4a8daff0e5113d6ac5f4",
       "source": "core/runtime/dependency_analyzer.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316376+00:00",
+      "generated_at": "2026-06-10T23:10:07.632045+00:00",
       "type": "full",
-      "schema_hash": "7719a69d1d0af61b0681741c7483222934222e29cf38ce791a6b346cc339ea04"
+      "schema_hash": "566b72c716e9ff981a349081dd5e927d1130f21eac0b4a8daff0e5113d6ac5f4"
     },
     ".vibe/runtime/dispatcher.py": {
       "sha256": "1326237830e00e9f35c14eac5104de768b540d1ca0deeed374c66a8df6986a64",
       "source": "core/runtime/dispatcher.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316414+00:00",
+      "generated_at": "2026-06-10T23:10:07.632084+00:00",
       "type": "full",
       "schema_hash": "1326237830e00e9f35c14eac5104de768b540d1ca0deeed374c66a8df6986a64"
     },
@@ -196,7 +196,7 @@
       "sha256": "b6c02c34886b4b4e35ffc96ab9497d687e8ec8c8a32aa5a166d022cc433848c3",
       "source": "core/runtime/dor_gate.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316453+00:00",
+      "generated_at": "2026-06-10T23:10:07.632121+00:00",
       "type": "full",
       "schema_hash": "b6c02c34886b4b4e35ffc96ab9497d687e8ec8c8a32aa5a166d022cc433848c3"
     },
@@ -204,7 +204,7 @@
       "sha256": "b32cbd3dd696201981f88d37df692beff14c111c551135c05cb57d21efee220b",
       "source": "core/runtime/handoff.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316491+00:00",
+      "generated_at": "2026-06-10T23:10:07.632159+00:00",
       "type": "full",
       "schema_hash": "b32cbd3dd696201981f88d37df692beff14c111c551135c05cb57d21efee220b"
     },
@@ -212,7 +212,7 @@
       "sha256": "509cdea664dbcde0f83e1659729bdd4f3de314cb8a651d77d8f75177eac1ceb1",
       "source": "core/runtime/issue_generator.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316530+00:00",
+      "generated_at": "2026-06-10T23:10:07.632197+00:00",
       "type": "full",
       "schema_hash": "509cdea664dbcde0f83e1659729bdd4f3de314cb8a651d77d8f75177eac1ceb1"
     },
@@ -220,7 +220,7 @@
       "sha256": "420815a757a44a49185cf486b3e42ebe68cb1e9bf43986922a0d5c31bcf10500",
       "source": "core/runtime/patch_loop.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316609+00:00",
+      "generated_at": "2026-06-10T23:10:07.632275+00:00",
       "type": "full",
       "schema_hash": "420815a757a44a49185cf486b3e42ebe68cb1e9bf43986922a0d5c31bcf10500"
     },
@@ -228,7 +228,7 @@
       "sha256": "95be93a62b9c87f96d5c98264bb1e111b7e3debb5c8e4e9420cea3c7dcbf5b01",
       "source": "core/runtime/qa_judge.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316649+00:00",
+      "generated_at": "2026-06-10T23:10:07.632314+00:00",
       "type": "full",
       "schema_hash": "95be93a62b9c87f96d5c98264bb1e111b7e3debb5c8e4e9420cea3c7dcbf5b01"
     },
@@ -236,7 +236,7 @@
       "sha256": "96ea7ffa82951e3c93689972f85da1dbff6564899cd2c799d3ca246ec055f969",
       "source": "core/runtime/result_collector.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316690+00:00",
+      "generated_at": "2026-06-10T23:10:07.632353+00:00",
       "type": "full",
       "schema_hash": "96ea7ffa82951e3c93689972f85da1dbff6564899cd2c799d3ca246ec055f969"
     },
@@ -244,7 +244,7 @@
       "sha256": "3248b572f9ee06d51020c66b72fd22a123769bcbd1466dbc8eeee44b6f544e12",
       "source": "core/runtime/spec_verify.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316773+00:00",
+      "generated_at": "2026-06-10T23:10:07.632434+00:00",
       "type": "full",
       "schema_hash": "3248b572f9ee06d51020c66b72fd22a123769bcbd1466dbc8eeee44b6f544e12"
     },
@@ -252,7 +252,7 @@
       "sha256": "b08dea8468a1540232eddda9ac684555d641183ece56bc8e4e7bca13adb940e9",
       "source": "core/runtime/state.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316818+00:00",
+      "generated_at": "2026-06-10T23:10:07.632478+00:00",
       "type": "full",
       "schema_hash": "b08dea8468a1540232eddda9ac684555d641183ece56bc8e4e7bca13adb940e9"
     },
@@ -260,7 +260,7 @@
       "sha256": "47d22f4516b2079f9ac8e113c705d2c14e38ca8f791aac1448972f72a4e80214",
       "source": "core/runtime/ui_task.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316856+00:00",
+      "generated_at": "2026-06-10T23:10:07.632516+00:00",
       "type": "full",
       "schema_hash": "47d22f4516b2079f9ac8e113c705d2c14e38ca8f791aac1448972f72a4e80214"
     },
@@ -268,7 +268,7 @@
       "sha256": "51e4f483b214814868ea4394286049b05881e59efd827329d332d80248d3eae4",
       "source": "core/runtime/worker_adapter.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316893+00:00",
+      "generated_at": "2026-06-10T23:10:07.632552+00:00",
       "type": "full",
       "schema_hash": "51e4f483b214814868ea4394286049b05881e59efd827329d332d80248d3eae4"
     },
@@ -276,7 +276,7 @@
       "sha256": "fcbd16fd209f50347574a37ee52e97bf0514021f4a371f357bd7c63fe4e294c9",
       "source": "core/schema/policy.yaml",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.314746+00:00",
+      "generated_at": "2026-06-10T23:10:07.631009+00:00",
       "type": "full",
       "schema_hash": "5d775cadd2c78503719196d36ba4b3d91784e6e499d63ccdb7f9c9f41ca28bcb"
     },
@@ -284,7 +284,7 @@
       "sha256": "d18744307b3f944b76f20800ae93030beeccd4268ef13deb2fd7be4092f444ba",
       "source": "core/runtime/loop_control.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316569+00:00",
+      "generated_at": "2026-06-10T23:10:07.632236+00:00",
       "type": "full",
       "schema_hash": "d18744307b3f944b76f20800ae93030beeccd4268ef13deb2fd7be4092f444ba"
     },
@@ -292,7 +292,7 @@
       "sha256": "db8efd0befd1d487ac08300e593f6dfcb1c34e17e774945a2522105162def413",
       "source": "core/runtime/run_ledger.py",
       "generator_version": "6.0.0",
-      "generated_at": "2026-06-10T23:04:17.316729+00:00",
+      "generated_at": "2026-06-10T23:10:07.632391+00:00",
       "type": "full",
       "schema_hash": "db8efd0befd1d487ac08300e593f6dfcb1c34e17e774945a2522105162def413"
     }

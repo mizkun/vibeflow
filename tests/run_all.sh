@@ -53,6 +53,25 @@ for f in "$TARGET_DIR"/test_*.sh; do
     fi
 done
 
+# Python unit tests (pytest), if available and present
+if [ -d "${REPO_ROOT}/tests/python" ] && command -v python3 >/dev/null 2>&1; then
+    if python3 -c "import pytest" >/dev/null 2>&1; then
+        out="$(cd "$REPO_ROOT" && python3 -m pytest tests/python -q 2>&1)"; code=$?
+        if [ "$code" -eq 0 ]; then
+            PASSED=$((PASSED + 1))
+            echo "PASS       tests/python (pytest)"
+        else
+            FAILED_COUNT=$((FAILED_COUNT + 1))
+            FAILED_LIST="${FAILED_LIST}  - tests/python (pytest, exit ${code})
+"
+            echo "FAIL(${code})  tests/python (pytest)"
+            printf '%s\n' "$out" | tail -15 | sed 's/^/    | /'
+        fi
+    else
+        echo "SKIP       tests/python (pytest not installed)"
+    fi
+fi
+
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "run_all: ${PASSED} files passed, ${FAILED_COUNT} failed"

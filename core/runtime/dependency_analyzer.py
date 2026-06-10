@@ -60,20 +60,35 @@ def execution_order(issues: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return ordered
 
 
+# "this blocks #N" / "blocking #N" / "before #N" means N depends on THIS —
+# the reverse edge. Treating it as a forward dependency manufactured a
+# false cycle whenever the blocked issue also said "depends on #this".
+_BLOCKS_RE = re.compile(r"\b(?:blocks?|blocking|before)\s+#(\d+)", re.IGNORECASE)
+
+
 def _extract_dependencies(
     issues: List[Dict[str, Any]], valid_numbers: Set[int]
 ) -> Dict[int, List[int]]:
-    """Extract dependency relationships from issue bodies."""
+    """Extract directional dependency relationships from issue bodies."""
     deps: Dict[int, List[int]] = {i["number"]: [] for i in issues}
 
     for issue in issues:
+        num = issue["number"]
         body = issue.get("body", "") or ""
-        # Match patterns like "Depends on #1", "#1 and #2", etc.
-        refs = re.findall(r"#(\d+)", body)
-        for ref in refs:
+
+        # Reverse edges: "this blocks #N" → N depends on this issue.
+        for ref in _BLOCKS_RE.findall(body):
             ref_num = int(ref)
-            if ref_num in valid_numbers and ref_num != issue["number"]:
-                deps[issue["number"]].append(ref_num)
+            if ref_num in valid_numbers and ref_num != num:
+                deps[ref_num].append(num)
+
+        # Forward edges: every other "#N" → this issue depends on N.
+        # Strip the blocks-clauses first so their numbers aren't double-counted.
+        forward_body = _BLOCKS_RE.sub("", body)
+        for ref in re.findall(r"#(\d+)", forward_body):
+            ref_num = int(ref)
+            if ref_num in valid_numbers and ref_num != num and ref_num not in deps[num]:
+                deps[num].append(ref_num)
 
     return deps
 
