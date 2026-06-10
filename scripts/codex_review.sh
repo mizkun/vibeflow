@@ -199,16 +199,50 @@ log_info "Running review with: ${CODEX_CMD}"
 
 # Pass AGENTS.md as --instructions if the codex command supports it,
 # otherwise the instruction context is already embedded in the prompt.
+#
+# Fail-closed: if every execution attempt fails, we do NOT feed a
+# fallback string into the parser (that produced a finding-free
+# passed=true review). We write an explicit execution_failed review
+# and exit non-zero.
 RAW_OUTPUT=""
+CODEX_FAILED=0
 if [ -n "$AGENTS_MD" ]; then
     # Try --instructions flag first (Codex CLI native), fall back to prompt-embedded
-    RAW_OUTPUT=$($CODEX_CMD --instructions "$AGENTS_MD" "$REVIEW_PROMPT" 2>/dev/null || \
-                 $CODEX_CMD "$REVIEW_PROMPT" 2>/dev/null || \
-                 echo "## Review Summary
-Review execution failed.")
+    RAW_OUTPUT=$($CODEX_CMD --instructions "$AGENTS_MD" "$REVIEW_PROMPT" 2>/dev/null) || \
+    RAW_OUTPUT=$($CODEX_CMD "$REVIEW_PROMPT" 2>/dev/null) || \
+    CODEX_FAILED=1
 else
-    RAW_OUTPUT=$($CODEX_CMD "$REVIEW_PROMPT" 2>/dev/null || echo "## Review Summary
-Review execution failed.")
+    RAW_OUTPUT=$($CODEX_CMD "$REVIEW_PROMPT" 2>/dev/null) || CODEX_FAILED=1
+fi
+
+if [ "$CODEX_FAILED" -ne 0 ]; then
+    log_error "Codex execution failed — recording fail-closed review"
+    mkdir -p "$OUTPUT_DIR"
+    FAILED_FILE=$(python3 -c "
+import json, sys
+from datetime import datetime
+from pathlib import Path
+
+out_dir = Path('${OUTPUT_DIR}')
+review = {
+    'identifier': '${IDENTIFIER}',
+    'timestamp': datetime.now().isoformat(),
+    'findings': [],
+    'summary': 'codex execution failed — review did not run',
+    'passed': False,
+    'status': 'execution_failed',
+    'has_warnings': False,
+    'finding_count': 0,
+    'raw_output': '',
+}
+path = out_dir / ('${IDENTIFIER}-' + datetime.now().strftime('%Y%m%d-%H%M%S') + '.json')
+with open(path, 'w', encoding='utf-8') as f:
+    json.dump(review, f, indent=2, ensure_ascii=False)
+    f.write('\n')
+print(path)
+")
+    log_error "Fail-closed review saved: ${FAILED_FILE}"
+    exit 1
 fi
 
 # --- Parse and save results ---

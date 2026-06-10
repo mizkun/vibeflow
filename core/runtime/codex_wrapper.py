@@ -32,7 +32,9 @@ def parse_output(raw_output: str) -> Dict[str, Any]:
             entry = json.loads(line)
             messages.append(entry)
             if entry.get("type") == "result":
-                result["status"] = entry.get("status", "success")
+                # Fail-closed: a result entry without an explicit status
+                # must not default to success.
+                result["status"] = entry.get("status", "unparsed")
                 result["summary"] = entry.get("summary", "")
             elif entry.get("status"):
                 result["status"] = entry["status"]

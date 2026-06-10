@@ -51,8 +51,13 @@ def collect_results(agent_output: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _parse_codex_output(raw: str) -> Dict[str, Any]:
-    """Parse Codex JSONL output."""
-    parsed: Dict[str, Any] = {"status": "success", "summary": ""}
+    """Parse Codex JSONL output.
+
+    Fail-closed: if no result/error entry is found (garbage output, or a
+    result entry without an explicit status), the status is 'unparsed',
+    never an implicit success.
+    """
+    parsed: Dict[str, Any] = {"status": "unparsed", "summary": ""}
 
     for line in raw.strip().split("\n"):
         line = line.strip()
@@ -62,7 +67,7 @@ def _parse_codex_output(raw: str) -> Dict[str, Any]:
             entry = json.loads(line)
             entry_type = entry.get("type", "")
             if entry_type == "result":
-                parsed["status"] = entry.get("status", "success")
+                parsed["status"] = entry.get("status", "unparsed")
                 parsed["summary"] = entry.get("summary", "")
             elif entry_type == "error":
                 parsed["status"] = "failed"
@@ -94,7 +99,8 @@ def _parse_claude_output(raw: str) -> Dict[str, Any]:
         parsed["summary"] = data.get("result", data.get("message", ""))
         parsed["cost_usd"] = data.get("cost_usd", 0)
     except json.JSONDecodeError:
-        parsed["status"] = "success"
+        # Fail-closed: unparseable output is not a success signal.
+        parsed["status"] = "unparsed"
         parsed["summary"] = raw.strip()
 
     return parsed

@@ -42,8 +42,10 @@ def parse_output(raw_output: str) -> Dict[str, Any]:
         result["cost_usd"] = data.get("cost_usd", 0)
         result["raw"] = data
     except json.JSONDecodeError:
-        # Fall back to treating as plain text
-        result["status"] = "success"
+        # Fail-closed: an unparseable payload is NOT a success — it is
+        # usually an error string from a crashed agent. Downstream QA
+        # must treat 'unparsed' as non-success.
+        result["status"] = "unparsed"
         result["result"] = raw_output
 
     return result
