@@ -69,10 +69,25 @@ gh issue edit <NUMBER> --add-label "qa:manual"
 git checkout -b vf/issue-<NUMBER>
 ```
 
-## ── ロール切替: Iris → Coding Agent ──
+## ── Coding part の委譲（Issue ごとに fresh context）──
 
-**ワークフロー状態を 3 ストア（state.yaml / project_state.yaml / session）
-同時に更新する**（/progress とアラートが実態とずれないように）:
+**Step 3.5〜6（spec 編集・TDD・実装・リファクタ）は、Iris 本体の
+コンテキストで直接やらず、サブエージェントに委譲する。**
+これは `iris-core.md`「必ず Coding Agent に dispatch する」の実行であり、
+2 つの効果がある:
+
+1. **コンテキスト隔離** — テストログ・diff 全文などの重い出力を
+   サブエージェント側に閉じ込め、Iris 本体のコンテキスト劣化を防ぐ
+   （Ralph ループの「イテレーション毎にコンテキストをリセットし、
+   ファイルだけを共有状態にする」原則）
+2. **ロール分離** — サブエージェントが Coding Agent として動く
+
+委譲手段（どちらか）:
+- **Agent tool のサブエージェント**（推奨。worktree 分離も可能）に
+  Issue 番号・AC・To-Be spec を渡し、Step 3.5〜6 を実行させる
+- **headless** `claude -p`（`.vibe/runtime/claude_code_wrapper.py` 経由）
+
+委譲先がワークフロー状態を更新する（3 ストア同時）:
 
 ```bash
 python3 -c "import sys; sys.path.insert(0,'.vibe/runtime'); import state; \

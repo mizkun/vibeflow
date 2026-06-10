@@ -59,6 +59,7 @@ class ClaudeCodeWrapper:
         self.claude_cmd = claude_cmd
         self.timeout = timeout
         self._processes: Dict[str, subprocess.Popen] = {}
+        self._out_files: Dict[str, tuple] = {}
 
     def dispatch(
         self,
@@ -110,16 +111,28 @@ class ClaudeCodeWrapper:
         ]
         env = dict(os.environ)
         env["VIBEFLOW_SESSION"] = task_id
+        # Stream stdout/stderr to files, not PIPEs: a long-running agent
+        # that writes a lot to stderr fills the OS pipe buffer (~64KB)
+        # and deadlocks if nobody drains it while we wait on poll().
+        out_dir = session_dir or work_dir
+        os.makedirs(out_dir, exist_ok=True)
+        out_path = os.path.join(out_dir, f"{task_id}.stdout")
+        err_path = os.path.join(out_dir, f"{task_id}.stderr")
+        handle["stdout_path"] = out_path
+        handle["stderr_path"] = err_path
         try:
+            fout = open(out_path, "w")
+            ferr = open(err_path, "w")
             proc = subprocess.Popen(
                 cmd,
                 cwd=work_dir,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                stdout=fout,
+                stderr=ferr,
                 text=True,
                 env=env,
             )
             self._processes[task_id] = proc
+            self._out_files[task_id] = (fout, ferr)
             handle["status"] = "running"
         except FileNotFoundError:
             handle["status"] = "failed"
@@ -145,15 +158,27 @@ class ClaudeCodeWrapper:
             if elapsed > self.timeout:
                 proc.kill()
                 handle["status"] = "timeout"
+                self._close_files(task_id)
             else:
                 handle["status"] = "running"
         elif ret == 0:
             handle["status"] = "completed"
+            self._close_files(task_id)
         else:
             handle["status"] = "failed"
             handle["exit_code"] = ret
+            self._close_files(task_id)
 
         return handle
+
+    def _close_files(self, task_id: str) -> None:
+        files = self._out_files.pop(task_id, None)
+        if files:
+            for f in files:
+                try:
+                    f.close()
+                except Exception:
+                    pass
 
     def collect(self, handle: Dict[str, Any]) -> Dict[str, Any]:
         """Collect the results of a completed task.
@@ -170,8 +195,11 @@ class ClaudeCodeWrapper:
             "parsed": {},
         }
 
-        if proc and proc.stdout:
-            raw = proc.stdout.read()
+        self._close_files(task_id)
+        out_path = handle.get("stdout_path")
+        if out_path and os.path.exists(out_path):
+            with open(out_path, encoding="utf-8") as f:
+                raw = f.read()
             if raw:
                 result["output"] = raw
                 result["parsed"] = parse_output(raw)
