@@ -8,18 +8,34 @@
 set -uo pipefail
 
 # ──────────────────────────────────────────────
-# 1. Infinite loop prevention
+# 1. Loop prevention
 # ──────────────────────────────────────────────
-# Scope flag to project dir to avoid cross-project interference
-PROJECT_HASH=$(echo "${CLAUDE_PROJECT_DIR:-.}" | (md5sum 2>/dev/null || md5 2>/dev/null) | cut -c1-8)
-FLAG_FILE="/tmp/vibeflow_stop_gate_${PROJECT_HASH}"
-
-if [ -f "$FLAG_FILE" ]; then
-    exit 0
+# Primary: Claude Code sets stop_hook_active=true in the hook input JSON
+# when the stop was already blocked once this turn — never block again.
+STDIN_JSON=""
+if [ ! -t 0 ]; then
+    STDIN_JSON=$(cat 2>/dev/null || true)
+fi
+if [ -n "$STDIN_JSON" ]; then
+    STOP_HOOK_ACTIVE=$(printf '%s' "$STDIN_JSON" | python3 -c '
+import json, sys
+try:
+    data = json.load(sys.stdin)
+    print("true" if data.get("stop_hook_active") else "false")
+except Exception:
+    print("false")
+' 2>/dev/null || echo "false")
+    if [ "$STOP_HOOK_ACTIVE" = "true" ]; then
+        exit 0
+    fi
 fi
 
-touch "$FLAG_FILE"
-trap 'rm -f "$FLAG_FILE"' EXIT
+# Secondary safety valve: count consecutive blocked stops per project.
+# Reset on test success; after MAX_BLOCKS, pass through and tell the
+# agent to escalate instead of looping forever on permanently red tests.
+PROJECT_HASH=$(echo "${CLAUDE_PROJECT_DIR:-.}" | (md5sum 2>/dev/null || md5 2>/dev/null) | cut -c1-8)
+COUNTER_FILE="/tmp/vibeflow_stop_gate_${PROJECT_HASH}"
+MAX_BLOCKS=3
 
 # ──────────────────────────────────────────────
 # 2. Read state (session-based first, legacy fallback)
@@ -99,15 +115,32 @@ TEST_OUTPUT=$(cd "$PROJECT_DIR" && $TEST_CMD 2>&1) && TEST_RC=0 || TEST_RC=$?
 
 if [ "$TEST_RC" -eq 0 ]; then
     # ──────────────────────────────────────────
-    # 7. Success: exit 0
+    # 6. Success: reset block counter and allow stop
     # ──────────────────────────────────────────
+    rm -f "$COUNTER_FILE"
     exit 0
-else
-    # ──────────────────────────────────────────
-    # 6. Failure: print message and exit 2
-    # ──────────────────────────────────────────
-    echo "テストが通っていません。修正してください。"
+fi
+
+# ──────────────────────────────────────────────
+# 7. Failure: block (exit 2) up to MAX_BLOCKS consecutive times
+# ──────────────────────────────────────────────
+BLOCKS=$(cat "$COUNTER_FILE" 2>/dev/null || echo 0)
+case "$BLOCKS" in
+    ''|*[!0-9]*) BLOCKS=0 ;;
+esac
+
+if [ "$BLOCKS" -ge "$MAX_BLOCKS" ]; then
+    rm -f "$COUNTER_FILE"
+    echo "stop_test_gate: テストが ${MAX_BLOCKS} 回連続で失敗したため停止を許可します。これ以上の自動リトライは行わず、needs_human として人間にエスカレーションしてください。" >&2
+    exit 0
+fi
+
+echo $((BLOCKS + 1)) > "$COUNTER_FILE"
+
+# exit 2 feeds stderr back to Claude — the message must go there.
+{
+    echo "テストが通っていません。修正してください。(blocked stop $((BLOCKS + 1))/${MAX_BLOCKS})"
     echo ""
     echo "$TEST_OUTPUT" | tail -50
-    exit 2
-fi
+} >&2
+exit 2

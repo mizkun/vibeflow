@@ -104,7 +104,11 @@ def main() -> None:
 
 
 def copy_static_hooks(output_dir: str) -> None:
-    """Copy static hook files (validate_write.sh, validate_step7a.py) from examples/."""
+    """Copy static hook files from examples/.
+
+    Every hook referenced by the generated settings.json must be in this
+    list, or a generate-only project would wire hooks that don't exist.
+    """
     import shutil
 
     # Find examples/ relative to the repo root
@@ -115,7 +119,14 @@ def copy_static_hooks(output_dir: str) -> None:
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
-    static_hooks = ["validate_write.sh", "validate_step7a.py"]
+    static_hooks = [
+        "validate_write.sh",
+        "validate_step7a.py",
+        "stop_test_gate.sh",
+        "postwrite_lint.sh",
+        "task_complete.sh",
+        "waiting_input.sh",
+    ]
     for hook_file in static_hooks:
         src = examples_hooks / hook_file
         dest = output_path / hook_file

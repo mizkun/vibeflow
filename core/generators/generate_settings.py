@@ -69,21 +69,43 @@ def generate_settings(schema_dir: str, output_dir: str) -> None:
     settings = {
         "hooks": {
             "PreToolUse": pre_tool_use,
-            "PostToolUse": [{
-                "matcher": "TodoWrite|Edit|Write|MultiEdit",
-                "hooks": [{
-                    "type": "command",
-                    "command": 'bash "$CLAUDE_PROJECT_DIR"/.vibe/hooks/task_complete.sh 2>/dev/null || true',
-                    "timeout": 2,
-                }],
-            }],
-            "Stop": [{
-                "hooks": [{
-                    "type": "command",
-                    "command": 'bash "$CLAUDE_PROJECT_DIR"/.vibe/hooks/waiting_input.sh 2>/dev/null || true',
-                    "timeout": 2,
-                }],
-            }],
+            "PostToolUse": [
+                {
+                    "matcher": "TodoWrite|Edit|Write|MultiEdit",
+                    "hooks": [{
+                        "type": "command",
+                        "command": 'bash "$CLAUDE_PROJECT_DIR"/.vibe/hooks/task_complete.sh 2>/dev/null || true',
+                        "timeout": 2,
+                    }],
+                },
+                {
+                    "matcher": "Write|Edit|MultiEdit",
+                    "hooks": [{
+                        "type": "command",
+                        "command": 'bash "$CLAUDE_PROJECT_DIR"/.vibe/hooks/postwrite_lint.sh',
+                        "timeout": 10,
+                    }],
+                },
+            ],
+            "Stop": [
+                # Test gate first: blocks the stop (exit 2) while tests
+                # fail at a coding step. No "|| true" — that would
+                # swallow the blocking exit code.
+                {
+                    "hooks": [{
+                        "type": "command",
+                        "command": 'bash "$CLAUDE_PROJECT_DIR"/.vibe/hooks/stop_test_gate.sh',
+                        "timeout": 120,
+                    }],
+                },
+                {
+                    "hooks": [{
+                        "type": "command",
+                        "command": 'bash "$CLAUDE_PROJECT_DIR"/.vibe/hooks/waiting_input.sh 2>/dev/null || true',
+                        "timeout": 2,
+                    }],
+                },
+            ],
         },
     }
 
