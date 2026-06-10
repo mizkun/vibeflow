@@ -306,4 +306,73 @@ print(result['passed'])
 run_test "null body is treated as missing" test_dor_null_body
 
 # ──────────────────────────────────────────────
+describe "DoR gate — v6 Spec 変更 section"
+
+test_missing_spec_section_warns() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.dor_gate import check_dor
+
+issue = {
+    'title': 'Add feature',
+    'body': '## Acceptance Criteria\n- works\n## File Locations\n- src/\n## Testing Requirements\n- unit',
+    'labels': [{'name': 'type:dev'}, {'name': 'risk:low'}, {'name': 'qa:auto'}],
+}
+r = check_dor(issue)
+warn_keys = [w.get('key', w) if isinstance(w, dict) else w for w in r.get('warnings', [])]
+flat = ' '.join(str(w) for w in r.get('warnings', []))
+assert 'spec_change' in flat or 'Spec' in flat, f'missing Spec 変更 section must warn: {r}'
+print('OK')
+")
+    assert_equals "OK" "$result" "an issue without '## Spec 変更' must get a DoR warning"
+}
+run_test "missing '## Spec 変更' section is a DoR warning" test_missing_spec_section_warns
+
+test_spec_section_present_no_warning() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.dor_gate import check_dor
+
+issue = {
+    'title': 'Add feature',
+    'body': '## Spec 変更\n対象 Story / Contract: spec 変更なし\n## Acceptance Criteria\n- works\n## File Locations\n- src/\n## Testing Requirements\n- unit',
+    'labels': [{'name': 'type:dev'}, {'name': 'risk:low'}, {'name': 'qa:auto'}],
+}
+r = check_dor(issue)
+flat = ' '.join(str(w) for w in r.get('warnings', []))
+assert 'spec_change' not in flat, f'present section must not warn: {r}'
+print('OK')
+")
+    assert_equals "OK" "$result" "an issue with '## Spec 変更' must not get the warning"
+}
+run_test "present '## Spec 変更' section passes" test_spec_section_present_no_warning
+
+test_execute_issue_wires_dor() {
+    local skill="${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-execute-issue/SKILL.md"
+    assert_file_contains "$skill" "check_dor" \
+        "execute-issue Step 1 must actually call the DoR gate (it was an orphan module)" || return 1
+}
+run_test "execute-issue wires check_dor into Step 1" test_execute_issue_wires_dor
+
+test_execute_issue_has_clarify() {
+    local skill="${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-execute-issue/SKILL.md"
+    assert_file_contains "$skill" "## Clarifications" \
+        "clarify answers must be recorded in the Issue body" || return 1
+    assert_file_contains "$skill" "AskUserQuestion" \
+        "ambiguities are resolved by asking the PO before implementation" || return 1
+}
+run_test "execute-issue Step 2 clarifies ambiguities before work" test_execute_issue_has_clarify
+
+test_issue_template_requires_spec_section() {
+    local skill="${FRAMEWORK_DIR}/examples/.claude/skills/vibeflow-issue-template/SKILL.md"
+    assert_file_contains "$skill" "Spec 変更" \
+        "issue-template must include the '## Spec 変更' section" || return 1
+}
+run_test "issue-template includes the Spec 変更 section" test_issue_template_requires_spec_section
+
+# ──────────────────────────────────────────────
 print_summary
