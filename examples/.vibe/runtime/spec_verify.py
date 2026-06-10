@@ -65,6 +65,27 @@ def _path_exists(repo_root: str, rel: str) -> bool:
     return (Path(repo_root) / rel).exists()
 
 
+# Marker files that don't count as "implementation exists"
+_PLACEHOLDER_NAMES = {".gitkeep", ".keep", ".DS_Store"}
+
+
+def _dir_is_empty_placeholder(repo_root: str, rel: str) -> bool:
+    """True if rel is a directory containing no real files (recursively).
+
+    A Story whose source_files point at an empty directory is a
+    placeholder for unimplemented work — it must not pass as As-Is
+    spec. The check is recursive so a parent-directory reference with
+    nested implementation files is not a false positive.
+    """
+    p = Path(repo_root) / rel
+    if not p.is_dir():
+        return False
+    for child in p.rglob("*"):
+        if child.is_file() and child.name not in _PLACEHOLDER_NAMES:
+            return False
+    return True
+
+
 def _source_ref_file(ref: str) -> str:
     """Strip an optional ':symbol' suffix from a source_ref, returning the path."""
     return ref.split(":", 1)[0] if ":" in ref else ref
@@ -235,6 +256,11 @@ def verify(spec_dir: str, repo_root: str) -> dict:
                     errors.append(
                         f"story '{stem}': source_files path not found: {src}"
                     )
+                elif _dir_is_empty_placeholder(repo_root, src):
+                    errors.append(
+                        f"story '{stem}': source_files path is an "
+                        f"empty directory (placeholder?): {src}"
+                    )
 
         deps = data.get("depends_on")
         if deps is not None and not isinstance(deps, list):
@@ -286,6 +312,11 @@ def verify(spec_dir: str, repo_root: str) -> dict:
                 elif not _path_exists(repo_root, src):
                     errors.append(
                         f"contract '{stem}': {role} path not found: {src}"
+                    )
+                elif _dir_is_empty_placeholder(repo_root, src):
+                    errors.append(
+                        f"contract '{stem}': {role} path is an "
+                        f"empty directory (placeholder?): {src}"
                     )
 
         ref = data.get("schema_ref")
