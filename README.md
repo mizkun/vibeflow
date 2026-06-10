@@ -164,8 +164,8 @@ v6 の core/runtime/ モジュール:
 ## Development
 
 ```bash
-# テスト実行
-for f in tests/test_*.sh; do bash "$f"; done
+# テスト実行（全件・exit code 集約）
+bash tests/run_all.sh
 
 # 特定テスト
 bash tests/test_codex_wrapper.sh
