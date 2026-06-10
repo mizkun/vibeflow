@@ -38,6 +38,8 @@ roles:
     - .vibe/sessions/*.yaml
     - .vibe/state.yaml
     - .vibe/test-results.log
+    - .vibe/runs/*.jsonl
+    - .vibe/reports/**
     enforcement: hard
 always_allow:
 - .vibe/project_state.yaml

@@ -58,6 +58,10 @@ ROLE_EDIT_ALLOW = {
 
         ".vibe/test-results.log",
 
+        ".vibe/runs/*.jsonl",
+
+        ".vibe/reports/**",
+
     ],
 
 }
@@ -73,8 +77,11 @@ ALWAYS_ALLOW = [
 
 ]
 
-# Writable via bash regardless of role (evidence/report capture)
-SAFE_WRITE_EXTRA = [".vibe/reports/*", ".vibe/reports/**"]
+# Writable via bash regardless of role (evidence/report capture, run ledger)
+SAFE_WRITE_EXTRA = [
+    ".vibe/reports/*", ".vibe/reports/**",
+    ".vibe/runs/*", ".vibe/runs/**",
+]
 
 # The guards themselves + the kill switch + approval checkpoints — no role
 # may write these via bash. Approvals are created only by `vibeflow approve`

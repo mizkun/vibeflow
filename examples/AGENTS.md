@@ -25,7 +25,7 @@ These are enforced by the VibeFlow hook system and validated post-execution.
 
 #### Coding Agent (Claude Code / Codex)
 - **Description**: コーディング、テスト、リファクタリング
-- **can_write**: src/*, tests/*, **/*.test.*, **/__tests__/*, .vibe/spec/**, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml, .vibe/test-results.log
+- **can_write**: src/*, tests/*, **/*.test.*, **/__tests__/*, .vibe/spec/**, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml, .vibe/test-results.log, .vibe/runs/*.jsonl, .vibe/reports/**
 - **can_read**: .vibe/spec/**, src/**, tests/**, .vibe/project_state.yaml, .vibe/sessions/*.yaml, .vibe/state.yaml
 - **enforcement**: hard
 

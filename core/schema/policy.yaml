@@ -44,6 +44,9 @@ roles:
       - ".vibe/sessions/*.yaml"
       - ".vibe/state.yaml"
       - ".vibe/test-results.log"
+      # run ledger: the loop's append-only audit log
+      - ".vibe/runs/*.jsonl"
+      - ".vibe/reports/**"
     enforcement: hard
 
 # Files always allowed regardless of role

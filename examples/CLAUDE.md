@@ -13,7 +13,7 @@ VibeFlow v6 は Iris-Only アーキテクチャ + 構造化 spec（Story / Contr
 ### Coding Agent (Claude Code / Codex)
 **Description**: コーディング、テスト、リファクタリング
 **Enforcement**: hard
-**Can Write**: `src/*`, `tests/*`, `**/*.test.*`, `**/__tests__/*`, `.vibe/spec/**`, `.vibe/project_state.yaml`, `.vibe/sessions/*.yaml`, `.vibe/state.yaml`, `.vibe/test-results.log`
+**Can Write**: `src/*`, `tests/*`, `**/*.test.*`, `**/__tests__/*`, `.vibe/spec/**`, `.vibe/project_state.yaml`, `.vibe/sessions/*.yaml`, `.vibe/state.yaml`, `.vibe/test-results.log`, `.vibe/runs/*.jsonl`, `.vibe/reports/**`
 
 <!-- VF:END roles -->
 

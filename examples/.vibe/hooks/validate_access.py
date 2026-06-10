@@ -58,6 +58,10 @@ ROLE_EDIT_ALLOW = {
 
         ".vibe/test-results.log",
 
+        ".vibe/runs/*.jsonl",
+
+        ".vibe/reports/**",
+
     ],
 
 }

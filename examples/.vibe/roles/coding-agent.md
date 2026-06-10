@@ -51,6 +51,10 @@
 
 - `.vibe/test-results.log`
 
+- `.vibe/runs/*.jsonl`
+
+- `.vibe/reports/**`
+
 
 
 **Enforcement**: hard

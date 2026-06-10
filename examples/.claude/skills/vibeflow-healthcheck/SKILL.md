@@ -57,6 +57,13 @@ VibeFlow プロジェクトの整合性を検証します。
 - .claude/skills/ ディレクトリが存在するか
 - 必須 skills が配置されているか
 
+#### 7b. Run Ledger 確認（ループの監査）
+- `.vibe/runs/<date>.jsonl`（run ledger）の直近サマリを表示する
+  （`run_ledger.summarize` — 直近 run の attempts / escalation / verdict 別件数）
+- **closed Issue に台帳エントリがない場合は warning**
+  （`run_ledger.closed_issues_without_entries`）。夜間・長時間ループの
+  結果を PO が事後検証できるよう、各 Issue は台帳に記録されているべき
+
 #### 8. 構造化 spec とコードの整合性（v6 — 日常検証の核）
 - `vibeflow spec-verify --run-tests` を実行する
   （PATH に無ければ `python3 .vibe/runtime/spec_verify.py .vibe/spec . --run-tests`）
