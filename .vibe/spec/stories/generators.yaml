@@ -1,0 +1,35 @@
+id: generators
+one_liner: |
+  スキーマ (core/schema/*.yaml) を単一の正本として、プロジェクトに配置する
+  ファイル群（hooks/settings/docs/CLAUDE.md/runtime/spec スケルトン/manifest）を
+  決定論的に生成する層。
+invariants:
+  - id: schema-is-single-source
+    text: |
+      生成物はスキーマから導出される。同じスキーマからは常に同じ examples/ が
+      生成され、ずれは generate --check / freshness が検出する。
+    test: tests/test_generate_check.sh
+    source_ref: core/generators/generate_all.py
+    rationale: |
+      v5 の二重生成（bash heredoc と schema 駆動）が乖離バグを量産した反省。
+  - id: setup-equals-generate
+    text: |
+      setup したプロジェクトは generate を内包し、schema 駆動ファイルを配置する。
+    test: tests/test_setup_e2e.sh
+    source_ref: setup_vibeflow.sh
+  - id: mutable-state-not-hash-checked
+    text: |
+      運用中に書き換わる state ファイルは manifest で kind=mutable として扱い、
+      存在チェックのみ行う（doctor / generate --check が誤検知しない）。
+    test: tests/test_doctor_integrity.sh
+    source_ref: core/generators/generate_all.py
+  - id: dead-runtime-not-deployed
+    text: |
+      v6 実行経路で未使用の v4 packet モジュールは .vibe/runtime/ に配布しない。
+    test: tests/test_dead_runtime_excluded.sh
+source_files:
+  - core/generators/
+  - core/templates/
+  - core/baselines/
+depends_on:
+  - spec-engine

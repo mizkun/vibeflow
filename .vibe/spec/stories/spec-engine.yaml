@@ -1,0 +1,26 @@
+id: spec-engine
+one_liner: |
+  構造化 spec (Story/Contract) をコードに照らして検証するエンジン。v6 の中核で、
+  spec とコードの乖離を error として検出し、invariant の verified/violated/pending
+  を計算する。
+invariants:
+  - id: drift-is-an-error
+    text: |
+      source_files / source_ref / test / producers / consumers の参照先が実在
+      しなければ error。空ディレクトリのプレースホルダも error。
+    test: tests/test_spec_verify.sh
+    source_ref: core/runtime/spec_verify.py
+  - id: invariant-tests-are-run
+    text: |
+      --run-tests で各 invariant の test を実行し、通過→verified、失敗→violated、
+      test 省略→pending、収集 0 件→error を計算する。
+    test: tests/test_spec_verify.sh
+    source_ref: core/runtime/spec_verify.py
+  - id: schema-and-engine-agree
+    text: |
+      spec.yaml の required フィールド定義と spec_verify.py の定数は一致する。
+    test: tests/test_spec_schema_consistency.sh
+    source_ref: core/runtime/spec_verify.py
+source_files:
+  - core/runtime/spec_verify.py
+  - core/schema/spec.yaml

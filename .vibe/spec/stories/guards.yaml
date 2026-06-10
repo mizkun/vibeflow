@@ -1,0 +1,39 @@
+id: guards
+one_liner: |
+  PreToolUse hook 群による決定論的な強制層。ロール権限・破壊的操作・テスト改竄・
+  spec ゲート・自己承認を、指示文ではなく機械で止める。
+invariants:
+  - id: bash-bypass-closed
+    text: |
+      破壊的 git（force push / main 直 push / reset --hard 等）と、保護対象への
+      bash 書き込みは BashGuard が止める。
+    test: tests/test_bash_guard.sh
+    source_ref: core/templates/validate_bash.py.j2
+  - id: tests-not-weakenable
+    text: |
+      既存テストの削除・skip 追加・テストケース純減は、人間承認 checkpoint が
+      なければ PR 作成をブロックする。
+    test: tests/test_test_guard.sh
+    source_ref: examples/.vibe/hooks/validate_step7a.py
+  - id: guards-not-self-tamperable
+    text: |
+      hooks/policy/manifest/settings はどのロールでも編集できず、全 hook 無効化の
+      キルスイッチは同梱しない。
+    test: tests/test_guard_integrity.sh
+    source_ref: core/templates/validate_access.py.j2
+  - id: checkpoint-not-self-approvable
+    text: |
+      Human Checkpoint の承認は TTY 必須の vibeflow approve のみが作成できる。
+    test: tests/test_approve_command.sh
+    source_ref: bin/vibeflow
+  - id: role-resolves-canonically
+    text: |
+      display_name / 短縮形 / role id のいずれでも同じロールに正規化して解決する。
+    test: tests/test_role_contract.sh
+    source_ref: core/templates/validate_access.py.j2
+source_files:
+  - core/templates/validate_access.py.j2
+  - core/templates/validate_bash.py.j2
+  - examples/.vibe/hooks/validate_step7a.py
+depends_on:
+  - generators

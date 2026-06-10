@@ -1,0 +1,26 @@
+id: cli
+one_liner: |
+  bin/vibeflow CLI。setup / upgrade / generate / doctor / spec-verify / approve を
+  提供し、フレームワークとプロジェクトの橋渡しをする単一エントリポイント。
+invariants:
+  - id: version-single-source
+    text: |
+      バージョンは VERSION ファイル 1 箇所が正本で、CLI はそこから読む。
+    test: tests/test_version_single_source.sh
+    source_ref: bin/vibeflow
+  - id: doctor-checks-integrity
+    text: |
+      doctor は manifest と突き合わせて改竄・欠落・ガード無効化を検出する。
+    test: tests/test_doctor.sh
+    source_ref: core/doctor.py
+  - id: advertised-commands-distributed
+    text: |
+      README が案内するコマンドは実際に配布される。
+    test: tests/test_commands_distribution.sh
+    source_ref: lib/create_commands.sh
+source_files:
+  - bin/vibeflow
+  - core/doctor.py
+  - core/upgrade.py
+depends_on:
+  - generators

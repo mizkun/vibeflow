@@ -1,0 +1,26 @@
+id: loop-control
+one_liner: |
+  自律ループの収束・停止条件を機械化する層。リトライ計数・agent フォールバック・
+  エスカレーション・暴走予算・監査台帳を、散文ではなくコードで持つ。
+invariants:
+  - id: retries-are-counted
+    text: |
+      失敗試行は session の safety.failed_approach_log に記録され、3 回で escalate、
+      2 回失敗で agent を codex に切り替える（計数は永続する）。
+    test: tests/test_loop_control.sh
+    source_ref: core/runtime/loop_control.py
+  - id: scope-budget-stops-runaway
+    text: |
+      1 試行の diff が予算（10 files / 800 lines）を超えたら escalate する。
+    test: tests/test_budget_guard.sh
+    source_ref: core/runtime/loop_control.py
+  - id: runs-are-auditable
+    text: |
+      各ステップは .vibe/runs/<date>.jsonl に 1 行 append され、PO が事後検証できる。
+    test: tests/test_run_ledger.sh
+    source_ref: core/runtime/run_ledger.py
+source_files:
+  - core/runtime/loop_control.py
+  - core/runtime/run_ledger.py
+depends_on:
+  - generators

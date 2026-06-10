@@ -1,0 +1,9 @@
+id: generated-manifest
+schema_ref: core/generators/manifest.py#Manifest
+producers:
+  - core/generators/generate_all.py
+  - core/generators/manifest.py
+consumers:
+  - core/doctor.py
+  - core/upgrade.py
+story: generators
