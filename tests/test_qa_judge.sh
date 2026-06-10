@@ -298,6 +298,52 @@ print('OK')
 }
 run_test "is_ui_task detection" test_ui_detect_by_files
 
+test_ui_no_substring_false_positives() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.qa_judge import is_ui_task
+
+# 'ui' must not match inside 'build'/'guide'; 'form' not inside 'performance'
+assert is_ui_task({'issue_title': 'Fix build script for CI'}) == False, 'build != ui'
+assert is_ui_task({'issue_title': 'Improve performance of parser'}) == False, 'performance != form'
+assert is_ui_task({'issue_title': 'Update setup guide'}) == False, 'guide != ui'
+# real UI titles still detected
+assert is_ui_task({'issue_title': 'Fix the UI layout'}) == True
+assert is_ui_task({'issue_title': 'ボタンの色を変える'}) == True
+print('OK')
+")
+    assert_equals "OK" "$result" "English UI keywords must match on word boundaries"
+}
+run_test "no substring false positives (build/performance/guide)" test_ui_no_substring_false_positives
+
+test_ui_detection_consistent_across_modules() {
+    local result
+    result=$(python3 -c "
+import sys
+sys.path.insert(0, '${FRAMEWORK_DIR}')
+from core.runtime.qa_judge import is_ui_task as qa_is_ui
+from core.runtime.dispatcher import _is_ui_task as dispatch_is_ui
+from core.runtime import issue_generator
+
+titles = [
+    'Fix build script for CI',
+    'ボタンの色を変える',
+    'Add dashboard screen',
+    'Refactor API layer',
+]
+for t in titles:
+    qa = qa_is_ui({'issue_title': t})
+    dp = dispatch_is_ui({'title': t, 'body': ''})
+    ig = issue_generator.title_is_ui(t)
+    assert qa == dp == ig, f'inconsistent UI verdicts for {t!r}: qa={qa} dispatcher={dp} issue_gen={ig}'
+print('OK')
+")
+    assert_equals "OK" "$result" "qa_judge / dispatcher / issue_generator must agree on UI detection"
+}
+run_test "UI detection is consistent across all three modules" test_ui_detection_consistent_across_modules
+
 # ──────────────────────────────────────────────
 describe "QA Judge — review verdict whitelist (fail-closed)"
 
