@@ -12,10 +12,11 @@ Iris が自動的にワークフローを進行します。ユーザーは Iris 
 | 4. Test Writing | TDD: テスト先行で作成（UI task は Playwright E2E も） | Coding Agent |
 | 5. Implementation | テストをパスする実装 | Coding Agent |
 | 6. Refactoring | コード品質の改善 | Coding Agent |
-| 7. Acceptance Test | テスト実行・結果検証（UI task は Playwright 必須） | Iris (QA) |
+| 7. Acceptance Test | テスト実行・結果検証（UI task は Playwright 必須）。暫定トリアージ — review_verdict は `pending` で渡し、捏造しない | Iris (QA) |
 | 7a. Human Checkpoint | 必要な場合のみ人間確認 | Human |
 | 8. PR Creation | Pull Request 作成 | Coding Agent |
-| 9. Cross-Review | 別 agent によるコードレビュー | Review Agent |
+| 9. Cross-Review | 別 agent によるコードレビュー（結果は `.vibe/reports/<issue>/review.md` に保存） | Review Agent |
+| 9.5. 確定判定 | 実レビュー verdict + 証拠で qa_judge を再実行。**auto_pass はここでのみ成立** | Iris (QA) |
 | 10. Merge | PR マージ | Iris |
 | 11. Close | Issue クローズ・状態更新 | Iris |
 
@@ -89,10 +90,15 @@ AC を削除・縮小する場合は Issue 本文を更新し、理由をコメ�
 
 ### 人間チェック不要 (auto_pass)
 - 全テスト PASS + クロスレビュー PASS
+- **証拠ファイルあり**（`.vibe/reports/<issue>/test.log` + `test.exit`。
+  主張だけでは auto_pass しない）
 - diff が小さい (files ≤ 5, lines ≤ 200)
 - `type:fix` or `type:chore` + `risk:low`
 - **UI task ではない**
 - **構造化 spec (`.vibe/spec/`) を変更していない**
+
+auto_pass は **Step 9.5（実レビュー verdict での確定判定）でのみ成立する**。
+Step 7 時点では review_verdict='pending' のため auto_pass は出ない。
 
 ### 人間チェック必要 (needs_human)
 - **構造化 spec の変更**（`.vibe/spec/` の Story/Contract を変更した PR は

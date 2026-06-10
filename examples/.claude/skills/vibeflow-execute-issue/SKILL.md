@@ -99,12 +99,20 @@ current_step: "7_acceptance_test"
 YAML
 ```
 
-## Step 7: QA 判定（Iris）
+## Step 7: QA 判定（Iris）— 暫定トリアージ
 
-### 7-1. テスト全実行
+**確定判定は Step 9.5（クロスレビュー後）で行う。** Step 7 は「テストが
+本当に通っているか」と「人間確認が必要な種類の変更か」のトリアージ。
+
+### 7-1. テスト全実行 — 証拠を残す
+
+テスト出力と exit code を**ファイルに保存する**（qa_judge はこの証拠
+ファイルを検証する。会話内の「通りました」という主張は証拠にならない）:
 
 ```bash
-npm test || pytest || bash tests/run_tests.sh
+mkdir -p .vibe/reports/<NUMBER>
+(npm test || pytest || bash tests/run_tests.sh) 2>&1 | tee .vibe/reports/<NUMBER>/test.log
+echo "${PIPESTATUS[0]}" > .vibe/reports/<NUMBER>/test.exit
 ```
 
 ### 7-2. UI task の場合: Playwright 実行
@@ -113,7 +121,7 @@ npm test || pytest || bash tests/run_tests.sh
 bash scripts/playwright_smoke.sh
 ```
 
-### 7-3. qa_judge で自動判定
+### 7-3. qa_judge で暫定判定
 
 以下の情報を集めて `qa_judge.judge()` を呼ぶ:
 
@@ -127,12 +135,16 @@ from qa_judge import judge, is_ui_task
 context = {
     'labels': ['type:dev', 'risk:low', 'qa:auto'],  # ← gh issue view で取得
     'tests_passed': True,       # ← 7-1 のテスト結果
-    'review_verdict': 'pass',   # ← 初回は仮 pass
+    'review_verdict': 'pending',  # ← クロスレビューは Step 9。捏造しない
     'files_changed': 5,         # ← git diff --stat から算出
     'lines_changed': 120,       # ← git diff --shortstat から算出
     'has_ui_changes': False,    # ← UI ファイルの有無を確認
     'playwright_passed': None,  # ← UI task なら 7-2 の結果、非 UI なら None
     'has_playwright_artifact': False,  # ← artifact の有無
+    'evidence': {               # ← 7-1 で保存した証拠ファイル
+        'test_log': '.vibe/reports/<NUMBER>/test.log',
+        'test_exit': '.vibe/reports/<NUMBER>/test.exit',
+    },
 }
 result = judge(context)
 # result['verdict']: 'auto_pass' | 'needs_human' | 'fail'
@@ -146,13 +158,15 @@ result = judge(context)
 - `playwright_passed`: UI task なら `scripts/playwright_smoke.sh` の exit code
 - `has_playwright_artifact`: `tests/e2e/` や `.vibe/artifacts/` にファイルがあるか
 
-### 判定結果による分岐
+### 判定結果による分岐（暫定）
 
-| verdict | アクション |
+`review_verdict='pending'` のため、この時点で `auto_pass` は出ない（仕様）。
+
+| 結果 | アクション |
 |---------|-----------|
-| `auto_pass` | → Step 8 へ（人間チェック不要） |
-| `needs_human` | → Step 7a へ |
 | `fail` | → Step 4 に戻ってリトライ（最大 3 回） |
+| `needs_human`（理由が「review not executed」**のみ**） | → レビュー待ちの正常状態。Step 8 へ進む |
+| `needs_human`（UI / risk:high / qa:manual / 大 diff 等を含む） | → Step 7a を先に通してから Step 8 へ |
 
 ## Step 7a: Human Checkpoint（必要な場合のみ）
 
@@ -218,7 +232,42 @@ Agent tool で code-reviewer サブエージェントを起動:
 - verdict: pass / warn / fail を返してもらう
 ```
 
-レビュー結果が `fail` の場合 → Step 4 に戻ってリトライ（最大 3 回）
+**レビュー結果は必ず `.vibe/reports/<NUMBER>/review.md` に保存する**
+（verdict と指摘一覧を含める）。Step 9.5 と Step 10 がこのファイルを参照する。
+
+**失敗時の扱い（fail-closed）:**
+- verdict `fail` → Step 4 に戻ってリトライ（最大 3 回）
+- verdict `warn` → 各指摘に「修正」または「対応不要の技術的理由」を
+  review.md に記録してから Step 9.5 へ（記録なしの warn は auto_pass 不可）
+- サブエージェントの実行失敗・verdict 抽出不能 → レビューをリトライ。
+  リトライ上限に達したら `needs_human` として PO にエスカレーション
+  （壊れているのはコードではなくレビュー基盤なので、再実装はしない）
+
+## Step 9.5: 確定判定（Iris）
+
+クロスレビューの**実際の** verdict で qa_judge を再実行し、確定 verdict を得る。
+`auto_pass` はこの確定判定でのみ成立する。
+
+```python
+import sys
+sys.path.insert(0, '.vibe/runtime')
+from qa_judge import judge
+
+context = {
+    # Step 7-3 と同じ値に、レビュー結果を反映:
+    'review_verdict': 'pass',   # ← review.md の実 verdict（捏造禁止）
+    'warn_responses_recorded': True,  # ← warn の場合、全指摘の対応記録があるか
+    # evidence は Step 7-1 のファイルをそのまま渡す
+    # ... 残りのキーは Step 7-3 と同じ
+}
+result = judge(context)
+```
+
+| 確定 verdict | アクション |
+|---------|-----------|
+| `auto_pass` | → Step 10 へ |
+| `needs_human` | → Step 7a（未承認なら）→ 承認後 Step 10 へ |
+| `fail` | → Step 4 に戻ってリトライ（最大 3 回） |
 
 ## Step 10: Merge（Iris）
 
@@ -242,15 +291,19 @@ current_step: "idle"
 YAML
 ```
 
-ユーザーに完了報告:
+ユーザーに完了報告。**チェックマークだけの主張は禁止 — 証拠を添える:**
 
 ```
 ✅ Issue #<NUMBER> 完了
 ━━━━━━━━━━━━━━━━━━━━━
 Agent: Claude Code
 PR: #<PR_NUMBER>
-テスト: ✅
-レビュー: ✅ (pass)
+
+テスト: <test.exit の値> — 実行コマンド: <Step 7-1 で使ったコマンド>
+  <test.log の末尾サマリ（例: "All 42 tests passed"）>
+  ログ: .vibe/reports/<NUMBER>/test.log
+レビュー: <review.md の verdict>（指摘 N 件 / 対応記録あり）
+  レビュー: .vibe/reports/<NUMBER>/review.md
 ```
 
 ---
