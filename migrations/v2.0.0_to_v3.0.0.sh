@@ -159,7 +159,8 @@ cp "${FRAMEWORK}/lib/roles/iris.md" ".vibe/roles/iris.md"
 cp "${FRAMEWORK}/lib/roles/product-manager.md" ".vibe/roles/product-manager.md"
 cp "${FRAMEWORK}/lib/roles/engineer.md" ".vibe/roles/engineer.md"
 cp "${FRAMEWORK}/lib/roles/qa-engineer.md" ".vibe/roles/qa-engineer.md"
-cp "${FRAMEWORK}/lib/roles/infra.md" ".vibe/roles/infra.md"
+# Source file was later renamed infra.md → infra-manager.md; destination keeps the v3 name
+cp "${FRAMEWORK}/lib/roles/infra-manager.md" ".vibe/roles/infra.md"
 log_ok "  ロールドキュメントを v3 に更新"
 
 # ============================================================

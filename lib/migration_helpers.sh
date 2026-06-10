@@ -17,10 +17,16 @@ log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
 # --- File operations (idempotent) ---
 
-# Copy file if destination doesn't exist (won't overwrite)
+# Copy file if destination doesn't exist (won't overwrite).
+# A vanished source (legacy file removed from the framework) is a warning,
+# not a crash — migrations run under set -e and must stay resumable.
 copy_if_absent() {
   local src="$1"
   local dst="$2"
+  if [ ! -f "$src" ]; then
+    log_warn "  スキップ（ソース欠落）: $src"
+    return 0
+  fi
   if [ ! -f "$dst" ]; then
     mkdir -p "$(dirname "$dst")"
     cp "$src" "$dst"

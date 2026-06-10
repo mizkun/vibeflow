@@ -305,7 +305,9 @@ test_claude_md_has_github_issues() {
     create_v2_project
     source "${FRAMEWORK_DIR}/lib/migration_helpers.sh"
     source "${FRAMEWORK_DIR}/migrations/v2.0.0_to_v3.0.0.sh" 2>/dev/null || true
-    assert_file_contains "CLAUDE.md" "GitHub Issues" || return 1
+    # The migration copies the framework's *current* examples/CLAUDE.md;
+    # v6 wording is "GitHub Issue" (singular), which also matches v3's plural.
+    assert_file_contains "CLAUDE.md" "GitHub Issue" || return 1
 }
 run_test "CLAUDE.md mentions GitHub Issues" test_claude_md_has_github_issues
 
@@ -315,13 +317,16 @@ run_test "CLAUDE.md mentions GitHub Issues" test_claude_md_has_github_issues
 
 describe "Issues Migration Tool"
 
-test_migration_tool_exists() {
+test_migration_tool_source_vanished_no_crash() {
     create_v2_project
     source "${FRAMEWORK_DIR}/lib/migration_helpers.sh"
     source "${FRAMEWORK_DIR}/migrations/v2.0.0_to_v3.0.0.sh" 2>/dev/null || true
-    assert_file_exists ".vibe/tools/migrate-issues.sh" || return 1
+    # migrate-issues.sh was removed from the framework (legacy/ only).
+    # The migration must skip the vanished source and still complete.
+    assert_file_contains ".vibe/version" "3.0.0" \
+        "migration should complete (version bumped) despite vanished tool source" || return 1
 }
-run_test "places migrate-issues.sh tool" test_migration_tool_exists
+run_test "skips vanished migrate-issues.sh source without crashing" test_migration_tool_source_vanished_no_crash
 
 # ──────────────────────────────────────────────
 # Test: Idempotency

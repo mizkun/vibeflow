@@ -211,15 +211,15 @@ test_validate_access_reads_session() {
     cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_access.py" \
        "${tmpdir}/.vibe/hooks/validate_access.py"
 
-    # Create session state (Engineer role)
+    # Create session state (Coding Agent role — key is the policy display_name)
     cat > "${tmpdir}/.vibe/sessions/dev-issue-10.yaml" << 'YAML'
 session_id: dev-issue-10
-current_role: "Engineer"
+current_role: "Coding Agent (Claude Code / Codex)"
 current_step: 5_implementation
 attached_issue: 10
 YAML
 
-    # Test: Engineer should be allowed to write src/
+    # Test: Coding Agent should be allowed to write src/
     local payload='{"tool_name":"Write","tool_input":{"file_path":"src/main.py"}}'
 
     set +e
@@ -229,7 +229,7 @@ YAML
     local code=$?
     set -e
 
-    assert_equals "0" "$code" "Engineer should be allowed to write src/"
+    assert_equals "0" "$code" "Coding Agent should be allowed to write src/"
 }
 run_test "validate_access reads session state" test_validate_access_reads_session
 
@@ -271,7 +271,7 @@ test_validate_access_fallback_to_state_yaml() {
 
     # No session, but state.yaml exists (backward compat)
     cat > "${tmpdir}/.vibe/state.yaml" << 'YAML'
-current_role: "Engineer"
+current_role: "Coding Agent (Claude Code / Codex)"
 YAML
 
     local payload='{"tool_name":"Write","tool_input":{"file_path":"src/main.py"}}'
