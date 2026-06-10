@@ -12,8 +12,7 @@ create_claude_settings() {
     section "Claude Code 設定を作成中"
     
     local settings_file=".claude/settings.json"
-    local local_template=".vibe/templates/settings.local.json"
-    
+
     info "settings.json を作成中..."
     
     # Create the settings.json using heredoc
@@ -104,23 +103,13 @@ JSON_CONTENT
         error "Claude Code 設定の作成に失敗しました"
         return 1
     fi
-    
-    # Create local settings template for emergency hook disable
-    info "緊急用ローカル設定テンプレートを作成中..."
-    
-    cat > "$local_template" << 'JSON_CONTENT'
-{
-  "disableAllHooks": true
-}
-JSON_CONTENT
 
-    if [ $? -eq 0 ]; then
-        success "ローカル設定テンプレートを作成しました: $local_template"
-        info "💡 緊急時は $local_template を .claude/settings.local.json にコピーして Hook を無効化できます"
-    else
-        warning "ローカル設定テンプレートの作成に失敗しました"
-    fi
-    
+    # NOTE: We deliberately do NOT ship an all-hooks-disable kill switch
+    # template. A one-line settings.local.json silently disabled every
+    # guard and was gitignored (invisible to the PO). If the guards
+    # genuinely need disabling for an emergency, the PO creates
+    # settings.local.json by hand — see docs/. doctor flags it if present.
+
     return 0
 }
 

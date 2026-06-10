@@ -41,6 +41,17 @@ ALWAYS_ALLOW = [
 {% endfor %}
 ]
 
+# The guards, the permission definition, the integrity record, and the
+# settings — NO role may edit these, even though .vibe/** is otherwise
+# writable. Updating them goes through the framework schema + generate.
+GUARD_PATTERNS = [
+    ".vibe/hooks/*", ".vibe/hooks/**",
+    ".vibe/policy.yaml",
+    ".vibe/generated-manifest.json",
+    ".claude/settings.json", ".claude/settings.local.json",
+    ".claude/settings*.json",
+]
+
 
 def project_root() -> str:
     """Get project root from CLAUDE_PROJECT_DIR or current directory."""
@@ -174,6 +185,17 @@ def main() -> None:
 
         if match_any(t, ALWAYS_ALLOW):
             continue
+
+        # GuardGuard: the safety machinery itself is off-limits to every
+        # role. Fix the framework schema and run `vibeflow generate`.
+        if match_any(t, GUARD_PATTERNS):
+            block(
+                f"[VibeFlow AccessGuard — ガード改竄の禁止]\n"
+                f"'{t}' は VibeFlow の安全装置（hook / policy / manifest /\n"
+                f"settings）のため、どのロールでも編集できません。\n\n"
+                f"変更が必要なら framework の schema を修正し\n"
+                f"`vibeflow generate` で再生成してください。"
+            )
 
         # Iris-specific: block code file writes with workflow guidance
         if role == "Iris" and match_any(t, CODE_PATTERNS):

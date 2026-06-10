@@ -250,6 +250,43 @@ def check_labels_workflow(schema_dir: Path) -> list[Check]:
     return checks
 
 
+def check_guards_active(project_dir: Path) -> list[Check]:
+    """Verify the safety guards are not disabled.
+
+    A .claude/settings.local.json with disableAllHooks:true silently
+    turns off every guard (AccessGuard, BashGuard, Spec Gate, TestGuard)
+    and is gitignored, so the PO can't see it. Flag it as an error. Also
+    verify the core guards are wired in settings.json."""
+    checks = []
+    local = project_dir / ".claude" / "settings.local.json"
+    if local.is_file():
+        try:
+            data = json.loads(local.read_text())
+        except Exception:
+            data = {}
+        if data.get("disableAllHooks") is True:
+            checks.append(Check(
+                "hooks_disabled", "error",
+                ".claude/settings.local.json sets disableAllHooks:true — "
+                "every safety guard is OFF. Remove it to restore the guards."
+            ))
+
+    settings = project_dir / ".claude" / "settings.json"
+    if settings.is_file():
+        text = settings.read_text()
+        for guard in ("validate_access.py", "validate_bash.py", "validate_step7a.py"):
+            if guard not in text:
+                checks.append(Check(
+                    "guard_unwired", "warn",
+                    f"{guard} is not wired in .claude/settings.json — "
+                    f"run `vibeflow generate` to restore it."
+                ))
+
+    if not checks:
+        checks.append(Check("guards_active", "ok", "safety guards are active"))
+    return checks
+
+
 def run_doctor(project_dir: str, schema_dir: str,
                framework_dir: str | None = None) -> list[Check]:
     """Run all doctor checks and return results."""
@@ -282,6 +319,9 @@ def run_doctor(project_dir: str, schema_dir: str,
 
     # 5. Labels ↔ workflow consistency
     all_checks.extend(check_labels_workflow(schema))
+
+    # 6. Guards active (kill switch / wiring)
+    all_checks.extend(check_guards_active(project))
 
     return all_checks
 
