@@ -76,11 +76,14 @@ ALWAYS_ALLOW = [
 # Writable via bash regardless of role (evidence/report capture)
 SAFE_WRITE_EXTRA = [".vibe/reports/*", ".vibe/reports/**"]
 
-# The guards themselves + the kill switch — no role may write these via bash
+# The guards themselves + the kill switch + approval checkpoints — no role
+# may write these via bash. Approvals are created only by `vibeflow approve`
+# (which requires a TTY), never by an agent echoing a file.
 GUARD_PATTERNS = [
     ".vibe/hooks/*", ".vibe/hooks/**",
     ".vibe/policy.yaml",
     ".vibe/generated-manifest.json",
+    ".vibe/checkpoints/*", ".vibe/checkpoints/**",
     ".claude/settings.json", ".claude/settings.local.json",
     ".claude/settings*.json",
 ]

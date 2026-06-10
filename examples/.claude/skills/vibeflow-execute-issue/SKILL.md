@@ -272,12 +272,18 @@ PO はコードを読まない — packet が PO の判断材料のすべてに�
 確認をお願いします。OK / NG を教えてください。
 ```
 
-### 3. OK の場合: checkpoint 作成
+### 3. 承認は PO が端末から行う
+
+エージェントは checkpoint を**自分で作らない**（自己承認の禁止）。
+PO に次を依頼する:
 
 ```bash
-mkdir -p .vibe/checkpoints
-echo "approved" > .vibe/checkpoints/<NUMBER>-qa-approved
+# PO が自分のターミナルで実行する（TTY 必須 — エージェントの Bash では失敗する）
+vibeflow approve <NUMBER>
 ```
+
+これが `.vibe/checkpoints/<NUMBER>-qa-approved` を作成する。
+`echo > .vibe/checkpoints/...` での自作は BashGuard がブロックする。
 
 ### 4. NG の場合: フィードバックを反映して Step 4 に戻る
 

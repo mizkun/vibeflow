@@ -39,6 +39,7 @@ usage() {
   echo "  version     バージョン情報を表示"
   echo "  doctor      環境の問題を診断"
   echo "  spec-verify 構造化 spec (Story/Contract) とコードの整合を検証"
+  echo "  approve     Human Checkpoint を承認 (PO が端末から実行)"
   echo "  help        このヘルプを表示"
   echo ""
   echo "Setup options:"
@@ -141,6 +142,36 @@ cmd_spec_verify() {
     "$(pwd)/.vibe/spec" "$(pwd)" "$@"
 }
 
+cmd_approve() {
+  # Human Checkpoint approval. Creates .vibe/checkpoints/<issue>-qa-approved.
+  # TTY-gated: an agent's Bash tool has no controlling terminal, so only a
+  # human running this at their own terminal can approve. This is the
+  # deterministic replacement for the agent echoing the checkpoint itself.
+  local issue="${1:-}"
+  if [ -z "$issue" ]; then
+    echo "Usage: vibeflow approve <issue>" >&2
+    return 1
+  fi
+  issue="${issue#\#}"
+
+  if ! ( exec 3<>/dev/tty ) 2>/dev/null; then
+    echo -e "${RED}[vibeflow approve] 端末 (TTY) からのみ承認できます。${NC}" >&2
+    echo "PO が自分のターミナルで 'vibeflow approve ${issue}' を実行してください。" >&2
+    return 1
+  fi
+
+  local ckdir=".vibe/checkpoints"
+  if [ ! -s "${ckdir}/${issue}-packet.md" ]; then
+    echo -e "${RED}[vibeflow approve] Checkpoint Packet がありません:${NC} ${ckdir}/${issue}-packet.md" >&2
+    echo "Step 7a で packet を作成・提示してから承認してください。" >&2
+    return 1
+  fi
+
+  mkdir -p "$ckdir"
+  echo "approved" > "${ckdir}/${issue}-qa-approved"
+  echo -e "${GREEN}✅ Issue #${issue} を承認しました${NC} (${ckdir}/${issue}-qa-approved)"
+}
+
 cmd_setup() {
   bash "${FRAMEWORK_DIR}/setup_vibeflow.sh" "$@"
 }
@@ -178,6 +209,7 @@ case "$COMMAND" in
   version)  cmd_version ;;
   doctor)   cmd_doctor "$@" ;;
   spec-verify) cmd_spec_verify "$@" ;;
+  approve)  cmd_approve "$@" ;;
   help|--help|-h)  usage ;;
   *)
     echo "Unknown command: $COMMAND"

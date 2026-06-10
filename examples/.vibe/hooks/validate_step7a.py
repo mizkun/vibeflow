@@ -454,10 +454,10 @@ def main() -> None:
             f"spec 変更を含む PR は qa:auto で自動承認できません。"
             f"必ず Human Checkpoint を通します。\n\n"
             f"承認フロー:\n"
-            f"  1) spec の As-Is → To-Be 差分をユーザーに提示して停止\n"
-            f"  2) ユーザーが差分を確認・承認\n"
-            f"  3) .vibe/checkpoints/{issue}-qa-approved を作成（内容は 'approved'）\n"
-            f"  4) その後 gh pr create を実行可能\n"
+            f"  1) Checkpoint Packet（spec 差分要約を含む）を PO に提示して停止\n"
+            f"  2) PO が自分の端末で `vibeflow approve {issue}` を実行（TTY 必須）\n"
+            f"  3) その後 gh pr create を実行可能\n"
+            f"  ※ エージェントが checkpoint を自作することはできません\n"
         )
 
     # v6 Reverse Spec Gate: code changed but spec untouched. The most
@@ -524,11 +524,11 @@ def main() -> None:
         f"PR 作成がブロックされました。\n"
         f"Issue {issue} の QA チェックポイント（Step 7a）が未承認です。\n\n"
         f"承認フロー:\n"
-        f"  1) QA テスト結果をユーザーに報告して停止\n"
-        f"  2) ユーザーが手動確認・承認\n"
-        f"  3) .vibe/checkpoints/{issue}-qa-approved を作成\n"
-        f"  4) その後 gh pr create を実行可能\n\n"
+        f"  1) QA テスト結果（Checkpoint Packet）を PO に報告して停止\n"
+        f"  2) PO が自分の端末で `vibeflow approve {issue}` を実行（TTY 必須）\n"
+        f"  3) その後 gh pr create を実行可能\n\n"
         f"または Issue に qa:auto ラベルを付与すると自動承認されます。\n"
+        f"※ エージェントが checkpoint を自作することはできません\n"
     )
 
 
