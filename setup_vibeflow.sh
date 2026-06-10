@@ -246,9 +246,24 @@ create_backup() {
 }
 
 # Function to run installation
+# Regenerate schema-driven files so a setup project matches a generated
+# one (validate_bash, .vibe/spec/ skeleton, runtime, manifest). This is
+# the single generator path — the lib/ bootstrap only lays the skeleton.
+run_generate() {
+    section "スキーマからプロジェクトファイルを生成中"
+    if python3 "${SCRIPT_DIR}/core/generators/generate_all.py" \
+        --schema-dir "${SCRIPT_DIR}/core/schema" \
+        --project-dir "." \
+        --framework-dir "${SCRIPT_DIR}"; then
+        success "スキーマ駆動ファイルの生成: OK"
+    else
+        warning "generate に失敗しました（doctor で確認してください）"
+    fi
+}
+
 run_installation() {
     section "インストールを開始します"
-    
+
     # Step 1: Create directory structure
     if ! create_vibe_structure; then
         error "ディレクトリ構造の作成に失敗しました"
@@ -601,9 +616,14 @@ main() {
     # Create backup if needed
     create_backup
     
-    # Run installation
+    # Run installation (lib/ bootstrap: skeleton, templates, labels)
     run_installation
-    
+
+    # Single source of truth: regenerate schema-driven files (validate_bash,
+    # the .vibe/spec/ skeleton, runtime modules, manifest, …) so a setup
+    # project is byte-identical to a generated one — no second generator.
+    run_generate
+
     # Verify installation
     if verify_installation; then
         # Write framework version file

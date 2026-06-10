@@ -16,7 +16,8 @@ create_templates() {
     
     # Create template files
     create_vision_template
-    create_spec_template
+    # v6: no loose spec.md — the structured spec (.vibe/spec/) is created
+    # by the kickoff skill; the skeleton is laid down by `vibeflow generate`.
     create_plan_template
     
     # Create issue templates
