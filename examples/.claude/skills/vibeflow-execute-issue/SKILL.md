@@ -58,7 +58,20 @@ current_step: "4_test_writing"
 YAML
 ```
 
-これにより `validate_access.py` が `src/*`, `tests/*` への書き込みを許可します。
+これにより `validate_access.py` が `src/*`, `tests/*`, `.vibe/spec/**` への書き込みを許可します。
+
+## Step 3.5: To-Be Spec 編集（Coding Agent）
+
+**Issue = Spec 差分。** Issue の「## Spec 変更」欄に従い、`.vibe/spec/` の
+Story / Contract を**この Issue ブランチ上で**編集してコミットする
+（As-Is = base ブランチの spec、To-Be = このブランチの spec。`spec-loop.md`）。
+
+- Issue が「spec 変更なし（コードのみ）」（バグ分類 (i) 等）の場合は省略
+- バグ分類 (iii)（spec に invariant が書かれていなかった）の場合は、
+  対応する Story に **invariant を追加**し、Step 4 でその test を書く
+- 機能追加なら Story の invariants / source_files、境界を渡る型の変更なら
+  Contract を更新する
+- コミット: `spec: update To-Be for #<NUMBER>`
 
 ## Step 4: Test Writing — TDD Red（Coding Agent）
 
@@ -103,6 +116,16 @@ YAML
 
 **確定判定は Step 9.5（クロスレビュー後）で行う。** Step 7 は「テストが
 本当に通っているか」と「人間確認が必要な種類の変更か」のトリアージ。
+
+### 7-0. spec 整合検証
+
+```bash
+vibeflow spec-verify
+# PATH に無い場合: python3 .vibe/runtime/spec_verify.py .vibe/spec .
+```
+
+**ERRORS 0（exit 0）を確認する。** FAIL の場合は spec とコードが乖離して
+いる — Step 3.5（spec の修正）または Step 4-5（コードの修正）に差し戻す。
 
 ### 7-1. テスト全実行 — 証拠を残す
 
@@ -174,8 +197,16 @@ result = judge(context)
 
 1. テスト結果のサマリを表示
 2. diff の概要を表示
-3. UI task の場合: スクリーンショットを提示
-4. **ユーザーの OK を待つ**
+3. **spec を変更した場合: As-Is → To-Be 差分を提示**
+
+```bash
+git diff main...HEAD -- .vibe/spec/
+```
+
+   差分の生 YAML に加えて、「この Issue でできるようになること / 変わる
+   こと / なくなること」を平易な日本語 3-5 行で要約して提示する。
+4. UI task の場合: スクリーンショットを提示
+5. **ユーザーの OK を待つ**
 
 ```
 📋 QA レポート — Issue #<NUMBER>
@@ -187,14 +218,14 @@ diff: X files, Y lines
 確認をお願いします。OK / NG を教えてください。
 ```
 
-5. OK の場合: checkpoint 作成
+6. OK の場合: checkpoint 作成
 
 ```bash
 mkdir -p .vibe/checkpoints
 echo "approved" > .vibe/checkpoints/<NUMBER>-qa-approved
 ```
 
-6. NG の場合: フィードバックを反映して Step 4 に戻る
+7. NG の場合: フィードバックを反映して Step 4 に戻る
 
 **注意**: アルゴリズム変更やデータ構造作成など、目視確認が不可能な場合は `qa:auto` ラベルが付いているはずなので、このステップはスキップされます。
 
