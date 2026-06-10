@@ -161,4 +161,29 @@ test_workflow_standard_synced() {
 run_test "workflow-standard.md documents Step 9.5" test_workflow_standard_synced
 
 # ──────────────────────────────────────────────
+describe "Execute Issue — spec loop wiring (Issue = Spec 差分)"
+
+test_has_tobe_spec_step() {
+    assert_file_contains "$SKILL" "Step 3.5" \
+        "needs Step 3.5: To-Be spec editing on the issue branch" || return 1
+    assert_file_contains "$SKILL" "To-Be" \
+        "Step 3.5 should describe the To-Be spec edit" || return 1
+    assert_file_contains "$SKILL" "## Spec 変更" \
+        "the issue's Spec 変更 section drives the To-Be edit" || return 1
+}
+run_test "Step 3.5: To-Be spec editing is wired" test_has_tobe_spec_step
+
+test_has_spec_verify_gate() {
+    assert_file_contains "$SKILL" "spec-verify" \
+        "Step 7 must run spec-verify before judgment" || return 1
+}
+run_test "Step 7 runs spec-verify" test_has_spec_verify_gate
+
+test_checkpoint_shows_spec_diff() {
+    assert_file_contains "$SKILL" "diff.*\.vibe/spec/" \
+        "Step 7a must present the As-Is→To-Be spec diff" || return 1
+}
+run_test "Step 7a presents the spec diff" test_checkpoint_shows_spec_diff
+
+# ──────────────────────────────────────────────
 print_summary
