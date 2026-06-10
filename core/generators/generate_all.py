@@ -59,11 +59,15 @@ def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: st
         os.makedirs(hooks_dir, exist_ok=True)
         generate_validate_access(os.path.join(schema_dir, "policy.yaml"), hooks_dir)
         copy_static_hooks(hooks_dir)
+        # validate_access.py / validate_bash.py are templated FROM the
+        # policy schema; the others are copied verbatim from examples/.
+        # Record each one's true origin so provenance is honest.
+        SCHEMA_GENERATED = {"validate_access.py", "validate_bash.py"}
         for hook_file in ("validate_access.py", "validate_bash.py", "validate_write.sh", "validate_step7a.py"):
             if (project / ".vibe" / "hooks" / hook_file).exists():
-                generated_files.append(
-                    (f".vibe/hooks/{hook_file}", "core/schema/policy.yaml")
-                )
+                src = ("core/schema/policy.yaml" if hook_file in SCHEMA_GENERATED
+                       else f"examples/.vibe/hooks/{hook_file}")
+                generated_files.append((f".vibe/hooks/{hook_file}", src))
 
     elif target == "settings":
         claude_dir = str(project / ".claude")
@@ -118,7 +122,7 @@ def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: st
             shutil.copy2(str(src_ps), str(dest_ps))
             print(f"Generated: {dest_ps}")
         if dest_ps.exists():
-            generated_files.append((".vibe/project_state.yaml", "core/schema/project_state.yaml"))
+            generated_files.append((".vibe/project_state.yaml", "examples/.vibe/project_state.yaml"))
 
         # sessions/iris-main.yaml
         src_iris = fw / "examples" / ".vibe" / "sessions" / "iris-main.yaml"
@@ -128,7 +132,7 @@ def run_target(target: str, schema_dir: str, project_dir: str, framework_dir: st
             shutil.copy2(str(src_iris), str(dest_iris))
             print(f"Generated: {dest_iris}")
         if dest_iris.exists():
-            generated_files.append((".vibe/sessions/iris-main.yaml", "core/schema/session_state.yaml"))
+            generated_files.append((".vibe/sessions/iris-main.yaml", "examples/.vibe/sessions/iris-main.yaml"))
 
     elif target == "spec":
         # v6 structured spec home — Story / Contract instances live here.
