@@ -1,22 +1,27 @@
 """Issue Auto-Generation for VibeFlow v6 Iris-Only Architecture.
-from __future__ import annotations
+
 Generates GitHub Issues from Plan/Spec content.
 Auto-assigns labels (type, qa) and formats for user review.
 """
 
+from __future__ import annotations
+
 import re
 from typing import Any, Dict, List
 
-
-# Keywords that suggest UI/manual QA
-_UI_KEYWORDS = [
-    "ui", "page", "screen", "component", "layout", "design",
-    "css", "style", "button", "form", "modal", "dialog",
-    "animation", "responsive", "ダッシュボード", "画面", "表示",
-]
+# UI detection is shared with qa_judge / dispatcher via ui_task.py.
+try:
+    from core.runtime.ui_task import text_mentions_ui
+except ImportError:  # flat .vibe/runtime/ deployment
+    from ui_task import text_mentions_ui
 
 _FIX_KEYWORDS = ["fix", "bug", "patch", "修正", "バグ"]
 _CHORE_KEYWORDS = ["chore", "refactor", "cleanup", "lint", "docs", "リファクタ"]
+
+
+def title_is_ui(title: str) -> bool:
+    """True if an issue title suggests UI work (shared ui_task logic)."""
+    return text_mentions_ui(title)
 
 
 def generate_issues(plan_text: str) -> List[Dict[str, Any]]:
@@ -83,7 +88,7 @@ def _auto_labels(title: str) -> List[str]:
         labels.append("type:dev")
 
     # QA label
-    if any(kw in title_lower for kw in _UI_KEYWORDS):
+    if title_is_ui(title):
         labels.append("qa:manual")
     else:
         labels.append("qa:auto")

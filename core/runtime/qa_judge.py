@@ -22,56 +22,13 @@ from typing import Any, Dict, List
 MAX_FILES_AUTO = 5
 MAX_LINES_AUTO = 200
 
-# File extensions that indicate UI changes
-UI_FILE_EXTENSIONS = {
-    ".tsx", ".jsx", ".vue", ".svelte", ".html",
-    ".css", ".scss", ".less", ".sass",
-}
-
-# Keywords in issue title/body that indicate UI task
-UI_KEYWORDS = [
-    "ui", "page", "screen", "component", "layout", "design",
-    "css", "style", "button", "form", "modal", "dialog",
-    "animation", "responsive", "dashboard",
-    "画面", "表示", "デザイン", "ダッシュボード", "レイアウト",
-    "コンポーネント", "ボタン", "フォーム", "モーダル",
-]
-
-
-def is_ui_task(context: Dict[str, Any]) -> bool:
-    """Determine if the task involves UI changes.
-
-    Args:
-        context: Dict with optional keys:
-            - has_ui_changes: bool (explicit flag)
-            - changed_files: list of file paths
-            - issue_title: str
-            - issue_body: str
-            - labels: list of str
-
-    Returns:
-        True if the task is a UI task.
-    """
-    # Explicit flag
-    if context.get("has_ui_changes"):
-        return True
-
-    # Check changed file extensions
-    changed_files = context.get("changed_files", [])
-    for f in changed_files:
-        for ext in UI_FILE_EXTENSIONS:
-            if f.endswith(ext):
-                return True
-
-    # Check issue title/body for UI keywords
-    title = context.get("issue_title", "").lower()
-    body = context.get("issue_body", "").lower()
-    text = f"{title} {body}"
-    for kw in UI_KEYWORDS:
-        if kw in text:
-            return True
-
-    return False
+# UI detection lives in ui_task.py — the single source of truth shared
+# with dispatcher and issue_generator. is_ui_task is re-exported here
+# for backward compatibility (skills import it from qa_judge).
+try:
+    from core.runtime.ui_task import is_ui_task
+except ImportError:  # flat .vibe/runtime/ deployment
+    from ui_task import is_ui_task
 
 
 def judge(context: Dict[str, Any]) -> Dict[str, Any]:

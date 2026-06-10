@@ -1,9 +1,11 @@
 """Session Auto-Dispatch for VibeFlow v6 Iris-Only Architecture.
-from __future__ import annotations
+
 Iris dispatches coding tasks to agents automatically.
 Generates prompts, selects agents, manages worktree isolation,
 and tracks session state.
 """
+
+from __future__ import annotations
 
 import json
 import os
@@ -11,25 +13,27 @@ import time
 import uuid
 from typing import Any, Dict, Optional
 
-from core.runtime.agent_selector import select_agent
-from core.runtime.claude_code_wrapper import ClaudeCodeWrapper
-from core.runtime.codex_wrapper import CodexWrapper
-
-# Keywords that indicate UI task
-_UI_KEYWORDS = [
-    "ui", "page", "screen", "component", "layout", "design",
-    "css", "style", "button", "form", "modal", "dialog",
-    "animation", "responsive", "dashboard",
-    "画面", "表示", "デザイン", "ダッシュボード", "コンポーネント",
-]
+# Modules are deployed flat into .vibe/runtime/, so package imports
+# need a flat fallback.
+try:
+    from core.runtime.agent_selector import select_agent
+    from core.runtime.claude_code_wrapper import ClaudeCodeWrapper
+    from core.runtime.codex_wrapper import CodexWrapper
+    from core.runtime.ui_task import is_ui_task
+except ImportError:  # flat .vibe/runtime/ deployment
+    from agent_selector import select_agent
+    from claude_code_wrapper import ClaudeCodeWrapper
+    from codex_wrapper import CodexWrapper
+    from ui_task import is_ui_task
 
 
 def _is_ui_task(issue: Dict[str, Any]) -> bool:
-    """Detect if an issue involves UI changes."""
-    title = issue.get("title", "").lower()
-    body = issue.get("body", "").lower()
-    text = f"{title} {body}"
-    return any(kw in text for kw in _UI_KEYWORDS)
+    """Detect if an issue involves UI changes (shared ui_task logic)."""
+    return is_ui_task({
+        "issue_title": issue.get("title", ""),
+        "issue_body": issue.get("body", ""),
+        "labels": issue.get("labels", []),
+    })
 
 
 def generate_prompt(
