@@ -308,4 +308,129 @@ test_base_honors_remote_only_branch() {
 run_test "honors --base when the branch exists only as origin/<branch>" test_base_honors_remote_only_branch
 
 # ──────────────────────────────────────────────
+describe "reverse spec gate — code changed but spec untouched"
+
+# gh mock: `gh issue view N --json body` prints the given body file;
+# label queries return qa:auto.
+make_gh_mock() {
+    local body_file="$1"
+    mkdir -p "${TEST_DIR}/bin"
+    cat > "${TEST_DIR}/bin/gh" << GHEOF
+#!/bin/bash
+if [[ "\$*" == *"--json body"* ]]; then
+    cat "${body_file}"
+    exit 0
+fi
+if [[ "\$*" == *"--json labels"* ]]; then
+    echo "qa:auto"
+    exit 0
+fi
+exit 0
+GHEOF
+    chmod +x "${TEST_DIR}/bin/gh"
+}
+
+run_hook_with_gh() {
+    local rc=0
+    echo "$PR_CMD" | PATH="${TEST_DIR}/bin:$PATH" CLAUDE_PROJECT_DIR="$TEST_DIR" \
+        python3 "$HOOK_SCRIPT" 2>/dev/null || rc=$?
+    return $rc
+}
+
+# A spec-using project (has .vibe/spec/ on main) with a code-only branch
+make_code_branch_in_spec_project() {
+    cd "$TEST_DIR"
+    mkdir -p .vibe/spec/stories
+    echo "id: core" > .vibe/spec/stories/core.yaml
+    echo "readme" > README.md
+    git add -A && git commit -q -m "base with spec"
+    git branch -M main
+    git checkout -q -b feature/work
+    mkdir -p src
+    echo "x = 1" > src/app.py
+    git add -A && git commit -q -m "code only"
+}
+
+test_code_without_declaration_blocked() {
+    make_code_branch_in_spec_project
+    create_state_with_issue "#60"
+    create_qa_auto_checkpoint "#60"
+    echo "## Spec 変更
+なにも書いていない" > "${TEST_DIR}/issue_body.txt"
+    make_gh_mock "${TEST_DIR}/issue_body.txt"
+    run_hook_with_gh
+    assert_equals "2" "$?" "code change without spec change nor declaration must block"
+}
+run_test "blocks code-only PR without a spec-or-declaration" test_code_without_declaration_blocked
+
+test_code_with_filled_declaration_passes() {
+    make_code_branch_in_spec_project
+    create_state_with_issue "#61"
+    create_qa_auto_checkpoint "#61"
+    echo "## Spec 変更
+対象 Story / Contract: spec 変更なし（コードのみ）" > "${TEST_DIR}/issue_body.txt"
+    make_gh_mock "${TEST_DIR}/issue_body.txt"
+    run_hook_with_gh
+    assert_equals "0" "$?" "a filled-in 'spec 変更なし' declaration must pass"
+}
+run_test "allows code-only PR with a filled-in declaration" test_code_with_filled_declaration_passes
+
+test_template_placeholder_does_not_count() {
+    make_code_branch_in_spec_project
+    create_state_with_issue "#62"
+    create_qa_auto_checkpoint "#62"
+    # the raw template line still contains brackets — not a decision
+    echo '## Spec 変更
+対象 Story / Contract: [`.vibe/spec/stories/<id>.yaml` / spec 変更なし（コードのみ）]' > "${TEST_DIR}/issue_body.txt"
+    make_gh_mock "${TEST_DIR}/issue_body.txt"
+    run_hook_with_gh
+    assert_equals "2" "$?" "an unfilled template placeholder must not count as a declaration"
+}
+run_test "template placeholder is not a declaration (false-positive guard)" test_template_placeholder_does_not_count
+
+test_human_checkpoint_overrides_reverse_gate() {
+    make_code_branch_in_spec_project
+    create_state_with_issue "#63"
+    create_human_checkpoint "#63"
+    echo "## Spec 変更
+なにも書いていない" > "${TEST_DIR}/issue_body.txt"
+    make_gh_mock "${TEST_DIR}/issue_body.txt"
+    run_hook_with_gh
+    assert_equals "0" "$?" "an explicit human approval overrides the reverse gate"
+}
+run_test "human checkpoint overrides the reverse gate" test_human_checkpoint_overrides_reverse_gate
+
+test_docs_only_change_passes_without_declaration() {
+    cd "$TEST_DIR"
+    mkdir -p .vibe/spec/stories
+    echo "id: core" > .vibe/spec/stories/core.yaml
+    echo "readme" > README.md
+    git add -A && git commit -q -m "base with spec"
+    git branch -M main
+    git checkout -q -b feature/docs
+    echo "more docs" >> README.md
+    git add -A && git commit -q -m "docs only"
+    create_state_with_issue "#64"
+    create_qa_auto_checkpoint "#64"
+    echo "## Spec 変更
+なにも書いていない" > "${TEST_DIR}/issue_body.txt"
+    make_gh_mock "${TEST_DIR}/issue_body.txt"
+    run_hook_with_gh
+    assert_equals "0" "$?" "docs-only changes need no spec declaration"
+}
+run_test "docs-only PR passes without a declaration" test_docs_only_change_passes_without_declaration
+
+test_gh_failure_blocks_reverse_gate() {
+    make_code_branch_in_spec_project
+    create_state_with_issue "#65"
+    create_qa_auto_checkpoint "#65"
+    mkdir -p "${TEST_DIR}/bin"
+    printf '#!/bin/bash\nexit 1\n' > "${TEST_DIR}/bin/gh"
+    chmod +x "${TEST_DIR}/bin/gh"
+    run_hook_with_gh
+    assert_equals "2" "$?" "gh failure must fail closed (cannot verify the declaration)"
+}
+run_test "gh failure fails closed on the reverse gate" test_gh_failure_blocks_reverse_gate
+
+# ──────────────────────────────────────────────
 print_summary
