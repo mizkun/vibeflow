@@ -143,10 +143,11 @@ test_classify_all_project_files() {
     local project="${TEST_DIR}/project"
     mkdir -p "${project}/.vibe/hooks" "${project}/.vibe/roles" "${project}/.claude/commands"
 
-    # Copy stock files (use files whose hashes still match v3.5.0 baseline)
+    # Copy stock files (use files whose hashes still match the v3.5.0
+    # baseline — task_complete.sh has stayed byte-stable across versions;
+    # waiting_input.sh / validate_step7a.py legitimately changed in v6).
     cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_write.sh" "${project}/.vibe/hooks/"
-    cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/validate_step7a.py" "${project}/.vibe/hooks/"
-    cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/waiting_input.sh" "${project}/.vibe/hooks/"
+    cp "${FRAMEWORK_DIR}/examples/.vibe/hooks/task_complete.sh" "${project}/.vibe/hooks/"
     # Modify one
     echo "# custom" >> "${project}/.vibe/hooks/validate_write.sh"
     # Add unknown
@@ -165,8 +166,8 @@ for path, status in sorted(results.items()):
 
     echo "$output" > "${TEST_DIR}/classify_output.txt"
 
-    assert_file_contains "${TEST_DIR}/classify_output.txt" "stock-managed: .vibe/hooks/waiting_input.sh" \
-        "waiting_input.sh should be stock-managed"
+    assert_file_contains "${TEST_DIR}/classify_output.txt" "stock-managed: .vibe/hooks/task_complete.sh" \
+        "task_complete.sh should be stock-managed"
     assert_file_contains "${TEST_DIR}/classify_output.txt" "customized: .vibe/hooks/validate_write.sh" \
         "Modified validate_write.sh should be customized"
 }
@@ -191,12 +192,13 @@ if actual != recorded:
     print(f'MISMATCH: validate_write.sh actual={actual[:16]} recorded={recorded[:16]}')
     exit(1)
 
-# Check waiting_input.sh (unchanged since v3.5.0)
-with open('${FRAMEWORK_DIR}/examples/.vibe/hooks/waiting_input.sh', 'rb') as f:
+# Check task_complete.sh (byte-stable since v3.5.0; waiting_input.sh
+# legitimately changed in v6 so it is no longer a valid 'unchanged' probe)
+with open('${FRAMEWORK_DIR}/examples/.vibe/hooks/task_complete.sh', 'rb') as f:
     actual = hashlib.sha256(f.read()).hexdigest()
-recorded = baseline['files']['.vibe/hooks/waiting_input.sh']['sha256']
+recorded = baseline['files']['.vibe/hooks/task_complete.sh']['sha256']
 if actual != recorded:
-    print(f'MISMATCH: waiting_input.sh actual={actual[:16]} recorded={recorded[:16]}')
+    print(f'MISMATCH: task_complete.sh actual={actual[:16]} recorded={recorded[:16]}')
     exit(1)
 
 print('OK')
