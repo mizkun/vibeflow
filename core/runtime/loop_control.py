@@ -41,6 +41,15 @@ except ImportError:  # flat .vibe/runtime/ deployment
 MAX_FIX_ATTEMPTS = 3
 SWITCH_AGENT_AFTER = 2  # failures
 
+# Pre-emptive scope budget for a single attempt. qa_judge's thresholds
+# are a post-hoc needs_human; these stop a runaway before it lands a
+# 43-commit scope explosion. Kept in line with patch_loop's file limit.
+MAX_FILES_PER_ATTEMPT = 10
+MAX_LINES_PER_ATTEMPT = 800
+
+# Same failure repeating this many times in a row → change approach.
+REPEAT_FAILURE_THRESHOLD = 2
+
 
 def _session_id(issue) -> str:
     return f"dev-issue-{str(issue).lstrip('#')}"
@@ -98,12 +107,30 @@ def consecutive_fingerprint(project_dir: str, issue) -> int:
     return n
 
 
+def check_budget(files_changed: int = 0, lines_changed: int = 0) -> dict:
+    """Pre-emptive runaway guard for a single attempt's diff size.
+
+    Returns {action: proceed|escalate, reason}."""
+    if files_changed > MAX_FILES_PER_ATTEMPT or lines_changed > MAX_LINES_PER_ATTEMPT:
+        return {
+            "action": "escalate",
+            "reason": (
+                f"scope budget exceeded ({files_changed} files / "
+                f"{lines_changed} lines > "
+                f"{MAX_FILES_PER_ATTEMPT}/{MAX_LINES_PER_ATTEMPT}) — "
+                f"stop and escalate before the change runs away"
+            ),
+        }
+    return {"action": "proceed", "reason": "within scope budget"}
+
+
 def should_retry(project_dir: str, issue) -> dict:
     """Decide what to do after the current attempt's failures.
 
-    Returns {action: retry|switch_agent|escalate, agent, reason, attempts}.
+    Returns {action, agent, reason, attempts, repeated_failure}.
     """
     fails = failure_count(project_dir, issue)
+    repeated = consecutive_fingerprint(project_dir, issue) >= REPEAT_FAILURE_THRESHOLD
 
     if fails >= MAX_FIX_ATTEMPTS:
         return {
@@ -111,22 +138,27 @@ def should_retry(project_dir: str, issue) -> dict:
             "agent": "",
             "reason": f"{fails} failed attempts (max {MAX_FIX_ATTEMPTS}) — escalate to human",
             "attempts": fails,
+            "repeated_failure": repeated,
         }
 
     # select_agent encodes the fallback: claude_code_failures>=2 → codex
     sel = select_agent({}, claude_code_failures=fails)
     if sel["agent"] != "claude_code":
-        return {
-            "action": "switch_agent",
-            "agent": sel["agent"],
-            "reason": sel["reason"],
-            "attempts": fails,
-        }
+        action, agent, reason = "switch_agent", sel["agent"], sel["reason"]
+    else:
+        action, agent, reason = "retry", "claude_code", f"attempt {fails + 1}/{MAX_FIX_ATTEMPTS}"
+
+    if repeated:
+        reason += (
+            " — 同じ失敗が連続している。前回と同じアプローチを繰り返さず、"
+            "別の方法を試すこと"
+        )
     return {
-        "action": "retry",
-        "agent": "claude_code",
-        "reason": f"attempt {fails + 1}/{MAX_FIX_ATTEMPTS}",
+        "action": action,
+        "agent": agent,
+        "reason": reason,
         "attempts": fails,
+        "repeated_failure": repeated,
     }
 
 

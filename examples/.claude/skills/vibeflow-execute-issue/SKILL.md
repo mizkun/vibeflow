@@ -120,6 +120,19 @@ npm test || pytest || bash tests/run_tests.sh
 3. テストは変更しない
 4. コミット: `feat: implement #<NUMBER>`
 
+### スコープ予算ガード（暴走防止）
+
+実装後、diff が予算内かを確認する（patch_loop と同水準）:
+
+```bash
+python3 .vibe/runtime/loop_control.py 2>/dev/null; \
+git diff --shortstat main...HEAD
+# files > 10 または lines > 800 を大きく超える場合は loop_control.check_budget で
+# action=escalate → 実装を止め、Issue を分割すべきか PO に相談する
+```
+
+1 試行でのスコープ爆発（43 コミット級）を、qa_judge の事後判定を待たずに止める。
+
 ## Step 6: Refactoring（Coding Agent）
 
 1. コード品質の改善（重複排除、命名改善等）
