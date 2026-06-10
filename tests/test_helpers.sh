@@ -16,6 +16,21 @@ TESTS_RUN=0
 TESTS_PASSED=0
 TESTS_FAILED=0
 CURRENT_TEST=""
+_CURRENT_TEST_FAILED=0
+_SUMMARY_PRINTED=0
+
+# Catch files that die (errexit, crash, stray exit) before print_summary:
+# without this, a mid-file abort can look like a partial-but-green run.
+_vf_exit_guard() {
+    local code=$?
+    if [ "${_SUMMARY_PRINTED}" -eq 0 ]; then
+        echo "" >&2
+        echo -e "${RED}ABORTED before summary (${TESTS_RUN} tests started) — treating as failure${NC}" >&2
+        exit 1
+    fi
+    exit "$code"
+}
+trap _vf_exit_guard EXIT
 
 # Framework directory (where vibeflow source is)
 FRAMEWORK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -270,6 +285,7 @@ describe() {
 it() {
     CURRENT_TEST="$1"
     TESTS_RUN=$((TESTS_RUN + 1))
+    _CURRENT_TEST_FAILED=0
 }
 
 pass() {
@@ -277,8 +293,13 @@ pass() {
     echo -e "  ${GREEN}✓${NC} ${CURRENT_TEST}"
 }
 
+# Counts at most once per test: every assert failure prints its message,
+# but TESTS_FAILED tracks failed *tests*, not failed asserts.
 fail() {
-    TESTS_FAILED=$((TESTS_FAILED + 1))
+    if [ "${_CURRENT_TEST_FAILED}" -eq 0 ]; then
+        TESTS_FAILED=$((TESTS_FAILED + 1))
+        _CURRENT_TEST_FAILED=1
+    fi
     echo -e "  ${RED}✗${NC} ${CURRENT_TEST}"
     echo -e "    ${RED}→ $1${NC}"
 }
@@ -289,13 +310,22 @@ run_test() {
 
     setup_test_env
 
-    # Run the test function; disable set -e for test execution
-    set +e
-    "$2"
-    local result=$?
-    set -e
+    # Run the test function in an `if` condition: bash suppresses errexit
+    # inside a command whose result is being tested, even when the test
+    # body itself runs `set -e` — so a failing assert can never abort the
+    # whole file.
+    local result=0
+    if "$2"; then
+        result=0
+    else
+        result=$?
+    fi
 
-    if [ "$result" -eq 0 ]; then
+    if [ "${_CURRENT_TEST_FAILED}" -ne 0 ]; then
+        : # already counted by fail()
+    elif [ "$result" -ne 0 ]; then
+        fail "test function returned $result without an assertion failure"
+    else
         pass
     fi
 
@@ -303,8 +333,15 @@ run_test() {
 }
 
 print_summary() {
+    _SUMMARY_PRINTED=1
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    local counted=$((TESTS_PASSED + TESTS_FAILED))
+    if [ "$counted" -ne "$TESTS_RUN" ]; then
+        echo -e "${RED}Accounting mismatch: $TESTS_RUN tests run but $counted outcomes counted (runner bug or stray it/pass/fail)${NC}"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        return 1
+    fi
     if [ "$TESTS_FAILED" -eq 0 ]; then
         echo -e "${GREEN}All $TESTS_RUN tests passed${NC}"
     else
