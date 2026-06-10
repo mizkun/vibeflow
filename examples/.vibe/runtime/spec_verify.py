@@ -181,6 +181,10 @@ def verify(spec_dir: str, repo_root: str) -> dict:
 
     inv_total = 0
     inv_pending = 0
+    # Pending invariants are the convergence backlog: each one is a gap
+    # in the "modifications don't break it" guarantee. Listed so the
+    # healthcheck can propose reinforcement issues without re-parsing.
+    pending_invariants: list = []
 
     # ---- Stories ----
     for stem, data in stories.items():
@@ -217,6 +221,11 @@ def verify(spec_dir: str, repo_root: str) -> dict:
                         f"test must be a string path"
                     )
                     inv_pending += 1
+                    pending_invariants.append({
+                        "story": stem,
+                        "id": inv.get("id", "?"),
+                        "text": str(inv.get("text", "")).strip(),
+                    })
                 elif test:
                     if not _path_exists(repo_root, test):
                         errors.append(
@@ -225,6 +234,11 @@ def verify(spec_dir: str, repo_root: str) -> dict:
                         )
                 else:
                     inv_pending += 1
+                    pending_invariants.append({
+                        "story": stem,
+                        "id": inv.get("id", "?"),
+                        "text": str(inv.get("text", "")).strip(),
+                    })
                 src_ref = inv.get("source_ref")
                 if src_ref and not isinstance(src_ref, str):
                     errors.append(
@@ -338,6 +352,7 @@ def verify(spec_dir: str, repo_root: str) -> dict:
         "invariants_total": inv_total,
         "invariants_pending": inv_pending,
         "invariants_with_test": inv_total - inv_pending,
+        "pending_invariants": pending_invariants,
     }
 
     return {

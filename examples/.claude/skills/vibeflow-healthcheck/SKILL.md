@@ -71,6 +71,32 @@ VibeFlow プロジェクトの整合性を検証します。
     押し上げる対象。数の推移を毎回見える化する
 - WARNINGS（schema_ref 未解決など）も表示する。
 
+##### Spec Health の記録（STATUS.md）
+
+spec-verify の結果を `.vibe/context/STATUS.md` の「## Spec Health」
+セクションに **1 行追記**する:
+
+```
+- <YYYY-MM-DD>: errors=N warnings=N verified=N violated=N pending=N/total
+```
+
+セクションは**直近 10 行のみ保持**し、古い行は削除する（STATUS.md は
+Tier-1 常時ロードのため無制限に追記しない）。
+
+##### invariant 補強 Issue の提案
+
+以下のいずれかに該当したら、Iris は **「invariant 補強 Issue」の作成を
+PO に提案する**（対象 Story・pending invariant 一覧（`stats.pending_invariants`）・
+追加すべき test を本文に含める。Issue 化は vibeflow-issue-template で行う）:
+
+- (a) pending 比率が前回記録より増加した
+- (b) pending 比率が 30% を超えたまま前回から減少していない
+- (c) 同一 WARNING が 2 回連続で出ている
+
+補強 Issue の「## Spec 変更」欄は「invariant への test フィールド追加
+（pending → verified 昇格、To-Be = As-Is + test パス）」と明記する
+（バグ分類 (iii) とは別物 — (iii) は invariant 未記録のケース）。
+
 ### Output Format
 各チェック項目について pass / warning / failure を表示。
 日本語で表示し、修正手順を含めてください。
