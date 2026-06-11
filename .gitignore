@@ -6,6 +6,10 @@ Thumbs.db
 node_modules/
 .pnp
 .pnp.js
+# Local Playwright dev install (the framework itself is Python+bash;
+# Playwright config is what it ships to user projects, not a root dep)
+/package.json
+/package-lock.json
 
 # Testing
 coverage/
